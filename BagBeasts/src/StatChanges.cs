@@ -6,5 +6,5 @@
     public int SPD { get; set; }
     public int INT { get; set; }
     public int ACC { get; set; }
-    public int DOGE { get; set; }
+    public int DODGE { get; set; }
 }

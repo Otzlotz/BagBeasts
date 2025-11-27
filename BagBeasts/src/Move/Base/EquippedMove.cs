@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace src.Move.Base
+namespace src.Move.Base;
 
 public class EquippedMove
 {

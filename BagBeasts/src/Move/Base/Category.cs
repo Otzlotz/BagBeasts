@@ -1,6 +1,6 @@
 
 
-namespace src.Move.Base
+namespace src.Move.Base;
 
 public enum Category
 {

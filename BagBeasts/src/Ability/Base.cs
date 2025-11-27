@@ -1,18 +1,16 @@
-namespace src.Item.Base;
-public abstract class ItemBase
+namespace BagBeasts.src.Ability;
+
+public abstract class AbilityBase
 {
 #region Properties
+
     public abstract readonly uint ID {get;}
-
     public abstract readonly string Name {get;}
-
     public abstract readonly string Description {get;}
 
 #endregion // Properties
 
 #region Methods
-
-    public abstract void ItemEffect();
-    
+    public abstract void AbilityEffect(); 
 #endregion // Methods
 }

@@ -1,4 +1,7 @@
 ﻿using System;
+using src.Move.Base;
+using src.Item.Base;
+using src.Ability.Base;
 
 public class BagBeastObject
 {
@@ -8,8 +11,8 @@ public class BagBeastObject
     public EquippedMove Move2 { get; set; }
     public EquippedMove Move3 { get; set; }
     public EquippedMove Move4 { get; set; }
-    public Item HeldItem { get; set; }
-    public Ability Ability { get; set; }
+    public ItemBase HeldItem { get; set; }
+    public AbilityBase Ability { get; set; }
     public int StatusEffect { get; set; }
     public StatChanges StatChange { get; set; }
     public bool Confusion { get; set; }

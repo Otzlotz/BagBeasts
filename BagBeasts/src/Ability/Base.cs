@@ -1,4 +1,4 @@
-namespace BagBeasts.src.Ability;
+namespace src.Ability.Base;
 
 public abstract class AbilityBase
 {

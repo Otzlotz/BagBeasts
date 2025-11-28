@@ -9,6 +9,7 @@ public class Battle
 
     public BagBeastObject Player2 { get; set; }
 
+
     public Battle(BagBeastObject p1, BagBeastObject p2)
     {
         Player1 = p1;

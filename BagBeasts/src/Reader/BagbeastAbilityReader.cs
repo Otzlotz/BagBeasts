@@ -1,29 +1,44 @@
 
 namespace src.Reader;
 
+/// <summary>
+/// Klasse für Methoden mit Datenbankabfragen für die Tabelle BagBeastAbility (besitzt einen Cache!)
+/// </summary>
 public class BagBeastAbilityReader
 {
     #region Properties
 
-    // Cached Abilities der Bagbeasts aus der Datenbank
-    // uint BagbeastId, List<uint> Abilities des Bagbeast
-    private readonly Dictionary<uint, List<uint>> BagBeastAbilityCache {get;} = new Dictionary<uint, List<uint>>();
+    /// <summary>
+    /// Cached Abilities der Bagbeasts aus der Datenbank
+    /// </summary>
+    /// <remarks>uint = BagbeastId, List<uint> = Abilities des Bagbeast</remarks>
+    private Dictionary<uint, List<uint>> BagBeastAbilityCache {get;} = new Dictionary<uint, List<uint>>();
 
     #endregion // Properties
 
     #region Public Methods
 
+    /// <summary>
+    /// Ermittelt die Abilities, welche ein Bagbeast besitzen kann
+    /// </summary>
+    /// <param name="bagBeastId">Bagbeast-ID</param>
+    /// <returns>IDs der Abilities, welche ein Bagbeast besitzen kann</returns>
     public List<uint> GetBagBeastAbilities(uint bagBeastId)
     {
         LeseBagBeastAbilities(bagBeastId);
         return BagBeastAbilityCache[bagBeastId];
     }
 
+    // TODO: Vielleicht noch direkt eine Methode, welche nicht nur die IDs sondern auch die Namen ließt
+
     #endregion // Public Methods
 
     #region Private Methods
     
-    // Ließt einen Eintrag in den Cache ein
+    /// <summary>
+    /// Ließt einen Eintrag in den Cache ein
+    /// </summary>
+    /// <param name="bagBeastId">Bagbeast-ID</param>
     private void LeseBagBeastAbilities(uint bagBeastId)
     {
         // Wenn die Ability bereits eingelesen wurden, dann müssen diese nicht nochmal eingelesen werden

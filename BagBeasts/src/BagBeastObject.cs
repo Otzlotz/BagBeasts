@@ -15,7 +15,7 @@ public class BagBeastObject
     public AbilityBase Ability { get; set; }
     public int StatusEffect { get; set; }
     public StatChanges StatChange { get; set; }
-    public bool Confusion { get; set; }
+    public int Confusion { get; set; }
 
     public BagBeastObject()
     {

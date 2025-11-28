@@ -5,7 +5,7 @@ public class AbilityReader
 {
     #region Properties
 
-    // Cached Multiplier aus der Datenbank
+    // Cached Abilities aus der Datenbank
     // uint Id, string Name
     private readonly Dictionary<uint, string> AbilityCache {get;} = new Dictionary<uint, string>();
 
@@ -13,27 +13,41 @@ public class AbilityReader
 
     #region Public Methods
 
-    public decimal GetName(uint abilityId)
+    public string GetName(uint abilityId)
     {
-        If (AbilityCache.Any())
-        {
-            return;
-        }
+        LeseAbility(abilityId);
+        return AbilityCache[abilityId];
     }
 
-    // TODO: Muss einmal im Programm gegen Anfang Ausgelöst werden!
-
-    // Muss einmal im Programm gegen Anfang Ausgelöst werden!
-    public void LeseAbility(uint abilityId)
+    // Ließt alle Datenbankeinträge in den Cache ein
+    public void AlleDatenEinlesen()
     {
-        // Wenn die Multiplier bereits eingelesen wurden, dann müssen diese nicht nochmal eingelesen werden
-        If (AbilityCache.Any())
+        // Wenn die Abilities bereits eingelesen wurden, dann müssen diese nicht nochmal eingelesen werden
+        if (AbilityCache.Any())
         {
             return;
         }
 
         // TODO: Datenbankabfrage und Cache Füllen
+        return;
     }
 
     #endregion // Public Methods
+
+    #region Private Methods
+
+    // Ließt einen Eintrag in den Cache ein
+    private void LeseAbility(uint abilityId)
+    {
+        // Wenn die Ability bereits eingelesen wurden, dann müssen diese nicht nochmal eingelesen werden
+        if (AbilityCache.Contains(abilityId))
+        {
+            return;
+        }
+
+        // TODO: Datenbankabfrage und Cache mit dem einen Eintrag Füllen
+        return;
+    }
+
+    #endregion // Private Methods
 }

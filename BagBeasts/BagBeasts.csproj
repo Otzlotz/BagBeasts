@@ -17,14 +17,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="src\Item\FocusSash.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="src\Item\FocusSash.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="DuckDB.NET.Bindings.Full" Version="1.4.1" />
     <PackageReference Include="DuckDB.NET.Data.Full" Version="1.4.1" />
   </ItemGroup>

@@ -17,7 +17,7 @@ public class EquippedMove
     #region Properties
 
     public MoveBase Move { get; private set; }
-    public int CurrentPP {get; private set;}
+    public uint CurrentPP {get; private set;}
     public MoveSonderbullshit Sonderbullshit {get;} = new MoveSonderbullshit();
 
     #endregion // Properties

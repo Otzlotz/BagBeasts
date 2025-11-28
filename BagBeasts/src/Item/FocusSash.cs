@@ -1,34 +1,21 @@
-namespace src.Item.Base;
+﻿using src.Move;
+using src.Move.Base;
 
-public class FocusSash : Base
+namespace src.Item.ItemBase;
+
+public class FocusSash : HitTakenItemBase
 {
-    #region Properties
-
-    public string Name {get; set;}
-
-    public string Description {get; set;}
-
-    public readonly ItemType ItemType {get => return ItemType.TakenHitItem;}
-
-    #endregion // Properties
-
-    #region Constructor
-
-    public FocusSash()
-    {
-    }
-
-    #endregion // Constructor
-
     #region Methods
 
-    public void ItemEffect(BagBeastObject holderBagBeast)
+    public override void ItemEffect(BagBeastObject holderBeast, BagBeastObject attackingBeast, MoveBase attackingMove)
     {
-        if (holderBagBeast.CurrentHP == MAXHP)
+
+        if (holderBeast.CurrentHP == holderBeast.MAXHP)
         {
-            
+
         }
     }
+
 
     #endregion // Methods
 }

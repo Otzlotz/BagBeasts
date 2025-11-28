@@ -5,7 +5,7 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <BlazorDisableThrowNavigationException>true</BlazorDisableThrowNavigationException>
-    <OutputType>Library</OutputType>
+    <OutputType>exe</OutputType>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -15,14 +15,6 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <WarningLevel>0</WarningLevel>
   </PropertyGroup>
-
-  <ItemGroup>
-    <Compile Remove="src\Item\FocusSash.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="src\Item\FocusSash.cs" />
-  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="DuckDB.NET.Bindings.Full" Version="1.4.1" />

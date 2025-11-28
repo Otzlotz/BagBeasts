@@ -40,7 +40,6 @@
             border: none;
             border-radius: 4px;
             cursor: pointer;
-            @onclick="btnLoginClick";
         }
         .login-container button:hover {
             background-color: #0056b3;
@@ -52,8 +51,7 @@
         <h2>Login</h2>
             <input type="text" name="username" placeholder="Benutzername" required>
             <input type="password" name="password" placeholder="Passwort" required>
-            <button type="submit">Einloggen</button>
-    </div>
+            <button @onclick="btnLoginClick">Einloggen</button>    
 </body>
 
 @code{

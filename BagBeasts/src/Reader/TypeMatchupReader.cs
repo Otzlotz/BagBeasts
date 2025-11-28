@@ -27,28 +27,48 @@ public class TypeMatchupReader
     /// <returns>Type Damage Multiplier</returns>
     public decimal GetMultiplier(Type attackType, Type defenderType1, Type? defenderType2)
     {
+        ReadMultiplierInCache(attackType, defenderType1);
         decimal multiplier1 = MultiplierCache[new Tuple<Type, Type>(attackType, defenderType1)];
-        decimal multiplier2 = defenderType2 != null ? MultiplierCache[new Tuple<Type, Type>(attackType, defenderType2.Value)] : 1;
+        decimal multiplier2 = 1;
+
+        if (defenderType2.HasValue)
+        {
+            ReadMultiplierInCache(attackType, defenderType2);
+            multiplier2 = MultiplierCache[new Tuple<Type, Type>(attackType, defenderType2.Value)];
+        }
 
         return multiplier1 * multiplier2;
     }
 
-    // TODO: Muss einmal im Programm gegen Anfang Ausgelöst werden!
-
     /// <summary>
     /// Ließt alle Datenbankeinträge in den Cache ein
     /// </summary>
-    public void AlleDatenEinlesen()
+    public void ReadAllDataInCache()
     {
-        // Wenn die Multiplier bereits eingelesen wurden, dann müssen diese nicht nochmal eingelesen werden
-        if (MultiplierCache.Any())
-        {
-            return;
-        }
-
-        // TODO: Datenbankabfrage und Cache Füllen
+        // TODO: Datenbankabfrage und Cache leeren und neu Füllen
         return;
     }
 
     #endregion // Public Methods
+
+    #region Private Methods
+
+    /// <summary>
+    /// Ließt einen Eintrag in den Cache ein
+    /// </summary>
+    /// <param name="attackType">Typ der Attacke</param>
+    /// <param name="defenderType">Typ des angegriffenen BagBeast</param>
+    private void ReadMultiplierInCache(Type attackType, Type defenderType)
+    {
+        // Wenn der Multiplier bereits eingelesen wurde, dann muss dieser nicht nochmal eingelesen werden
+        if (MoveCache.Contains(moveId))
+        {
+            return;
+        }
+
+        // TODO: Datenbankabfrage und Cache mit dem einen Eintrag Füllen
+        return;
+    }
+
+    #endregion // Private Methods
 }

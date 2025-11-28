@@ -25,8 +25,8 @@ public class MoveReader
     /// <returns>Name aus der Datenbank</returns>
     public string GetName(uint moveId)
     {
-        LeseAbility(moveId);
-        return MoveCache[moveId].item1;
+        ReadMoveInCache(moveId);
+        return MoveCache[moveId].Item1;
     }
 
     /// <summary>
@@ -36,8 +36,17 @@ public class MoveReader
     /// <returns>Beschreibung aus der Datenbank</returns>
     public string GetDescription(uint moveId)
     {
-        LeseAbility(moveId);
-        return MoveCache[moveId].item2;
+        ReadMoveInCache(moveId);
+        return MoveCache[moveId].Item2;
+    }
+
+    /// <summary>
+    /// Ließt alle Datenbankeinträge in den Cache ein
+    /// </summary>
+    public void ReadAllDataInCache()
+    {
+        // TODO: Datenbankabfrage und Cache leeren und neu Füllen
+        return;
     }
 
     #endregion // Public Methods
@@ -48,9 +57,9 @@ public class MoveReader
     /// Ließt einen Eintrag in den Cache ein
     /// </summary>
     /// <param name="moveId">Move-ID</param>
-    private void LeseMove(uint moveId)
+    private void ReadMoveInCache(uint moveId)
     {
-        // Wenn der Move bereits eingelesen wurden, dann müssen diese nicht nochmal eingelesen werden
+        // Wenn der Move bereits eingelesen wurde, dann muss dieser nicht nochmal eingelesen werden
         if (MoveCache.Contains(moveId))
         {
             return;

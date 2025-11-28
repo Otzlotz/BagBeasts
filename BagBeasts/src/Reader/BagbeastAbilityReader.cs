@@ -25,11 +25,20 @@ public class BagBeastAbilityReader
     /// <returns>IDs der Abilities, welche ein Bagbeast besitzen kann</returns>
     public List<uint> GetBagBeastAbilities(uint bagBeastId)
     {
-        LeseBagBeastAbilities(bagBeastId);
+        ReadBagBeastAbilitiesInCache(bagBeastId);
         return BagBeastAbilityCache[bagBeastId];
     }
 
     // TODO: Vielleicht noch direkt eine Methode, welche nicht nur die IDs sondern auch die Namen ließt
+
+    /// <summary>
+    /// Ließt alle Datenbankeinträge in den Cache ein
+    /// </summary>
+    public void ReadAllDataInCache()
+    {
+        // TODO: Datenbankabfrage und Cache leeren und neu Füllen
+        return;
+    }
 
     #endregion // Public Methods
 
@@ -39,13 +48,13 @@ public class BagBeastAbilityReader
     /// Ließt einen Eintrag in den Cache ein
     /// </summary>
     /// <param name="bagBeastId">Bagbeast-ID</param>
-    private void LeseBagBeastAbilities(uint bagBeastId)
+    private void ReadBagBeastAbilitiesInCache(uint bagBeastId)
     {
-        // Wenn die Ability bereits eingelesen wurden, dann müssen diese nicht nochmal eingelesen werden
-        //if (BagBeastAbilityCache.Contains(bagBeastId))
-        //{
-        //    return;
-        //}
+        // Wenn die Abilities bereits eingelesen wurden, dann müssen diese nicht nochmal eingelesen werden
+        if (BagBeastAbilityCache.Contains(bagBeastId))
+        {
+            return;
+        }
 
         // TODO: Datenbankabfrage und Cache mit dem einen Eintrag Füllen
         return;

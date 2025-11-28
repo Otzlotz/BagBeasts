@@ -25,8 +25,17 @@ public class AbilityReader
     /// <returns>Name aus der Datenbank</returns>
     public string GetName(uint abilityId)
     {
-        LeseAbility(abilityId);
+        ReadAbilityInCache(abilityId);
         return AbilityCache[abilityId];
+    }
+
+    /// <summary>
+    /// Ließt alle Datenbankeinträge in den Cache ein
+    /// </summary>
+    public void ReadAllDataInCache()
+    {
+        // TODO: Datenbankabfrage und Cache leeren und neu Füllen
+        return;
     }
 
     #endregion // Public Methods
@@ -37,13 +46,13 @@ public class AbilityReader
     /// Ließt einen Eintrag in den Cache ein
     /// </summary>
     /// <param name="abilityId">Ability-ID</param>
-    private void LeseAbility(uint abilityId)
+    private void ReadAbilityInCache(uint abilityId)
     {
-        // Wenn die Ability bereits eingelesen wurden, dann müssen diese nicht nochmal eingelesen werden
-        //if (AbilityCache.Contains(abilityId))
-        //{
-        //    return;
-        //}
+        // Wenn die Ability bereits eingelesen wurden, dann muss diese nicht nochmal eingelesen werden
+        if (AbilityCache.Contains(abilityId))
+        {
+            return;
+        }
 
         // TODO: Datenbankabfrage und Cache mit dem einen Eintrag Füllen
         return;

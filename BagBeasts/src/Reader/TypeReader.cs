@@ -26,25 +26,38 @@ public class TypeReader
     /// <returns>Name aus der Datenbank</returns>
     public string GetName(Type type)
     {
+        ReadTypeInCache(type);
         return TypeCache[type];
     }
-
-    // TODO: Muss einmal im Programm gegen Anfang Ausgelöst werden!
 
     /// <summary>
     /// Ließt alle Datenbankeinträge in den Cache ein
     /// </summary>
-    public void AlleDatenEinlesen()
+    public void ReadAllDataInCache()
     {
-        // Wenn die Types bereits eingelesen wurden, dann müssen diese nicht nochmal eingelesen werden
-        if (TypeCache.Any())
-        {
-            return;
-        }
-
-        // TODO: Datenbankabfrage und Cache Füllen
+        // TODO: Datenbankabfrage und Cache leeren und neu Füllen
         return;
     }
 
     #endregion // Public Methods
+
+    #region Private Methods
+
+    /// <summary>
+    /// Ließt einen Eintrag in den Cache ein
+    /// </summary>
+    /// <param name="type">Type</param>
+    private void ReadTypeInCache(Type type)
+    {
+        // Wenn der Type bereits eingelesen wurde, dann muss dieser nicht nochmal eingelesen werden
+        if (TypeCache.Contains(type))
+        {
+            return;
+        }
+
+        // TODO: Datenbankabfrage und Cache mit dem einen Eintrag Füllen
+        return;
+    }
+
+    #endregion // Private Methods
 }

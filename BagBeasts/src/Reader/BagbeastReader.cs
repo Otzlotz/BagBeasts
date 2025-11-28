@@ -1,3 +1,4 @@
+using src.Beast;
 
 namespace src.Reader;
 
@@ -12,7 +13,7 @@ public class BagbeastReader
     /// Cached Bagbeasts aus der Datenbank
     /// </summary>
     /// <remarks>uint = ID, Bagbeast = Bagbeast</remarks>
-    private Dictionary<uint, Bagbeast> BagbeastCache {get;} = new Dictionary<uint, Bagbeast>();
+    private Dictionary<uint, BagBeast> BagbeastCache {get;} = new Dictionary<uint, BagBeast>();
 
     #endregion // Properties
 
@@ -23,7 +24,7 @@ public class BagbeastReader
     /// </summary>
     /// <param name="bagbeastId">Bagbeast-ID</param>
     /// <returns>Bagbeast aus der Datenbank</returns>
-    public string GetBagbeast(uint bagbeastId)
+    public BagBeast GetBagbeast(uint bagbeastId)
     {
         ReadBagbeastInCache(bagbeastId);
         return BagbeastCache[bagbeastId];
@@ -49,7 +50,7 @@ public class BagbeastReader
     private void ReadBagbeastInCache(uint bagbeastId)
     {
         // Wenn das Bagbeast bereits eingelesen wurde, dann muss dieses nicht nochmal eingelesen werden
-        if (BagbeastCache.Contains(bagbeastId))
+        if (BagbeastCache.ContainsKey(bagbeastId))
         {
             return;
         }

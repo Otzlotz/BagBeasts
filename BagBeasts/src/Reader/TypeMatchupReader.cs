@@ -33,7 +33,7 @@ public class TypeMatchupReader
 
         if (defenderType2.HasValue)
         {
-            ReadMultiplierInCache(attackType, defenderType2);
+            ReadMultiplierInCache(attackType, defenderType2.Value);
             multiplier2 = MultiplierCache[new Tuple<Type, Type>(attackType, defenderType2.Value)];
         }
 
@@ -61,7 +61,7 @@ public class TypeMatchupReader
     private void ReadMultiplierInCache(Type attackType, Type defenderType)
     {
         // Wenn der Multiplier bereits eingelesen wurde, dann muss dieser nicht nochmal eingelesen werden
-        if (MoveCache.Contains(moveId))
+        if (MultiplierCache.ContainsKey(new Tuple<Type, Type>(attackType, defenderType)))
         {
             return;
         }

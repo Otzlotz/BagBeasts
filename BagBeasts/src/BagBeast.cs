@@ -1,5 +1,7 @@
 ﻿using System;
 
+namespace src.Beast;
+
 /// <summary>
 /// Klasse eines BagBeasts aus der Datenbank
 /// </summary>

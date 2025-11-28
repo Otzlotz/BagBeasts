@@ -50,7 +50,7 @@ public class TypeReader
     private void ReadTypeInCache(Type type)
     {
         // Wenn der Type bereits eingelesen wurde, dann muss dieser nicht nochmal eingelesen werden
-        if (TypeCache.Contains(type))
+        if (TypeCache.ContainsKey(type))
         {
             return;
         }

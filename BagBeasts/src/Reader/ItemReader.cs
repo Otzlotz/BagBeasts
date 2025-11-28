@@ -61,7 +61,7 @@ public class ItemReader
     private void ReadItemInCache(uint itemId)
     {
         // Wenn das Item bereits eingelesen wurde, dann muss dieses nicht nochmal eingelesen werden
-        if (MoveCache.Contains(itemId))
+        if (ItemCache.ContainsKey(itemId))
         {
             return;
         }

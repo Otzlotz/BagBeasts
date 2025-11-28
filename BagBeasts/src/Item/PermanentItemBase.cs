@@ -1,3 +1,5 @@
+using src.Beast;
+
 namespace src.Item.ItemBase;
 public abstract class PermanentItemBase : ItemBase
 {

@@ -60,7 +60,7 @@ public class MoveReader
     private void ReadMoveInCache(uint moveId)
     {
         // Wenn der Move bereits eingelesen wurde, dann muss dieser nicht nochmal eingelesen werden
-        if (MoveCache.Contains(moveId))
+        if (MoveCache.ContainsKey(moveId))
         {
             return;
         }

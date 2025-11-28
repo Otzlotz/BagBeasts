@@ -51,7 +51,7 @@ public class BagBeastMoveReader
     private void ReadBagBeastMovesInCache(uint bagBeastId)
     {
         // Wenn die Moves bereits eingelesen wurden, dann müssen diese nicht nochmal eingelesen werden
-        if (BagBeastMoveCache.Contains(bagBeastId))
+        if (BagBeastMoveCache.ContainsKey(bagBeastId))
         {
             return;
         }

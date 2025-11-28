@@ -51,7 +51,7 @@ public class BagBeastAbilityReader
     private void ReadBagBeastAbilitiesInCache(uint bagBeastId)
     {
         // Wenn die Abilities bereits eingelesen wurden, dann müssen diese nicht nochmal eingelesen werden
-        if (BagBeastAbilityCache.Contains(bagBeastId))
+        if (BagBeastAbilityCache.ContainsKey(bagBeastId))
         {
             return;
         }

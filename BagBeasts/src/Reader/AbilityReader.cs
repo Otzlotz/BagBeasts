@@ -49,7 +49,7 @@ public class AbilityReader
     private void ReadAbilityInCache(uint abilityId)
     {
         // Wenn die Ability bereits eingelesen wurden, dann muss diese nicht nochmal eingelesen werden
-        if (AbilityCache.Contains(abilityId))
+        if (AbilityCache.ContainsKey(abilityId))
         {
             return;
         }

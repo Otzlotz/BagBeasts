@@ -5,10 +5,10 @@ VirtualTurn rechnet ob moves Treffen, Zusatzeffekte, Schaden etc.
 VirtualTurn wird verlassen
 Initiative / Turnorder wird geprüft
 Attacke_1 wird durchgeführt
-Sonderbullshit von Attacke wird geprüft
+Sonderbullshit von Attacke_1 wird geprüft
 Schaden wird abgezogen
 Attacke_2 wird durchgeführt
-Sonderbullshit von Attacke wird geprüft
+Sonderbullshit von Attacke_2 wird geprüft
 Schaden wird abgezogen
 TurnOverEvent
 

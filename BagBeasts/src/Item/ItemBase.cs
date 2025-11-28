@@ -1,4 +1,7 @@
+using src.Item.ItemType;
+
 namespace src.Item.Base;
+
 public abstract class ItemBase
 {
     #region Properties
@@ -8,7 +11,7 @@ public abstract class ItemBase
 
     public abstract string Description {get;}
 
-    public abstract ItemType TemType {get; set;}
+    public abstract ItemType ItemType {get; set;}
 
     #endregion // Properties
 

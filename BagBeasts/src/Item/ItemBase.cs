@@ -1,4 +1,5 @@
-using src.Item.ItemType;
+using src.Item.Base;
+using System.ComponentModel;
 
 namespace src.Item.Base;
 
@@ -11,7 +12,7 @@ public abstract class ItemBase
 
     public abstract string Description {get;}
 
-    public abstract ItemType ItemType {get; set;}
+    public abstract Itemtypes.ItemType ItemType {get; set;}
 
     #endregion // Properties
 

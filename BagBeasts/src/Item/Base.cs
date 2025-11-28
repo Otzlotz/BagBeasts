@@ -1,18 +1,20 @@
 namespace src.Item.Base;
 public abstract class ItemBase
 {
-#region Properties
-    public abstract readonly uint ID {get;}
+    #region Properties
+    public abstract uint ID {get;}
 
-    public abstract readonly string Name {get;}
+    public abstract string Name {get;}
 
-    public abstract readonly string Description {get;}
+    public abstract string Description {get;}
 
-#endregion // Properties
+    public abstract ItemType TemType {get; set;}
 
-#region Methods
+    #endregion // Properties
 
-    public abstract void ItemEffect();
+    #region Methods
+
+    public abstract void ItemEffect(BagBeastObject holderBagBeast);
     
-#endregion // Methods
+    #endregion // Methods
 }

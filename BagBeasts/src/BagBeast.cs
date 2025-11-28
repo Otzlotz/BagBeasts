@@ -8,8 +8,8 @@ public class BagBeast
     #region Properties
     public string Name { get; private set; }
     public int ID { get; private set; }
-    public Typ Type1 { get; private set; }
-    public Typ? Type2 { get; private set; }
+    public Type Type1 { get; private set; }
+    public Type? Type2 { get; private set; }
     public int HP { get; private set; }
     public int ATK { get; private set; }
     public int SPA { get; private set; }

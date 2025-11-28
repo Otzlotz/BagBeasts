@@ -21,17 +21,18 @@ public class TypeReader
 
     // TODO: Muss einmal im Programm gegen Anfang Ausgelöst werden!
 
-    // Muss einmal im Programm gegen Anfang Ausgelöst werden!
+    // Ließt alle Datenbankeinträge in den Cache ein
     public void AlleDatenEinlesen()
     {
-        // Wenn die Multiplier bereits eingelesen wurden, dann müssen diese nicht nochmal eingelesen werden
-        If (TypeCache.Any())
+        // Wenn die Types bereits eingelesen wurden, dann müssen diese nicht nochmal eingelesen werden
+        if (TypeCache.Any())
         {
             return;
         }
 
         // TODO: Datenbankabfrage und Cache Füllen
+        return;
     }
 
-    #dnregion // Public Methods
+    #endregion // Public Methods
 }

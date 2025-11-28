@@ -23,16 +23,17 @@ public class TypeMatchupReader
 
     // TODO: Muss einmal im Programm gegen Anfang Ausgelöst werden!
 
-    // Muss einmal im Programm gegen Anfang Ausgelöst werden!
+    // Ließt alle Datenbankeinträge in den Cache ein
     public void AlleDatenEinlesen()
     {
         // Wenn die Multiplier bereits eingelesen wurden, dann müssen diese nicht nochmal eingelesen werden
-        If (MultiplierCache.Any())
+        if (MultiplierCache.Any())
         {
             return;
         }
 
         // TODO: Datenbankabfrage und Cache Füllen
+        return;
     }
 
     #endregion // Public Methods

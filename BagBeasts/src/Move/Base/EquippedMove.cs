@@ -12,7 +12,7 @@ public class EquippedMove
         CurrentPP = move.PP;
     }
 
-    #endregion //  Constructor
+    #endregion // Constructor
 
     #region Properties
 
@@ -26,10 +26,10 @@ public class EquippedMove
 
     public void Use(MoveBase enemyMove)
     {
-        // TODO: Es muss eigentlich vorher noch geprüft werden ob der Move überhaupt genuttz werden kann (zb. ob dieser Locked ist, ist in MoveSonderbullshit)
+        // TODO: Es muss eigentlich vorher noch geprüft werden, ob der Move überhaupt genutzt werden kann (zb. ob dieser Locked ist, ist in MoveSonderbullshit)
 
         Move.Execute(enemyMove);
-        CurrentPP--;
+        //CurrentPP--;
     }
 
     #endregion // Methods

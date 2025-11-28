@@ -42,10 +42,10 @@ public class BagBeastAbilityReader
     private void LeseBagBeastAbilities(uint bagBeastId)
     {
         // Wenn die Ability bereits eingelesen wurden, dann müssen diese nicht nochmal eingelesen werden
-        if (BagBeastAbilityCache.Contains(bagBeastId))
-        {
-            return;
-        }
+        //if (BagBeastAbilityCache.Contains(bagBeastId))
+        //{
+        //    return;
+        //}
 
         // TODO: Datenbankabfrage und Cache mit dem einen Eintrag Füllen
         return;

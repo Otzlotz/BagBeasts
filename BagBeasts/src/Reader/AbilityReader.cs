@@ -40,10 +40,10 @@ public class AbilityReader
     private void LeseAbility(uint abilityId)
     {
         // Wenn die Ability bereits eingelesen wurden, dann müssen diese nicht nochmal eingelesen werden
-        if (AbilityCache.Contains(abilityId))
-        {
-            return;
-        }
+        //if (AbilityCache.Contains(abilityId))
+        //{
+        //    return;
+        //}
 
         // TODO: Datenbankabfrage und Cache mit dem einen Eintrag Füllen
         return;

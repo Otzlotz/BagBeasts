@@ -1,4 +1,5 @@
 ﻿using System;
+using src.Battle
 
 /// <summary>
 /// Klasse eines BagBeasts aus der Datenbank

@@ -2,11 +2,11 @@ namespace src.Item.Base;
 public abstract class ItemBase
 {
 #region Properties
-    public abstract readonly uint ID {get;}
+    public abstract uint ID {get;}
 
-    public abstract readonly string Name {get;}
+    public abstract string Name {get;}
 
-    public abstract readonly string Description {get;}
+    public abstract string Description {get;}
 
 #endregion // Properties
 

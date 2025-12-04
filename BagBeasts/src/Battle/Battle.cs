@@ -9,6 +9,13 @@ public class Battle
 
     public BagBeastObject Player2 { get; set; }
 
+    public readonly List<BagBeastObject> TeamPlayer1 { get; }
+
+    public readonly List<BagBeastObject> TeamPlayer2 { get; }
+
+    public MoveBase SelectedPlayer1Move { get; set; }
+
+    public MoveBase SelectedPlayer2Move { get; set; }
 
     public Battle(BagBeastObject p1, BagBeastObject p2)
     {
@@ -20,21 +27,71 @@ public class Battle
     {
         while (!ct.IsCancellationRequested)
         {
+            SelectedPlayer1Move = Select();
+            SelectedPlayer2Move = Select();
 
+            if (TurnOrder(SelectedPlayer1Move.Prio, SelectedPlayer2Move.Prio, Player1.INT, Player2.INT))
+            {
+                Turn(Player1, Player2, SelectedPlayer1Move, SelectedPlayer2Move, switchInBeast);
+
+                if (Player2.StatusEffect == StatusEffect.EternalEep)
+                {
+                    Turn(Player2, Player1, SelectedPlayer2Move, SelectedPlayer1Move, switchInBeast);
+                }
+            }
+            else
+            {
+                Turn(Player2, Player1, SelectedPlayer2Move, SelectedPlayer1Move, switchInBeast);
+                
+                if (Player2.StatusEffect == StatusEffect.EternalEep)
+                {
+                    Turn(Player1, Player2, SelectedPlayer1Move, SelectedPlayer2Move, switchInBeast);
+                }
+            }
+
+            if(Player1.)
         }
     }
 
-    public void Select(object movenumm)
+    public MoveBase Select(object movenumm)
     {
 
     }
 
-    private void Turn(BagBeastObject beast, EquippedMove selectedMove)
+    private void Turn(BagBeastObject executingBeast, BagBeastObject defendingBeast, MoveBase selectedMove)
     {
         if (selectedMove != null)
         {
-            //if (selectedMove == switched)
+            //if (switchout) dann switch out
+            //{
+            //  Mach switch
+            //  if (switchInBeast.Ability is SwitchInAbility)    
+            //}
+            //else mach mov
 
+            if (executingBeast.Confusion > 0)
+            {
+                
+            }
+            else if (executingBeast.StatusEffect = StatusEffect.Paralysis)
+            {
+                
+            }
+            else if (executingBeast.StatusEffect = StatusEffect.Eep)
+            {
+                
+            }
+            //else if (FLINCH)
+            //{
+            //}
+
+            selectedMove.Execute(executingBeast, defendingBeast);
+
+            //if (defendingBeast.Ability is OnHitAbility)
+            //if (defendingBeast.Item is OnHitItem)
+
+            //if (selectedMove is SwitchOutMove)
+            //if (switchInBeast.Ability is SwitchInAbility) 
 
         }
     }

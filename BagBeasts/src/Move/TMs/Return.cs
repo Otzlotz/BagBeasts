@@ -1,4 +1,3 @@
-using src.Move.Base;
 namespace src.Move.TMs;
 
 public class Return : MoveBase
@@ -23,7 +22,7 @@ public class Return : MoveBase
 
     #region Methods
 
-    public override void Execute(MoveBase enemyMove)
+    public void Execute(MoveBase enemyMove)
     {
         // TODO: DO
     }

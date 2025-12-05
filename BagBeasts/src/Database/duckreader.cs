@@ -17,8 +17,9 @@ namespace BagBeasts.src.Database
         {
             try
             {
+                DBConnection.Open();
                 DuckDBCommand command = DBConnection.CreateCommand();
-                command.CommandText = new string("SELECT * FROM BAGBEAST");
+                command.CommandText = new string("SELECT * FROM BAGBEASTS");
 
                 DuckDBDataReader reader = command.ExecuteReader();
                 List<BagBeast> retval = new List<BagBeast>();
@@ -136,7 +137,7 @@ namespace BagBeasts.src.Database
                 }
                 else
                 {
-                    _connection = new DuckDBConnection("DataSource = BagBeasts.db;ACCESS_MODE=READ_ONLY");
+                    _connection = new DuckDBConnection("DataSource = BagBeasts.db");
                     return _connection;
                 }
             }

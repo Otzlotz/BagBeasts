@@ -25,38 +25,38 @@ public class Battle
 
     public void BattleInit(CancellationToken ct)
     {
-        while (!ct.IsCancellationRequested)
-        {
-            SelectedPlayer1Move = Select();
-            SelectedPlayer2Move = Select();
+        //while (!ct.IsCancellationRequested)
+        //{
+        //    SelectedPlayer1Move = Select();
+        //    SelectedPlayer2Move = Select();
 
-            if (TurnOrder(SelectedPlayer1Move.Prio, SelectedPlayer2Move.Prio, Player1.INT, Player2.INT))
-            {
-                Turn(Player1, Player2, SelectedPlayer1Move, SelectedPlayer2Move, switchInBeast);
+        //    if (TurnOrder(SelectedPlayer1Move.Prio, SelectedPlayer2Move.Prio, Player1.INT, Player2.INT))
+        //    {
+        //        Turn(Player1, Player2, SelectedPlayer1Move, SelectedPlayer2Move, switchInBeast);
 
-                if (Player2.StatusEffect == StatusEffect.EternalEep)
-                {
-                    Turn(Player2, Player1, SelectedPlayer2Move, SelectedPlayer1Move, switchInBeast);
-                }
-            }
-            else
-            {
-                Turn(Player2, Player1, SelectedPlayer2Move, SelectedPlayer1Move, switchInBeast);
+        //        if (Player2.StatusEffect == StatusEffect.EternalEep)
+        //        {
+        //            Turn(Player2, Player1, SelectedPlayer2Move, SelectedPlayer1Move, switchInBeast);
+        //        }
+        //    }
+        //    else
+        //    {
+        //        Turn(Player2, Player1, SelectedPlayer2Move, SelectedPlayer1Move, switchInBeast);
+                
+        //        if (Player2.StatusEffect == StatusEffect.EternalEep)
+        //        {
+        //            Turn(Player1, Player2, SelectedPlayer1Move, SelectedPlayer2Move, switchInBeast);
+        //        }
+        //    }
 
-                if (Player2.StatusEffect == StatusEffect.EternalEep)
-                {
-                    Turn(Player1, Player2, SelectedPlayer1Move, SelectedPlayer2Move, switchInBeast);
-                }
-            }
-
-            if (Player1.)
-        }
+            //if(Player1.)
+        //}
     }
 
-    public MoveBase Select(object movenumm)
-    {
+    //public MoveBase Select(object movenumm)
+    //{
 
-    }
+    //}
 
     private void Turn(BagBeastObject executingBeast, BagBeastObject defendingBeast, MoveBase selectedMove)
     {
@@ -64,22 +64,22 @@ public class Battle
         {
             //if (switchout) dann switch out
             //{
-            //    Mach switch
-            //  if (switchInBeast.Ability is SwitchInAbility)
+            //  Mach switch
+            //  if (switchInBeast.Ability is SwitchInAbility)    
             //}
             //else mach mov
 
-            if (executingBeast.StatusEffect = StatusEffect.Paralysis)
-            {
+            //if (executingBeast.StatusEffect = StatusEffect.Paralysis)
+            //{
 
-            }
-            else if (executingBeast.StatusEffect = StatusEffect.Eep)
-            {
+            //}
+            //else if (executingBeast.StatusEffect = StatusEffect.Eep)
+            //{
 
-            }
-            else if (FLINCH)
-            {
-            }
+            //}
+            //else if (FLINCH)
+            //{
+            //}
 
             if (executingBeast.Confusion > 0)
             {

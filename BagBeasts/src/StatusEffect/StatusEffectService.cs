@@ -24,7 +24,7 @@ public class StatusEffectService
         }
 
         bagBeastObject.StatusEffect = StatusEffect.No;
-        bagBeastObject.StatusEffectCounter = 0;
+        //bagBeastObject.StatusEffectCounter = 0;
     }
 
 
@@ -133,7 +133,7 @@ public class StatusEffectService
         // TODO: Muss 2 - 5 Runden halten, Muss also eine Random Zahl von 3 - 6 Berechnen
         int confusionDuration;
 
-        bagBeastObject.Confusion = confusionDuration;
+        //bagBeastObject.Confusion = confusionDuration;
 
         return true;
     }
@@ -157,7 +157,7 @@ public class StatusEffectService
         if (bagBeastObject.Confusion == 0)
         {
             // TODO: Falls RemoveConfusion() später nicht mehr macht als das auf 0 zu setzen ist der Aufruf der Methode unnötig
-            RemoveConfusion();
+            //RemoveConfusion();
             return false;
         }
 
@@ -219,7 +219,7 @@ public class StatusEffectService
     private bool TryApplyToxic(BagBeastObject bagBeastObject)
     {
         bagBeastObject.StatusEffect = StatusEffect.Toxic;
-        bagBeastObject.StatusEffectCounter = 1;
+        //bagBeastObject.StatusEffectCounter = 1;
 
         return true;
     }
@@ -261,16 +261,17 @@ public class StatusEffectService
     /// <returns>Ob das Bagbeast durch den Statuseffekt Stunned ist</returns>
     private bool TriggerEep(BagBeastObject bagBeastObject)
     {
-        if (bagBeastObject.StatusEffectCounter == 0)
-        {
-            RemoveStatusEffect(bagBeastObject);
-            return false;
-        }
-        else
-        {
-            bagBeastObject.StatusEffectCounter--;
-            return true;
-        }
+        //if (bagBeastObject.StatusEffectCounter == 0)
+        //{
+        //    RemoveStatusEffect(bagBeastObject);
+        //    return false;
+        //}
+        //else
+        //{
+        //    bagBeastObject.StatusEffectCounter--;
+        //    return true;
+        //}
+        return true;
     }
 
     /// <summary>
@@ -306,12 +307,13 @@ public class StatusEffectService
 
         // TODO:Unsicher ob das auslösen des Damage doch eine eigene Methode bekommt (in einem anderen Service)
 
-        bagBeastObject.CurrentHP =- damage;
+        //bagBeastObject.CurrentHP =- damage;
 
         if (bagBeastObject.CurrentHP < 0)
         {
             bagBeastObject.CurrentHP = 0;
         }
+        return false;
     }
 
     /// <summary>
@@ -321,18 +323,19 @@ public class StatusEffectService
     /// <returns>Ob das Bagbeast durch den Statuseffekt Stunned ist</returns>
     private bool TriggerToxic(BagBeastObject bagBeastObject)
     {
-        decimal damage = bagBeastObject.MAXHP / 16 * bagBeastObject.StatusEffectCounter;
+        //decimal damage = bagBeastObject.MAXHP / 16 * bagBeastObject.StatusEffectCounter;
 
         // TODO: Abrunden auf ganze Zahl und mindestens 1 schaden
 
         // TODO:Unsicher ob das auslösen des Damage doch eine eigene Methode bekommt (in einem anderen Service)
 
-        bagBeastObject.CurrentHP =- damage;
+        //bagBeastObject.CurrentHP =- damage;
 
         if (bagBeastObject.CurrentHP < 0)
         {
             bagBeastObject.CurrentHP = 0;
         }
+        return false;
     }
 
     /// <summary>
@@ -348,12 +351,13 @@ public class StatusEffectService
 
         // TODO:Unsicher ob das auslösen des Damage doch eine eigene Methode bekommt (in einem anderen Service)
 
-        bagBeastObject.CurrentHP =- damage;
+        //bagBeastObject.CurrentHP =- damage;
 
         if (bagBeastObject.CurrentHP < 0)
         {
             bagBeastObject.CurrentHP = 0;
         }
+        return false;
     }
 
     /// <summary>
@@ -369,12 +373,13 @@ public class StatusEffectService
 
         // TODO:Unsicher ob das auslösen des Damage doch eine eigene Methode bekommt (in einem anderen Service)
 
-        bagBeastObject.CurrentHP =- damage;
+        //bagBeastObject.CurrentHP =- damage;
 
         if (bagBeastObject.CurrentHP < 0)
         {
             bagBeastObject.CurrentHP = 0;
         }
+        return false;
     }
 
     #endregion // Trigger

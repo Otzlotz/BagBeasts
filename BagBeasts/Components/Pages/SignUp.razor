@@ -1,0 +1,28 @@
+@page "/SignUp"
+@rendermode InteractiveServer
+@inject NavigationManager Nav
+
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Account erstellen</title>
+</head>
+<div class ="page">
+    <div class="login-container">
+        <h2>Account erstellen</h2>
+            <input type="text" name="username" placeholder="Benutzername" required>
+            <input type="password" name="password" placeholder="Passwort" required>
+            <input type="password" name="password" placeholder="Passwort bestätigen" required>
+            <button @onclick="btnLoginClick">Benutzer erstellen</button>
+    </div>
+</div>
+
+@code{
+    public void btnLoginClick()
+    {
+        Nav.NavigateTo(uri: "/login");
+    }
+}
+
+

@@ -10,12 +10,30 @@ public class StatusEffectService
 {
     #region Public Methods
 
+    #region Primary Status
+
     /// <summary>
-    /// Versucht dem Bagbeast einen Statuseffekt anzuwenden
+    /// Entfernt den aktuellen Statuseffekt des Bagbeast
+    /// </summary>
+    /// <param name="bagBeastObject">Bagbeast</param>
+    public void RemoveStatusEffect(BagBeastObject bagBeastObject)
+    {
+        if (bagBeastObject.StatusEffect == StatusEffect.EternalEep)
+        {
+            return;
+        }
+
+        bagBeastObject.StatusEffect = StatusEffect.No;
+        bagBeastObject.StatusEffectCounter = 0;
+    }
+
+
+    /// <summary>
+    /// Versucht auf dem Bagbeast einen Statuseffekt anzuwenden
     /// </summary>
     /// <param name="bagBeastObject">Bagbeast</param>
     /// <param name="statusEffect">Anzuwendender Statuseffekt</param>
-    /// <returns>Ob der Statuseffekt erfolgreich ausgelöst wurde</returns>
+    /// <returns>Ob der Statuseffekt erfolgreich angewendet wurde</returns>
     public bool TryApplyStatusEffekt(BagBeastObject bagBeastObject, StatusEffect statusEffect)
     {
         // TODO: Die verschiedenen Interaktionen müssen noch in den Battlelog geschrieben werden
@@ -53,26 +71,11 @@ public class StatusEffectService
     }
 
     /// <summary>
-    /// Entfernt den aktuellen Statuseffekt des Bagbeast
-    /// </summary>
-    /// <param name="bagBeastObject">Bagbeast</param>
-    public void RemoveStatusEffect(BagBeastObject bagBeastObject)
-    {
-        if (bagBeastObject.StatusEffect == StatusEffect.EternalEep)
-        {
-            return;
-        }
-
-        bagBeastObject.StatusEffect = StatusEffect.No;
-        bagBeastObject.StatusEffectCounter = 0;
-    }
-
-    /// <summary>
     /// Löst den Statuseffekt des Bagbeast aus (sofern es einen hat)
     /// </summary>
     /// <param name="bagBeastObject">Bagbeast</param>
     /// <returns>Ob das Bagbeast durch den Statuseffekt Stunned ist</returns>
-    /// <remarks>Kann die HP des Bagbeast auf 0 setzen, löst aber nicht selber den EternalEep aus</remarks>
+    /// <remarks>Kann die HP des Bagbeast auf 0 setzen, löst aber nicht selber den EternalEep aus!</remarks>
     public bool TriggerStatusEffect(BagBeastObject bagBeastObject)
     {
         switch (bagBeastObject.StatusEffect)
@@ -100,6 +103,68 @@ public class StatusEffectService
 
         return false;
     }
+
+    #endregion // Primary Status
+
+    #region Confusion
+
+    /// <summary>
+    /// Entfernt Verwirrung des Bagbeast
+    /// </summary>
+    /// <param name="bagBeastObject">Bagbeast</param>
+    public void RemoveConfusion(BagBeastObject bagBeastObject)
+    {
+        bagBeastObject.Confusion = 0;
+    }
+
+    /// <summary>
+    /// Versucht auf dem Bagbeast Verwirrung anzuwenden
+    /// </summary>
+    /// <param name="bagBeastObject">Bagbeast</param>
+    /// <returns>Ob die Verwirrung erfolgreich angewendet wurde</returns>
+    public bool TryApplyConfusion(BagBeastObject bagBeastObject)
+    {
+        // Wer schon verwirrt ist kann nicht nochmal verwirrt werden
+        if (bagBeastObject.Confusion > 0)
+        {
+            return false;
+        }
+
+        // TODO: Muss 2 - 5 Runden halten, Muss also eine Random Zahl von 3 - 6 Berechnen
+        int confusionDuration;
+
+        bagBeastObject.Confusion = confusionDuration;
+
+        return true;
+    }
+
+    /// <summary>
+    /// Löst Verwirrung aus (sofern es verwirrt ist)
+    /// </summary>
+    /// <param name="bagBeastObject">Bagbeast</param>
+    /// <returns>Ob das Bagbeast durch die Verwirrung Stunned ist</returns>
+    /// <remarks>Kann die HP des Bagbeast auf 0 setzen, löst aber nicht selber den EternalEep aus!</remarks>
+    public bool TriggerConfusion(BagBeastObject bagBeastObject)
+    {
+        // Prüfen, ob das Bagbeast überhaupt verwirrt ist
+        if (bagBeastObject.Confusion == 0)
+        {
+            return false;
+        }
+
+        bagBeastObject.Confusion--;
+
+        if (bagBeastObject.Confusion == 0)
+        {
+            // TODO: Falls RemoveConfusion() später nicht mehr macht als das auf 0 zu setzen ist der Aufruf der Methode unnötig
+            RemoveConfusion();
+            return false;
+        }
+
+        return true;
+    }
+
+    #endregion // Confusion
 
     #endregion // Public Methods
 

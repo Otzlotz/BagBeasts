@@ -3,13 +3,14 @@ using src.Move.Base;
 using src.Item.Base;
 using src.Item.ItemBase;
 using src.Ability.Base;
+using src.StatusEffect;
 
 public class BagBeastObject
 {
-    public readonly int Id { get; }
-    public readonly string Name { get; }
-    public Typ Type1 { get; private set; }
-    public Typ? Type2 { get; private set; }
+    public int Id { get; }
+    public string Name { get; }
+    public Type Type1 { get; private set; }
+    public Type? Type2 { get; private set; }
     public int CurrentHP { get; set; }
     public int MAXHP { get; set; }
     public int ATK { get; set; }

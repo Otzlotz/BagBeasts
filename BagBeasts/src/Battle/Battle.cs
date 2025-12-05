@@ -9,9 +9,9 @@ public class Battle
 
     public BagBeastObject Player2 { get; set; }
 
-    public readonly List<BagBeastObject> TeamPlayer1 { get; }
+    public List<BagBeastObject> TeamPlayer1 { get; }
 
-    public readonly List<BagBeastObject> TeamPlayer2 { get; }
+    public List<BagBeastObject> TeamPlayer2 { get; }
 
     public MoveBase SelectedPlayer1Move { get; set; }
 
@@ -42,14 +42,14 @@ public class Battle
             else
             {
                 Turn(Player2, Player1, SelectedPlayer2Move, SelectedPlayer1Move, switchInBeast);
-                
+
                 if (Player2.StatusEffect == StatusEffect.EternalEep)
                 {
                     Turn(Player1, Player2, SelectedPlayer1Move, SelectedPlayer2Move, switchInBeast);
                 }
             }
 
-            //if(Player1.)
+            if (Player1.)
         }
     }
 
@@ -64,22 +64,22 @@ public class Battle
         {
             //if (switchout) dann switch out
             //{
-            //  Mach switch
-            //  if (switchInBeast.Ability is SwitchInAbility)    
+            //    Mach switch
+            //  if (switchInBeast.Ability is SwitchInAbility)
             //}
             //else mach mov
 
             if (executingBeast.StatusEffect = StatusEffect.Paralysis)
             {
-                
+
             }
             else if (executingBeast.StatusEffect = StatusEffect.Eep)
             {
-                
+
             }
-            //else if (FLINCH)
-            //{
-            //}
+            else if (FLINCH)
+            {
+            }
 
             if (executingBeast.Confusion > 0)
             {

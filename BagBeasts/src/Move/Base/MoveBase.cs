@@ -9,7 +9,7 @@ public abstract class MoveBase
     public abstract uint Damage {get;}
 
     // 0 - 100. Null trifft immer
-    public abstract uint? Accuracy {get;}
+    public abstract readonly uint? Accuracy {get;}
 
     public abstract uint CritChanceTier {get;}
 
@@ -23,7 +23,7 @@ public abstract class MoveBase
 
     #region Methods
 
-    public abstract void Execute(MoveBase enemyMove);
+    public abstract int Execute(BagBeastObject executingBeast, BagBeastObject defendingBeast, BagBeastObject? switchInBeast = null);
 
     #endregion // Methods
 }

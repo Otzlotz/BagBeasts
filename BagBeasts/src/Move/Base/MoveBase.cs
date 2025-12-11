@@ -9,7 +9,7 @@ public abstract class MoveBase
     public abstract uint Damage {get;}
 
     // 0 - 100. Null trifft immer
-    public abstract readonly uint? Accuracy {get;}
+    public abstract uint? Accuracy {get;}
 
     public abstract uint CritChanceTier {get;}
 
@@ -18,6 +18,8 @@ public abstract class MoveBase
     public abstract Type Type {get;}
 
     public abstract Category Category {get;}
+
+    public abstract bool Contact {get;}
 
     #endregion // Properties
 

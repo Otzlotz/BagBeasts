@@ -1,13 +1,16 @@
 ﻿using System;
 using System.Diagnostics.Eventing.Reader;
 using src.Move.Base;
+using src.Ability.AbilityBase;
+using src.Item.ItemBase;
+using src.StatusEffect;
 
 namespace src.Battle;
 public class Battle
 {
-    public BagBeastObject Player1 { get; set; }
+    public BagBeastObject Player1Beast { get; set; }
 
-    public BagBeastObject Player2 { get; set; }
+    public BagBeastObject Player2Beast { get; set; }
 
     public readonly List<BagBeastObject> TeamPlayer1 { get; }
 
@@ -19,8 +22,8 @@ public class Battle
 
     public Battle(BagBeastObject p1, BagBeastObject p2)
     {
-        Player1 = p1;
-        Player2 = p2;
+        Player1Beast = p1;
+        Player2Beast = p2;
     }
 
     public void BattleInit(CancellationToken ct)
@@ -30,26 +33,44 @@ public class Battle
             SelectedPlayer1Move = Select();
             SelectedPlayer2Move = Select();
 
-            if (TurnOrder(SelectedPlayer1Move.Prio, SelectedPlayer2Move.Prio, Player1.INT, Player2.INT))
+            if (TurnOrder(SelectedPlayer1Move.Prio, SelectedPlayer2Move.Prio, Player1Beast.INT, Player2Beast.INT))
             {
-                Turn(Player1, Player2, SelectedPlayer1Move, SelectedPlayer2Move, switchInBeast);
+                Turn(Player1Beast, Player2Beast, SelectedPlayer1Move, SelectedPlayer2Move, switchInBeast);
 
-                if (Player2.StatusEffect == StatusEffect.EternalEep)
+                if (Player2Beast.StatusEffect != StatusEffect.EternalEep)
                 {
-                    Turn(Player2, Player1, SelectedPlayer2Move, SelectedPlayer1Move, switchInBeast);
+                    Turn(Player2Beast, Player1Beast, SelectedPlayer2Move, SelectedPlayer1Move, switchInBeast);
                 }
             }
             else
             {
-                Turn(Player2, Player1, SelectedPlayer2Move, SelectedPlayer1Move, switchInBeast);
+                Turn(Player2Beast, Player1Beast, SelectedPlayer2Move, SelectedPlayer1Move, switchInBeast);
                 
-                if (Player2.StatusEffect == StatusEffect.EternalEep)
+                if (Player2Beast.StatusEffect != StatusEffect.EternalEep)
                 {
-                    Turn(Player1, Player2, SelectedPlayer1Move, SelectedPlayer2Move, switchInBeast);
+                    Turn(Player1Beast, Player2Beast, SelectedPlayer1Move, SelectedPlayer2Move, switchInBeast);
                 }
             }
 
-            //if(Player1.)
+            if (Player1Beast.Ability is RoundEndAbilityBase ability)
+            {
+                ability.AbilityEffect(Player1Beast);
+            }
+
+            if (Player2Beast.Ability is RoundEndAbilityBase ability)
+            {
+                ability.AbilityEffect(Player2Beast);
+            }
+
+            if (Player1Beast.HeldItem is RoundEndItemBase item)
+            {
+                item.ItemEffect(Player1Beast);
+            }
+
+            if (Player2Beast.HeldItem is RoundEndItemBase item)
+            {
+                item.ItemEffect(Player2Beast);
+            }
         }
     }
 
@@ -60,44 +81,51 @@ public class Battle
 
     private void Turn(BagBeastObject executingBeast, BagBeastObject defendingBeast, MoveBase selectedMove)
     {
-        if (selectedMove != null)
+        if (selectedMove == null)
         {
-            //if (switchout) dann switch out
-            //{
-            //  Mach switch
-            //  if (switchInBeast.Ability is SwitchInAbility)    
-            //}
-            //else mach mov
+            return;
+        }
 
-            if (executingBeast.StatusEffect = StatusEffect.Paralysis)
-            {
-                
-            }
-            else if (executingBeast.StatusEffect = StatusEffect.Eep)
-            {
-                
-            }
-            //else if (FLINCH)
-            //{
-            //}
+        //if (switchout) dann switch out
+        //{
+        //  Mach switch
+        //  if (switchInBeast.Ability is SwitchInAbility)    
+        //}
+        //else mach mov
 
-            if (executingBeast.Confusion > 0)
-            {
-                
-            }
+        var effectService = new StatusEffectService();
 
-            selectedMove.Execute(executingBeast, defendingBeast);
+        if ((executingBeast.StatusEffect == StatusEffect.Paralysis || executingBeast.StatusEffect == StatusEffect.Eep) && effectService.TriggerStatusEffect(executingBeast))
+        {
+            return;
+        }
+        //else if (FLINCH)
+        //{
+        // return;
+        //}
+        else if (effectService.TriggerConfusion(executingBeast))
+        {
+            return;
+        }
 
-            //if (defendingBeast.Ability is OnHitAbility)
-            //if (defendingBeast.Item is OnHitItem)
+        selectedMove.Execute(executingBeast, defendingBeast);
 
-            //if (selectedMove is SwitchOutMove)
-            //if (switchInBeast.Ability is SwitchInAbility) 
+        // switch in Effekte bei U-Turn
 
+        //TODO: Dodge-Abfrage
+        if (defendingBeast.Ability is HitTakenAbilityBase ability)
+        {
+            ability.AbilityEffect(executingBeast, defendingBeast, selectedMove);
+        }
+
+        if (defendingBeast.HeldItem is HitTakenItemBase item)
+        {
+            item.ItemEffect(executingBeast, defendingBeast, selectedMove);
         }
     }
 
     #region BattleChecks
+
     /// <summary>
     /// Checks the hit condition
     /// </summary>

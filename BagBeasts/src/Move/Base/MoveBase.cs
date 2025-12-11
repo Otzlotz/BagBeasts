@@ -19,6 +19,8 @@ public abstract class MoveBase
 
     public abstract Category Category {get;}
 
+    public abstract bool Contact {get;}
+
     #endregion // Properties
 
     #region Methods

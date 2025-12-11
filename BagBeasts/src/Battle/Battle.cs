@@ -12,9 +12,9 @@ public class Battle
 
     public BagBeastObject Player2Beast { get; set; }
 
-    public readonly List<BagBeastObject> TeamPlayer1 { get; }
+    public List<BagBeastObject> TeamPlayer1 { get; }
 
-    public readonly List<BagBeastObject> TeamPlayer2 { get; }
+    public List<BagBeastObject> TeamPlayer2 { get; }
 
     public MoveBase SelectedPlayer1Move { get; set; }
 
@@ -30,8 +30,8 @@ public class Battle
     {
         while (!ct.IsCancellationRequested)
         {
-            SelectedPlayer1Move = Select();
-            SelectedPlayer2Move = Select();
+           SelectedPlayer1Move = Select();
+           SelectedPlayer2Move = Select();
 
             if (TurnOrder(SelectedPlayer1Move.Prio, SelectedPlayer2Move.Prio, Player1Beast.INT, Player2Beast.INT))
             {

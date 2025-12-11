@@ -3,38 +3,15 @@ using src.Move.Base;
 using src.Item.Base;
 using src.Item.ItemBase;
 using src.Ability.Base;
+using src.StatusEffect;
 
 public class BagBeastObject
 {
-    #region Fields
-
-    int _currentHP;
-
-    #endregion // Fields
-
     public readonly int Id { get; }
     public readonly string Name { get; }
     public Typ Type1 { get; private set; }
     public Typ? Type2 { get; private set; }
-    public int CurrentHP
-    {
-        get;
-        set
-        {
-            if (value < 0)
-            {
-                _currentHP = 0;
-            }
-            else if (value > MAXHP)
-            {
-                _currentHP = MAXHP;
-            }
-            else
-            {
-                _currentHP = value;
-            }
-        }
-    }
+    public int CurrentHP { get; set; }
     public int MAXHP { get; set; }
     public int ATK { get; set; }
     public int SPA { get; set; }

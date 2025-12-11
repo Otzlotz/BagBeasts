@@ -28,7 +28,7 @@ public class EquippedMove
     {
         // TODO: Es muss eigentlich vorher noch geprüft werden, ob der Move überhaupt genutzt werden kann (zb. ob dieser Locked ist, ist in MoveSonderbullshit)
 
-        Move.Execute(enemyMove);
+        //Move.Execute(enemyMove);
         //CurrentPP--;
     }
 

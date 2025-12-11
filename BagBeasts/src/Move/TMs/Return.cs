@@ -1,3 +1,5 @@
+using src.Move.Base;
+
 namespace src.Move.TMs;
 
 public class Return : MoveBase
@@ -24,7 +26,12 @@ public class Return : MoveBase
 
     public void Execute(MoveBase enemyMove)
     {
-        // TODO: DO
+        // TODO: Dennis kreuzigen
+    }
+
+    public override int Execute(BagBeastObject executingBeast, BagBeastObject defendingBeast, BagBeastObject? switchInBeast = null)
+    {
+        throw new NotImplementedException();
     }
 
     #endregion // Methods

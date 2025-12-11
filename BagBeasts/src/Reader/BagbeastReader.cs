@@ -1,4 +1,4 @@
-using src.Beast;
+using BagBeasts.src.Beast;
 
 namespace src.Reader;
 

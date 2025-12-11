@@ -74,10 +74,12 @@ public class StatusEffectService
     /// Löst den Statuseffekt des Bagbeast aus (sofern es einen hat)
     /// </summary>
     /// <param name="bagBeastObject">Bagbeast</param>
-    /// <returns>Ob das Bagbeast durch den Statuseffekt Stunned ist</returns>
+    /// <returns>Ob das Bagbeast durch den Statuseffekt Stunned ist oder in EternalEep gefallen ist</returns>
     /// <remarks>Kann die HP des Bagbeast auf 0 setzen, löst aber nicht selber den EternalEep aus!</remarks>
     public bool TriggerStatusEffect(BagBeastObject bagBeastObject)
     {
+        // TODO: Bei den Damage Effekten ein true zurückgeben wenn das BagBeast stirbt
+
         switch (bagBeastObject.StatusEffect)
         {
             case StatusEffect.Eep:
@@ -142,7 +144,7 @@ public class StatusEffectService
     /// Löst Verwirrung aus (sofern es verwirrt ist)
     /// </summary>
     /// <param name="bagBeastObject">Bagbeast</param>
-    /// <returns>Ob das Bagbeast durch die Verwirrung Stunned ist</returns>
+    /// <returns>Ob das Bagbeast durch die Verwirrung Stunned ist (oder in EternalEep gefallen ist)</returns>
     /// <remarks>Kann die HP des Bagbeast auf 0 setzen, löst aber nicht selber den EternalEep aus!</remarks>
     public bool TriggerConfusion(BagBeastObject bagBeastObject)
     {

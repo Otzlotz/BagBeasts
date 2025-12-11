@@ -1,6 +1,5 @@
 ﻿using BagBeasts.src.Beast;
-using DuckDB.NET.Data;
-using DuckDB.NET.Data.DataChunk.Reader;
+
 using System;
 using System.Diagnostics;
 using System.Net.Http.Headers;
@@ -19,7 +18,7 @@ namespace BagBeasts.src.Database
             {
                 DBConnection.Open();
                 DuckDBCommand command = DBConnection.CreateCommand();
-                command.CommandText = new string("SELECT * FROM BAGBEASTS");
+                command.CommandText = new string("SELECT * FROM Bagbeasts");
 
                 DuckDBDataReader reader = command.ExecuteReader();
                 List<BagBeast> retval = new List<BagBeast>();

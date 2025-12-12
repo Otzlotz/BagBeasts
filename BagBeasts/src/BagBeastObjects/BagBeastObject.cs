@@ -2,7 +2,7 @@
 using src.Move.Base;
 using src.Item.Base;
 using src.Item.ItemBase;
-using src.Ability.Base;
+using src.Ability.AbilityBase;
 using src.StatusEffect;
 
 public class BagBeastObject

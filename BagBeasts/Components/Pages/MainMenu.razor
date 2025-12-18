@@ -1,5 +1,5 @@
 @page "/MainMenu"
-
+@using BagBeasts.src.Hashfunction;
 @inject NavigationManager Nav
 @inject IJSRuntime JS
 @rendermode InteractiveServer
@@ -19,7 +19,7 @@
     private string UserIDdb = "1";
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        UserIDdb = Hash(UserIDdb);
+        UserIDdb = Hashfunction.Hash(UserIDdb);
         if(firstRender){
             string userIDlocal = await JS.InvokeAsync<string>(identifier: "CheckForCookie", new object[] {"UserID"});
                 
@@ -40,12 +40,5 @@
     private void btnBattleClick()
     {
         Nav.NavigateTo(uri: "/Battle", forceLoad: true);
-    }
-    private string Hash(string input)
-    {
-        input += "DennisStinkt";
-        var inputBytes = Encoding.UTF8.GetBytes(input);
-        var inputHash = SHA256.HashData(inputBytes);
-        return Convert.ToHexString(inputHash);
     }
 }

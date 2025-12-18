@@ -1,13 +1,22 @@
-﻿@page "/login"
-@page "/"
+﻿@page "/Login"
 @rendermode InteractiveServer
+@using Microsoft.AspNetCore.Mvc.RazorPages
 @inject NavigationManager Nav
+@inject IJSRuntime JS
 
 <div class ="page"> 
     <div class="login-container">
         <h2>Login</h2>
-        <input type="text" name="username" placeholder="Benutzername" required>
-        <input type="password" name="password" placeholder="Passwort" required>
+
+        @if (!string.IsNullOrEmpty(errorMessage))
+        {
+            <div class="error-banner">
+                @errorMessage
+            </div>
+        }
+
+        <input type="text" name="username" placeholder="Benutzername" required is @bind="username">
+        <input type="password" name="password" placeholder="Passwort" required @bind="password">
         <button @onclick="btnLoginClick">Einloggen</button>    
         <span>Kein Account?</span>
         <NavLink href="/SignUp">Account erstellen</NavLink>
@@ -15,8 +24,50 @@
 </div>
 
 @code {
+    private string username = null;
+    private string password = null;
+    private string errorMessage = null;
+    private int userID = 0;
     private void btnLoginClick()
     {
-        Nav.NavigateTo(uri: "/MainMenu");
+        errorMessage = null;
+
+        if (username == "11" && Hash(password) == Hash("qq"))
+        {
+            Nav.NavigateTo(uri: "/MainMenu");
+            JS.InvokeVoidAsync("SetAuthCookie", new object[] {Hash("1")}); // ToDo; UserID aus Datenbank lesen um Cookie zu setzen
+        }
+        else
+        {
+            // Login fehlgeschlagen: Setzen der Fehlermeldung
+            errorMessage = "Die eingegebenen Anmeldedaten sind ungültig. Bitte versuchen Sie es erneut.";
+            // Erzwingen eines Rerenders, um das Banner anzuzeigen
+            StateHasChanged();
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if(firstRender){
+            string userIdString;
+            userIdString = await JS.InvokeAsync<string>(identifier: "CheckForCookie", new object[] {1}); // ToDo; DB lesen und nach BenutzerID prüfen
+            if (int.TryParse(userIdString, out int parsedUserID))
+            {
+                userID = parsedUserID;
+                // Wenn ein gültiger Cookie gefunden wurde, leiten Sie den Benutzer weiter
+                if (userID > 0)
+                {
+                    Nav.NavigateTo(uri: "/MainMenu");
+                }
+            }
+        }
+    }
+
+    private string Hash(string input)
+    {
+        input += "DennisStinkt";
+        var inputBytes = Encoding.UTF8.GetBytes(input);
+        var inputHash = SHA256.HashData(inputBytes);
+        return Convert.ToHexString(inputHash);
     }
 }

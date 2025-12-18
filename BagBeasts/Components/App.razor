@@ -21,3 +21,24 @@
 </body>
 
 </html>
+
+<script>
+    function SetAuthCookie(UserID) {
+        document.cookie = "UserID=" + UserID + "; path=/";
+        console.log("Cookie gesetzt für UserID: " + UserID);
+        location.reload();
+    }
+
+    function CheckForCookie(CookieName) {
+        let name = CookieName + "=";
+        let decodedCookie = decodeURIComponent(document.cookie);
+        let ca = decodedCookie.split(';');
+        for (let i = 0; i < ca.length; i++) {
+            let c = ca[i].trim(); // Trimmt Leerzeichen am Anfang
+            if (c.indexOf(name) === 0) {
+                return c.substring(name.length, c.length);
+            }
+        }
+        return null; // Erst zurückgeben, wenn die Schleife komplett durch ist!
+    }
+</script>

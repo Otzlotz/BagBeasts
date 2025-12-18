@@ -1,44 +1,22 @@
 ﻿@using src.Beast;
 @page "/test"
-@attribute [StreamRendering]
+@rendermode RenderMode.InteractiveServer
 
 <PageTitle>Test</PageTitle>
 
-@if (bagbeasts == null)
-{
-    <p><em>Loading...</em></p>
-}
-else
-{
-    <table class="table">
-        <thead>
-            <tr>
-                <th>BagBeasts</th>
-                <th aria-label="label1">Temp. (C)</th>
-                <th aria-label="label2">Temp. (F)</th>
-                <th>Summary</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var beast in bagbeasts)
-            {
-                <tr>
-                    <td>@beast.Name</td>
-                    <td>@beast.ID</td>
-                    <td>@beast.Type1</td>
-                    <td>@beast.Type2.HasValue ? @beast.Type2.Value : @string.Empty</td>
-                </tr>
-            }
-        </tbody>
-    </table>
-}
+<button @onclick="newDB">ResetDB</button>
 
 @code {
     private List<BagBeast>? bagbeasts;
 
     protected override async Task OnInitializedAsync()
     {
-        var reader = new src.Database.duckreader();
-        bagbeasts = reader.BagBeastsFromDb();
+        // var reader = new src.Database.datareader();
+        // bagbeasts = reader.BagBeastsFromDb();
+    }
+    private void newDB(MouseEventArgs args)
+    {
+        // var reader = new src.Database.datareader();
+        // reader.newDB();
     }
 }

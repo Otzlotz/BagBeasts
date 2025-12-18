@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace BagBeasts.src.Beast
 {
@@ -8,8 +9,8 @@ namespace BagBeasts.src.Beast
     public class BagBeast
     {
         #region Properties
-        public string Name { get; private set; }
         public int ID { get; private set; }
+        public string Name { get; private set; }
         public Type Type1 { get; private set; }
         public Type? Type2 { get; private set; }
         public int HP { get; private set; }

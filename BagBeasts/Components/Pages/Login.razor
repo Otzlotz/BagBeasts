@@ -1,6 +1,7 @@
 ﻿@page "/Login"
 @rendermode InteractiveServer
 @using Microsoft.AspNetCore.Mvc.RazorPages
+@using BagBeasts.src.Hashfunction
 @inject NavigationManager Nav
 @inject IJSRuntime JS
 
@@ -32,10 +33,10 @@
     {
         errorMessage = null;
 
-        if (username == "11" && Hash(password) == Hash("qq"))
+        if (username == "11" && Hashfunction.Hash(password) == Hashfunction.Hash("qq"))
         {
             Nav.NavigateTo(uri: "/MainMenu");
-            JS.InvokeVoidAsync("SetAuthCookie", new object[] {Hash("1")}); // ToDo; UserID aus Datenbank lesen um Cookie zu setzen
+            JS.InvokeVoidAsync("SetAuthCookie", new object[] {Hashfunction.Hash("1")}); // ToDo; UserID aus Datenbank lesen um Cookie zu setzen
         }
         else
         {
@@ -61,13 +62,5 @@
                 }
             }
         }
-    }
-
-    private string Hash(string input)
-    {
-        input += "DennisStinkt";
-        var inputBytes = Encoding.UTF8.GetBytes(input);
-        var inputHash = SHA256.HashData(inputBytes);
-        return Convert.ToHexString(inputHash);
     }
 }

@@ -112,7 +112,6 @@ public class Battle
 
         // switch in Effekte bei U-Turn
 
-        //TODO: Dodge-Abfrage
         if (defendingBeast.Ability is HitTakenAbilityBase ability)
         {
             ability.AbilityEffect(executingBeast, defendingBeast, selectedMove);
@@ -125,26 +124,6 @@ public class Battle
     }
 
     #region BattleChecks
-
-    /// <summary>
-    /// Checks the hit condition
-    /// </summary>
-    /// <param name="accuracy">Accuracy after Calculation</param>
-    /// <returns>Hit? y/n</returns>
-    private bool IsHit(int? accuracy)
-    {
-        if (accuracy.HasValue)
-        {
-            Random rnd = new Random();
-            int random = rnd.Next(1, 100);
-            if (random > accuracy)
-            {
-                return false;
-            }
-            return true;
-        }
-        return true;
-    }
 
     /// <summary>
     /// Checks the turnorder between two opponents

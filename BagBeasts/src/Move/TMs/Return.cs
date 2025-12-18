@@ -1,37 +1,40 @@
+using src.Battle;
 using src.Move.Base;
+using src.StatusEffect;
 
 namespace src.Move.TMs;
 
 public class Return : MoveBase
 {
-    #region Properties 
-
-    public override uint ID {get;} = 1;
-
-    public override uint Damage {get;} = 100;
-
-    public override uint? Accuracy {get;} = 100;
-
-    public override uint CritChanceTier {get;} = 1;
-
-    public override uint PP {get;} = 20;
-
-    public override Type Type {get;} = Type.Normal;
-
-    public override Category Category {get;} = Category.Physical;
-
-    #endregion // Properties
-
     #region Methods
 
-    public void Execute(MoveBase enemyMove)
+    /// <inheritdoc/>
+    public override bool Execute(BagBeastObject executingBeast, BagBeastObject defendingBeast, BagBeastObject? switchInBeast = null)
     {
-        // TODO: Dennis kreuzigen
-    }
+        // TODO: Der müsste irgendwie als Singleton angelegt werden
+        BattleCalculationService battleCalculationService = new BattleCalculationService();
 
-    public override int Execute(BagBeastObject executingBeast, BagBeastObject defendingBeast, BagBeastObject? switchInBeast = null)
-    {
-        throw new NotImplementedException();
+        PP--;
+
+        // Prüfen, ob der Angriff trifft
+        if (!battleCalculationService.MoveHit())
+        {
+            return false;
+        }
+
+        // Prüfen, ob ein Krit ausgelöst wird
+        bool critTriggered = battleCalculationService.CritTriggered(CritChanceTier);
+
+        // Schaden am Gegner zufügen
+        defendingBeast.CurrentHP - battleCalculationService.HitDamage(executingBeast, defendingBeast, this, critTriggered);
+
+        if (defendingBeast.CurrentHP == 0)
+        {
+             // TODO: Irgendwie StatusEffect.StatusEffect, trotz des using oben. Robin fixt das schon
+             defendingBeast.StatusEffect = StatusEffect.StatusEffect.EternalEep;
+        }
+
+        return true;
     }
 
     #endregion // Methods

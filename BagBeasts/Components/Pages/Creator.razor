@@ -30,7 +30,7 @@ else
                     <td>@beast.Name</td>
                     <td>@beast.ID</td>
                     <td>@beast.Type1</td>
-                    <td>@beast.Type2.HasValue ? @beast.Type2.Value : @string.Empty</td>
+                    <td>@beast.Type2 ?? @string.Empty</td>
                 </tr>
             }
         </tbody>

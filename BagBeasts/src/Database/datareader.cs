@@ -66,14 +66,7 @@ namespace BagBeasts.src.Database
                     List<Ability> retval = new();
                     foreach (var ability in context.Abilities)
                     {
-                        if (ability.Name != null)
-                        {
-                            retval.Add(new Ability(ability.Id, ability.Name));
-                        }
-                        else
-                        {
-                            retval.Add(new Ability(ability.Id));
-                        }
+                        retval.Add(ability);
                     }
                     return retval;
                 }

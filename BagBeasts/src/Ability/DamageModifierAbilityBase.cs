@@ -4,7 +4,7 @@ using src.Move.Base;
 
 namespace src.Ability.AbilityBase;
 
-public class DamageModifierAbilityBase : AbilityBase
+public abstract class DamageModifierAbilityBase : AbilityBase
 {
     #region Methods
 

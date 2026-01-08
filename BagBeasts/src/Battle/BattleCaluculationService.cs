@@ -33,8 +33,8 @@ public class BattleCalculationService
         // TODO: Reader muss irgendwie als Singleton oder so erstellt werden!
         TypeMatchupReader typeMatchupReader = new TypeMatchupReader();
 
-        decimal f1 = GetF1(attacker, attackMove, critTriggered);
-        decimal crit = critTriggered ? 1.5 : 1;
+        decimal f1 = GetF1(attacker, attackMove);
+        decimal crit = critTriggered ? 1.5m : 1m;
         ushort z = GetZ();
         decimal stab = GetStab(attacker, attackMove);
         decimal typeMult = typeMatchupReader.GetMultiplier(attackMove.Type, defender.Type1, defender.Type2);
@@ -52,7 +52,7 @@ public class BattleCalculationService
         // Abilityeffekt ggf. auslösen
         if (attacker.Ability is DamageModifierAbilityBase ability)
         {
-            damage = item.ItemEffect(attacker, defender, attackMove, damage);
+            damage = ability.AbilityEffect(attacker, defender, attackMove, damage);
         }
 
         // Wenn Damage zugefügt wird, dann wird dieser, auf mindestens 1, abgerundet
@@ -109,7 +109,7 @@ public class BattleCalculationService
         // TODO: Reader muss irgendwie als Singleton oder so erstellt werden!
         TypeMatchupReader typeMatchupReader = new TypeMatchupReader();
 
-        uint? accuracy = attackMove.Accuracy;
+        decimal? accuracy = attackMove.Accuracy;
 
         // Wenn der Type Multiplier 0 ist, dann ist der Defender Immun gegen Attacken dieses Typen
         if (typeMatchupReader.GetMultiplier(attackMove.Type, defender.Type1, defender.Type2) == 0)
@@ -118,25 +118,25 @@ public class BattleCalculationService
         }
 
         // Itemeffekt ggf. auslösen
-        if (attacker.HeldItem is AccuracyModifyingItemBase item)
+        if (attacker.HeldItem is AccuracyModifyingItemBase item1)
         {
-            accuracy = item.ItemEffect(attacker, defender, attackMove, true, accuracy);
+            accuracy = item1.ItemEffect(attacker, defender, attackMove, true, accuracy);
         }
 
-        if (defender.HeldItem is AccuracyModifyingItemBase item)
+        if (defender.HeldItem is AccuracyModifyingItemBase item2)
         {
-            accuracy = item.ItemEffect(attacker, defender, attackMove, false, accuracy);
+            accuracy = item2.ItemEffect(defender, attacker, attackMove, false, accuracy);
         }
 
         // Abilityeffekt ggf. auslösen
-        if (attacker.Ability is AccuracyModifyingAbilityBase ability)
+        if (attacker.Ability is AccuracyModifyingAbilityBase ability1)
         {
-            accuracy = item.ItemEffect(attacker, defender, attackMove, true, accuracy);
+            accuracy = ability1.AbilityEffect(attacker, defender, attackMove, true, accuracy);
         }
 
-        if (defender.Ability is AccuracyModifyingAbilityBase ability)
+        if (defender.Ability is AccuracyModifyingAbilityBase ability2)
         {
-            accuracy = item.ItemEffect(attacker, defender, attackMove, false, accuracy);
+            accuracy = ability2.AbilityEffect(defender, attacker, attackMove, false, accuracy);
         }
 
         // Accuracy null trifft immer
@@ -196,7 +196,7 @@ public class BattleCalculationService
             x += statChange;
         }
 
-        return defendValue * (x / y);
+        return attackValue * (x / y);
     }
 
     /// <summary>
@@ -250,7 +250,7 @@ public class BattleCalculationService
         if (attacker.Type1 == attackMove.Type
         || (attacker.Type2.HasValue && attacker.Type2 == attackMove.Type))
         {
-            return 1.5;
+            return 1.5m;
         }
 
         return 1;
@@ -264,10 +264,10 @@ public class BattleCalculationService
         
         // TODO: ggf. Ability Adrenalin beachten
         // BRT
-        if ((attacker.StatusEffect == StatusEffect.StatusEffect.Burn && attackMove.Category == Category.Physical)
-         || (attacker.StatusEffect == StatusEffect.StatusEffect.FrostBurn && attackMove.Category == Category.Special))
+        if ((attacker.StatusEffect == StatusEffect.StatusEffectEnum.Burn && attackMove.Category == Category.Physical)
+         || (attacker.StatusEffect == StatusEffect.StatusEffectEnum.FrostBurn && attackMove.Category == Category.Special))
         {
-            return 0.5;
+            return 0.5m;
         }
         else
         {
@@ -285,6 +285,9 @@ public class BattleCalculationService
         int x = 3;
         int y = 3;
 
+        // TODO: Hier DEES Nochmal drüber schauen
+
+        /*
         if (attacker.StatChange.ACC < 0)
         {
             // Accuracy wird verringert
@@ -295,6 +298,7 @@ public class BattleCalculationService
             // Accuracy wird erhöht (Bei StatChange = 0 bleibt es unverändert!)
             x += statChange;
         }
+        */
 
         return x / y;
     }
@@ -309,6 +313,9 @@ public class BattleCalculationService
         int x = 3;
         int y = 3;
 
+        // TODO: Hier DEES Nochmal drüber schauen
+
+        /*
         if (statChange < 0)
         {
             // Dodge wird erhöht
@@ -319,6 +326,7 @@ public class BattleCalculationService
             // Dodge wird verringert (Bei StatChange = 0 bleibt es unverändert!)
             y += statChange;
         }
+        */
 
         return x / y;
     }

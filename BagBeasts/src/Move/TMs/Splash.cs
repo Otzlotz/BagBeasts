@@ -18,7 +18,7 @@ public class Splash : MoveBase
         PP--;
 
         // Prüfen, ob der Angriff trifft
-        if (!battleCalculationService.MoveHit())
+        if (!battleCalculationService.MoveHit(executingBeast, defendingBeast, this))
         {
             return false;
         }
@@ -27,7 +27,7 @@ public class Splash : MoveBase
 
         // Random ermitteln, welcher Statuseffekt ausgelöst wird
         Random rnd = new Random();
-        StatusEffect.StatusEffect statusEffect = (StatusEffect.StatusEffect)rnd.Next(2, 7);
+        StatusEffect.StatusEffectEnum statusEffect = (StatusEffect.StatusEffectEnum)rnd.Next(2, 7);
 
         return statusEffectService.TryApplyStatusEffekt(defendingBeast, statusEffect);
     }

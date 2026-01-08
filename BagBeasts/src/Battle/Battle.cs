@@ -8,9 +8,9 @@ using src.StatusEffect;
 namespace src.Battle;
 public class Battle
 {
-    public BagBeastObject Player1Beast { get; set; }
+    public BagBeastObject Player1Beast;
 
-    public BagBeastObject Player2Beast { get; set; }
+    public BagBeastObject Player2Beast;
 
     public List<BagBeastObject> TeamPlayer1 { get; }
 
@@ -30,56 +30,60 @@ public class Battle
     {
         while (!ct.IsCancellationRequested)
         {
-           SelectedPlayer1Move = Select();
-           SelectedPlayer2Move = Select();
+            // TODO: DO
+           //SelectedPlayer1Move = Select();
+           //SelectedPlayer2Move = Select();
 
             if (TurnOrder(SelectedPlayer1Move.Prio, SelectedPlayer2Move.Prio, Player1Beast.INT, Player2Beast.INT))
             {
-                Turn(Player1Beast, Player2Beast, SelectedPlayer1Move, SelectedPlayer2Move, switchInBeast);
+                Turn(Player1Beast, Player2Beast, SelectedPlayer1Move, SelectedPlayer2Move);
 
-                if (Player2Beast.StatusEffect != StatusEffect.EternalEep)
+                if (Player2Beast.StatusEffect != StatusEffectEnum.EternalEep)
                 {
-                    Turn(Player2Beast, Player1Beast, SelectedPlayer2Move, SelectedPlayer1Move, switchInBeast);
+                    Turn(Player2Beast, Player1Beast, SelectedPlayer2Move, SelectedPlayer1Move);
                 }
             }
             else
             {
-                Turn(Player2Beast, Player1Beast, SelectedPlayer2Move, SelectedPlayer1Move, switchInBeast);
+                Turn(Player2Beast, Player1Beast, SelectedPlayer2Move, SelectedPlayer1Move);
                 
-                if (Player2Beast.StatusEffect != StatusEffect.EternalEep)
+                if (Player2Beast.StatusEffect != StatusEffectEnum.EternalEep)
                 {
-                    Turn(Player1Beast, Player2Beast, SelectedPlayer1Move, SelectedPlayer2Move, switchInBeast);
+                    Turn(Player1Beast, Player2Beast, SelectedPlayer1Move, SelectedPlayer2Move);
                 }
             }
 
-            if (Player1Beast.Ability is RoundEndAbilityBase ability)
+            if (Player1Beast.Ability is RoundEndAbilityBase ability1)
             {
-                ability.AbilityEffect(Player1Beast);
+                ability1.AbilityEffect(ref Player1Beast);
             }
 
-            if (Player2Beast.Ability is RoundEndAbilityBase ability)
+            if (Player2Beast.Ability is RoundEndAbilityBase ability2)
             {
-                ability.AbilityEffect(Player2Beast);
+                ability2.AbilityEffect(ref Player2Beast);
             }
 
-            if (Player1Beast.HeldItem is RoundEndItemBase item)
+            if (Player1Beast.HeldItem is RoundEndItemBase item1)
             {
-                item.ItemEffect(Player1Beast);
+                item1.ItemEffect(Player1Beast);
             }
 
-            if (Player2Beast.HeldItem is RoundEndItemBase item)
+            if (Player2Beast.HeldItem is RoundEndItemBase item2)
             {
-                item.ItemEffect(Player2Beast);
+                item2.ItemEffect(Player2Beast);
             }
         }
     }
 
+    // TODO: DO
+    /*
     public MoveBase Select(object movenumm)
     {
 
     }
+    */
 
-    private void Turn(BagBeastObject executingBeast, BagBeastObject defendingBeast, MoveBase selectedMove)
+    private void Turn(BagBeastObject executingBeast, BagBeastObject defendingBeast, MoveBase selectedMove, MoveBase defenderMove)
     {
         if (selectedMove == null)
         {
@@ -95,7 +99,7 @@ public class Battle
 
         var effectService = new StatusEffectService();
 
-        if ((executingBeast.StatusEffect == StatusEffect.Paralysis || executingBeast.StatusEffect == StatusEffect.Eep) && effectService.TriggerStatusEffect(executingBeast))
+        if ((executingBeast.StatusEffect == StatusEffectEnum.Paralysis || executingBeast.StatusEffect == StatusEffectEnum.Eep) && effectService.TriggerStatusEffect(executingBeast))
         {
             return;
         }
@@ -114,7 +118,7 @@ public class Battle
 
         if (defendingBeast.Ability is HitTakenAbilityBase ability)
         {
-            ability.AbilityEffect(executingBeast, defendingBeast, selectedMove);
+            ability.AbilityEffect(ref executingBeast, ref defendingBeast, selectedMove);
         }
 
         if (defendingBeast.HeldItem is HitTakenItemBase item)

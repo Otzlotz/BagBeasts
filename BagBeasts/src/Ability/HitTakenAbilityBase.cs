@@ -2,7 +2,7 @@ using src.Ability.AbilityBase;
 using src.Move.Base;
 
 namespace src.Ability.AbilityBase;
-public class HitTakenAbilityBase : AbilityBase
+public abstract class HitTakenAbilityBase : AbilityBase
 {
     #region Methods
 

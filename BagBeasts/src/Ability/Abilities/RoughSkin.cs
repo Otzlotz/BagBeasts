@@ -6,7 +6,7 @@ public class RoughSkin : HitTakenAbilityBase
 {
     #region Methods
 
-    public void AbilityEffect(ref BagBeastObject holderBeast, ref BagBeastObject attackingBeast, MoveBase attackingMove)
+    public override void AbilityEffect(ref BagBeastObject holderBeast, ref BagBeastObject attackingBeast, MoveBase attackingMove)
     {
         if (attackingMove.Contact)
         {

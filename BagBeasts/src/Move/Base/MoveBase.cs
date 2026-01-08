@@ -4,20 +4,20 @@ public abstract class MoveBase : ActionBase
 {
     #region Properties 
 
-    public abstract uint Damage {get;}
+    public uint Damage {get; protected set;} 
 
     // 0 - 100. Null trifft immer
-    public abstract uint? Accuracy {get;}
+    public uint? Accuracy {get; protected set;}
 
-    public abstract uint CritChanceTier {get;}
+    public uint CritChanceTier {get; protected set;}
 
-    public abstract uint PP {get;}
+    public uint PP {get; protected set;}
 
-    public abstract Type Type {get;}
+    public Type Type {get; protected set;}
 
-    public abstract Category Category {get;}
+    public Category Category {get; protected set;}
 
-    public abstract bool Contact {get;}
+    public bool Contact {get; protected set;}
 
     #endregion // Properties
 
@@ -31,6 +31,11 @@ public abstract class MoveBase : ActionBase
     /// <param name="switchInBeast">Optional: Babbeast, welches durch die Attacke (nach dem Angriff) eingewechselt wird</param>
     /// <returns>true: Angriff hat getroffen | false: Angriff hat nicht getroffen</returns>
     public abstract bool Execute(BagBeastObject executingBeast, BagBeastObject defendingBeast, BagBeastObject? switchInBeast = null);
+
+    public void Init(BagBeasts.Move fromDB)
+    {
+        // pass
+    }
 
     #endregion // Methods
 }

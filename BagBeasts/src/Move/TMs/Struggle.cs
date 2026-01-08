@@ -21,12 +21,12 @@ public class Struggle : MoveBase
         bool critTriggered = battleCalculationService.CritTriggered(CritChanceTier);
 
         // Schaden am Gegner zufügen
-        defendingBeast.CurrentHP - battleCalculationService.HitDamage(executingBeast, defendingBeast, this, critTriggered);
+        defendingBeast.CurrentHP =- battleCalculationService.HitDamage(executingBeast, defendingBeast, this, critTriggered);
 
         if (defendingBeast.CurrentHP == 0)
         {
              // TODO: Irgendwie StatusEffect.StatusEffect, trotz des using oben. Robin fixt das schon
-             defendingBeast.StatusEffect = StatusEffect.StatusEffect.EternalEep;
+             defendingBeast.StatusEffect = StatusEffect.StatusEffectEnum.EternalEep;
         }
 
         // 25% Recoil
@@ -35,7 +35,7 @@ public class Struggle : MoveBase
         if (executingBeast.CurrentHP == 0)
         {
              // TODO: Irgendwie StatusEffect.StatusEffect, trotz des using oben. Robin fixt das schon
-            executingBeast.StatusEffect = StatusEffect.StatusEffect.EternalEep;
+            executingBeast.StatusEffect = StatusEffect.StatusEffectEnum.EternalEep;
         }
 
         // Struggle trifft immer

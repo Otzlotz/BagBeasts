@@ -5,7 +5,7 @@ namespace src.StatusEffect;
 /// <summary>
 /// Die Primären Statuseffekte (es kann nur einen geben...)
 /// </summary>
-public enum StatusEffect
+public enum StatusEffectEnum
 {
     /// <summary>
     /// Kein Primärer Statuseffekt

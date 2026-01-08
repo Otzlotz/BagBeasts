@@ -6,11 +6,11 @@ public class ToughClaws : DamageModifierAbilityBase
 {
     #region Methods
 
-    public decimal AbilityEffect(BagBeastObject holderBeast, BagBeastObject defenderBeast, MoveBase attackMove, decimal damage)
+    public override decimal AbilityEffect(BagBeastObject holderBeast, BagBeastObject defenderBeast, MoveBase attackMove, decimal damage)
     {
-        if (attackingMove.Contact)
+        if (attackMove.Contact)
         {
-            damage = damage * 1.3;
+            damage = damage * 1.3m;
         }
 
         return damage;

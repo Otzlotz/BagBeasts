@@ -7,10 +7,10 @@ using src.StatusEffect;
 
 public class BagBeastObject
 {
-    public readonly int Id { get; }
-    public readonly string Name { get; }
-    public Typ Type1 { get; private set; }
-    public Typ? Type2 { get; private set; }
+    public int Id { get; set;  }
+    public string Name { get; set;  }
+    public Type Type1 { get; protected set; }
+    public Type? Type2 { get; protected set; }
     public int CurrentHP { get; set; }
     public int MAXHP { get; set; }
     public int ATK { get; set; }
@@ -24,7 +24,7 @@ public class BagBeastObject
     public EquippedMove Move4 { get; set; }
     public ItemBase HeldItem { get; set; }
     public AbilityBase Ability { get; set; }
-    public StatusEffect StatusEffect { get; set; }
+    public StatusEffectEnum StatusEffect { get; set; }
     public int StatusCounter { get; set; }
     public StatChanges StatChange { get; set; }
     public int Confusion { get; set; }

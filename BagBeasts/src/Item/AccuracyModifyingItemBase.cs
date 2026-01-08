@@ -17,7 +17,7 @@ public abstract class AccuracyModifyingItemBase : ItemBase
     /// <param name="isAttacker">true: <see cref="holderBeast"/> ist der Angreifer | false: <see cref="enemyBeast"/> ist der Angreifer</param>
     /// <param name="accuracy">Genauigkeit der Attacke (ggf. bereits angepasst)</param>
     /// <returns>Neue Accuracy</returns>
-    public abstract decimal ItemEffect(BagBeastObject holderBeast, BagBeastObject enemyBeast, MoveBase attackMove, bool isAttacker, decimal accuracy);
+    public abstract decimal ItemEffect(BagBeastObject holderBeast, BagBeastObject enemyBeast, MoveBase attackMove, bool isAttacker, decimal? accuracy);
 
     #endregion // Methods
 }

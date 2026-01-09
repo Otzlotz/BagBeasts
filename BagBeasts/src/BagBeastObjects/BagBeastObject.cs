@@ -7,11 +7,30 @@ using src.StatusEffect;
 
 public class BagBeastObject
 {
+    #region Fields
+
+    private int _currentHP;
+
+    #endregion // Fields
+
+    #region Properties
     public int Id { get; set;  }
     public string Name { get; set;  }
     public Type Type1 { get; protected set; }
     public Type? Type2 { get; protected set; }
-    public int CurrentHP { get; set; }
+    public int CurrentHP
+    {
+        get => _currentHP;
+        set
+        {
+            _currentHP = value;
+
+            if (_currentHP <= 0)
+            {
+                _currentHP = 0;
+            }
+        }
+    }
     public int MAXHP { get; set; }
     public int ATK { get; set; }
     public int SPA { get; set; }
@@ -29,7 +48,5 @@ public class BagBeastObject
     public StatChanges StatChange { get; set; }
     public int Confusion { get; set; }
 
-    public BagBeastObject()
-    {
-    }
+    #endregion // Properties
 }

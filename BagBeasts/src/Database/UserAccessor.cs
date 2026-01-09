@@ -40,6 +40,7 @@ namespace BagBeasts.src.Database
                 {
                     User retval = context.Users.Where(x => x == user).First() ?? new();
                     retval = user;
+                    context.SaveChanges();
                     return true;
                 }
             }

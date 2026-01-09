@@ -12,30 +12,36 @@ public class Struggle : MoveBase
     #region Methods
 
     /// <inheritdoc/>
-    public override bool Execute(BagBeastObject executingBeast, BagBeastObject defendingBeast, BagBeastObject? switchInBeast = null)
+    public override bool Execute(BagBeastObject executingBeast, BagBeastObject defendingBeast, BagBeastObject? switchInBeast = null, out string moveExecuteMessage)
     {
         // TODO: Der müsste irgendwie als Singleton angelegt werden
         BattleCalculationService battleCalculationService = new BattleCalculationService();
+        StatusEffectService statusEffectService = new StatusEffectService();
 
         // Prüfen, ob ein Krit ausgelöst wird
-        bool critTriggered = battleCalculationService.CritTriggered(CritChanceTier);
+        bool critTriggered = battleCalculationService.CritTriggered(CritChanceTier, out string critMessage);
 
         // Schaden am Gegner zufügen
-        defendingBeast.CurrentHP =- battleCalculationService.HitDamage(executingBeast, defendingBeast, this, critTriggered);
+        ExcecuteHit(executingBeast, defendingBeast, this, battleCalculationService.HitDamage(executingBeast, defendingBeast, this, critTriggered), out string executeHitMessage);
 
-        if (defendingBeast.CurrentHP == 0)
+        if (critTriggered)
         {
-             // TODO: Irgendwie StatusEffect.StatusEffect, trotz des using oben. Robin fixt das schon
-             defendingBeast.StatusEffect = StatusEffect.StatusEffectEnum.EternalEep;
+            moveExecuteMessage = critMessage + "\n" + executeHitMessage;
         }
+        else
+        {
+            moveExecuteMessage = executeHitMessage;
+        }
+
+        // TODO: Recoil Message
 
         // 25% Recoil
         executingBeast.CurrentHP =- executingBeast.MAXHP / 4;
+        moveExecuteMessage += "\n" + $"{executingBeast.Name} was damaged by recoil!";
 
         if (executingBeast.CurrentHP == 0)
         {
-             // TODO: Irgendwie StatusEffect.StatusEffect, trotz des using oben. Robin fixt das schon
-            executingBeast.StatusEffect = StatusEffect.StatusEffectEnum.EternalEep;
+            moveExecuteMessage += "\n" + statusEffectService.SetEternalEep(executingBeast);
         }
 
         // Struggle trifft immer

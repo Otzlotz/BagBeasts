@@ -28,18 +28,41 @@ namespace BagBeasts.src.Database
         }
 
         /// <summary>
-        /// Schreibt einen User in die Datenbank
+        /// Ändert einen User in der Datenbank
         /// </summary>
         /// <param name="user">Userobjekt</param>
         /// <returns>Funktioniert y/n</returns>
-        public bool WriteUser(User user)
+        public bool UpdateUser(User user)
         {
             try
             {
                 using (PostgresContext context = new PostgresContext())
                 {
-                    User retval = context.Users.Where(x => x == user).First() ?? new();
+                    User retval = context.Users.Where(x => x.Id == user.Id).First() ?? new();
                     retval = user;
+                    context.SaveChanges();
+                    return true;
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex.Message);
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Schreibt einen User in die Datenbank
+        /// </summary>
+        /// <param name="user">Userobjekt</param>
+        /// <returns>Funktioniert y/n</returns>
+        public bool InsertUser(User user)
+        {
+            try
+            {
+                using (PostgresContext context = new PostgresContext())
+                {
+                    context.Users.Add(user);
                     context.SaveChanges();
                     return true;
                 }

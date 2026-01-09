@@ -1,6 +1,9 @@
 @page "/SignUp"
 @rendermode InteractiveServer
 @inject NavigationManager Nav
+@using BagBeasts.src.Database
+@using System.Diagnostics.Eventing.Reader
+@using System.Diagnostics
 
 
 <head>
@@ -10,18 +13,50 @@
 </head>
 <div class ="page">
     <div class="login-container">
+        @if (!string.IsNullOrEmpty(errorMessage))
+        {
+            <div class="error-banner">
+                @errorMessage
+            </div>
+        }
         <h2>Account erstellen</h2>
-            <input type="text" name="username" placeholder="Benutzername" required>
-            <input type="password" name="password" placeholder="Passwort" required>
-            <input type="password" name="password" placeholder="Passwort bestätigen" required>
+            <input type="text" placeholder="Benutzername" @bind="username" required>
+            <input type="password" placeholder="Passwort" @bind="password" required>
+            <input type="password" placeholder="Passwort bestätigen" @bind="passwordrepeated" required>
             <button @onclick="btnLoginClick">Benutzer erstellen</button>
     </div>
 </div>
 
 @code{
+    string username;
+    string password;
+    string passwordrepeated;
+    private string errorMessage = null;
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if(firstRender){
+            UserAccessor UA = new UserAccessor();
+        }
+    }
     public void btnLoginClick()
     {
-        Nav.NavigateTo(uri: "/login");
+        if (password != passwordrepeated)
+        {
+            errorMessage = "Die Passwörter stimmen nicht überein.";
+        }
+        else
+        {
+        UserAccessor UA = new UserAccessor();
+        if (UA.InsertUser(new User{Name = username, Psw = password})){
+                Nav.NavigateTo(uri: "/login");
+
+        }
+        else{
+            errorMessage = "Insert kapot.";
+            Debug.WriteLine("Insert Kapot.");
+        }
+        
+        }
     }
 }
 

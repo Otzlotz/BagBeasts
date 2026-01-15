@@ -1,9 +1,5 @@
 
 
-
-
-// TODO: Namespace muss vermutlich noch angepasst werden
-
 using System;
 using src.Ability.AbilityBase;
 using src.Item.ItemBase;
@@ -16,7 +12,7 @@ namespace src.Battle;
 /// <summary>
 /// Service zum Berechnen des Schaden
 /// </summary>
-public class BattleCalculationService
+public static class BattleCalculationService
 {
     #region Public Methods
 
@@ -28,7 +24,7 @@ public class BattleCalculationService
     /// <param name="attackMove">Attacke</param>
     /// <param name="critTriggered">Ob ein Volltreffer ausgelöst wurde</param>
     /// <returns>Berechneter Schaden</returns>
-    public int HitDamage(BagBeastObject attacker, BagBeastObject defender, MoveBase attackMove, bool critTriggered)
+    public static int HitDamage(BagBeastObject attacker, BagBeastObject defender, MoveBase attackMove, bool critTriggered)
     {
         // TODO: Reader muss irgendwie als Singleton oder so erstellt werden!
         TypeMatchupReader typeMatchupReader = new TypeMatchupReader();
@@ -70,7 +66,7 @@ public class BattleCalculationService
     /// <param name="critChanceTier">Tier des Move bezüglich Krit Chance</param>
     /// <param name="critMessage">OUT: Message, wenn ein Krit ausgelöst wurde (String.Empty, wenn es nicht ausgelöst wurde)</param>
     /// <returns>Ob ein Krit ausgelöst wird</returns>
-    public bool CritTriggered(uint critChanceTier, out string critMessage)
+    public static bool CritTriggered(uint critChanceTier, out string critMessage)
     {
         // TODO: Chancen einbauen (zum testen auf True gesetzt)
         bool critTriggerd = true;
@@ -113,7 +109,7 @@ public class BattleCalculationService
     /// <param name="attackMove">Attacke</param>
     /// <param name="moveHitMessage">OUT: Message, wenn der Angriff daneben geht (string.Empty, wenn der Angriff trifft)</param>
     /// <returns>Ob der Angriff trifft</returns>
-    public bool MoveHit(BagBeastObject attacker, BagBeastObject defender, MoveBase attackMove, out string moveHitMessage)
+    public static bool MoveHit(BagBeastObject attacker, BagBeastObject defender, MoveBase attackMove, out string moveHitMessage)
     {
         // TODO: Reader muss irgendwie als Singleton oder so erstellt werden!
         TypeMatchupReader typeMatchupReader = new TypeMatchupReader();
@@ -178,8 +174,6 @@ public class BattleCalculationService
         return true;
     }
 
-    // TODO: Überlegen ob Statuseffekt Damage auch hier rein kommt
-
     #endregion // Public Methods
 
     #region Private Methods
@@ -190,7 +184,7 @@ public class BattleCalculationService
     /// <param name="attacker">Angreifendes Bagbeast</param>
     /// <param name="attackMove">Attacke</param>
     /// <returns>Passender Attackstat</returns>
-    private decimal GetAttackStat(BagBeastObject attacker, MoveBase attackMove)
+    private static decimal GetAttackStat(BagBeastObject attacker, MoveBase attackMove)
     {
         // TODO: Wenn Bodypress implementiert wird muss hier vielleicht Sonderbullshit rein
 
@@ -220,7 +214,7 @@ public class BattleCalculationService
     /// <param name="attackMove">Attacke</param>
     /// <param name="critTriggered">Ob ein Volltreffer ausgelöst wurde</param>
     /// <returns>Passender Defensestat</returns>
-    private decimal GetDefendstat(BagBeastObject defender, MoveBase attackMove, bool critTriggered)
+    private static decimal GetDefendstat(BagBeastObject defender, MoveBase attackMove, bool critTriggered)
     {
         // TODO: Wenn Psyshock implementiert wird muss hier vielleicht Sonderbullshit rein
 
@@ -247,7 +241,7 @@ public class BattleCalculationService
     /// Berechnet Z für die Schadenskalkulation
     /// </summary>
     /// <returns>Z (zwischen 85 - 100)</returns>
-    private ushort GetZ()
+    private static ushort GetZ()
     {
         // TODO: Random Wert zwischen 85 - 100 berechnen und zurückgeben
         return 100;
@@ -259,7 +253,7 @@ public class BattleCalculationService
     /// <param name="attacker">Angreifendes Bagbeast</param>
     /// <param name="attackMove">Attacke</param>
     /// <returns>STAB (STAB = Same Type Attack Bonus)</returns>
-    private decimal GetStab(BagBeastObject attacker, MoveBase attackMove)
+    private static decimal GetStab(BagBeastObject attacker, MoveBase attackMove)
     {
         if (attacker.Type1 == attackMove.Type
         || (attacker.Type2.HasValue && attacker.Type2 == attackMove.Type))
@@ -270,7 +264,7 @@ public class BattleCalculationService
         return 1;
     }
 
-    private decimal GetF1(BagBeastObject attacker, MoveBase attackMove)
+    private static decimal GetF1(BagBeastObject attacker, MoveBase attackMove)
     {
         // TODO: Noch ist geplannt, dass Reflektor und Lichtschild nicht rein kommt. Wenn doch dann war hier vorher die Damage Calculation davon drin
 
@@ -294,7 +288,7 @@ public class BattleCalculationService
     /// </summary>
     /// <param name="attacker">Angreifendes Bagbeast</param>
     /// <returns>Stat Modifier für den Accuracy Stat</returns>
-    private decimal GetAccuracyStatModifier(BagBeastObject attacker)
+    private static decimal GetAccuracyStatModifier(BagBeastObject attacker)
     {
         int x = 3;
         int y = 3;
@@ -322,7 +316,7 @@ public class BattleCalculationService
     /// </summary>
     /// <param name="defender">Angegriffenes Bagbeast</param>
     /// <returns>Stat Modifier für den Dodge Stat</returns>
-    private decimal GetDodgeStatModifier(BagBeastObject defender)
+    private static decimal GetDodgeStatModifier(BagBeastObject defender)
     {
         int x = 3;
         int y = 3;

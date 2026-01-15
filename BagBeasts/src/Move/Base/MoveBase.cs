@@ -70,9 +70,6 @@ public abstract class MoveBase : ActionBase
     /// <param name="executeHitMessage">OUT: Hit Message</param>
     protected void ExcecuteHit(BagBeastObject executingBeast, BagBeastObject defendingBeast, MoveBase move, int damage, out string executeHitMessage)
     {
-        // TODO: Der müsste irgendwie als Singleton angelegt werden
-        StatusEffectService statusEffectService = new StatusEffectService();
-
         moveHitMessage = string.Empty;
         defendingBeast.CurrentHP =- damage;
 
@@ -80,7 +77,7 @@ public abstract class MoveBase : ActionBase
 
         if (defendingBeast.CurrentHP == 0)
         {
-             executeHitMessage = statusEffectService.SetEternalEep(defendingBeast);
+             executeHitMessage = StatusEffectService.SetEternalEep(defendingBeast);
         }
 
         if (executeHitMessage == string.Empty)

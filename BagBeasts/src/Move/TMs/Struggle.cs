@@ -14,15 +14,11 @@ public class Struggle : MoveBase
     /// <inheritdoc/>
     public override bool Execute(BagBeastObject executingBeast, BagBeastObject defendingBeast, BagBeastObject? switchInBeast = null, out string moveExecuteMessage)
     {
-        // TODO: Der müsste irgendwie als Singleton angelegt werden
-        BattleCalculationService battleCalculationService = new BattleCalculationService();
-        StatusEffectService statusEffectService = new StatusEffectService();
-
         // Prüfen, ob ein Krit ausgelöst wird
-        bool critTriggered = battleCalculationService.CritTriggered(CritChanceTier, out string critMessage);
+        bool critTriggered = BattleCalculationService.CritTriggered(CritChanceTier, out string critMessage);
 
         // Schaden am Gegner zufügen
-        ExcecuteHit(executingBeast, defendingBeast, this, battleCalculationService.HitDamage(executingBeast, defendingBeast, this, critTriggered), out string executeHitMessage);
+        ExcecuteHit(executingBeast, defendingBeast, this, BattleCalculationService.HitDamage(executingBeast, defendingBeast, this, critTriggered), out string executeHitMessage);
 
         if (critTriggered)
         {
@@ -41,7 +37,7 @@ public class Struggle : MoveBase
 
         if (executingBeast.CurrentHP == 0)
         {
-            moveExecuteMessage += "\n" + statusEffectService.SetEternalEep(executingBeast);
+            moveExecuteMessage += "\n" + StatusEffectService.SetEternalEep(executingBeast);
         }
 
         // Struggle trifft immer

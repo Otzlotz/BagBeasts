@@ -97,9 +97,7 @@ public class Battle
         //}
         //else mach mov
 
-        var effectService = new StatusEffectService();
-
-        if ((executingBeast.StatusEffect == StatusEffectEnum.Paralysis || executingBeast.StatusEffect == StatusEffectEnum.Eep) && effectService.TriggerStatusEffect(executingBeast))
+        if ((executingBeast.StatusEffect == StatusEffectEnum.Paralysis || executingBeast.StatusEffect == StatusEffectEnum.Eep) && StatusEffectService.TriggerStatusEffect(executingBeast))
         {
             return;
         }
@@ -107,7 +105,7 @@ public class Battle
         //{
         // return;
         //}
-        else if (effectService.TriggerConfusion(executingBeast))
+        else if (StatusEffectService.TriggerConfusion(executingBeast))
         {
             return;
         }

@@ -23,14 +23,10 @@ public class Splash : MoveBase
     /// <inheritdoc/>
     public override bool Execute(BagBeastObject executingBeast, BagBeastObject defendingBeast, BagBeastObject? switchInBeast = null, out string moveExecuteMessage)
     {
-        // TODO: Der müsste irgendwie als Singleton angelegt werden
-        BattleCalculationService battleCalculationService = new BattleCalculationService();
-        StatusEffectService statusEffectService = new StatusEffectService();
-
         PP--;
 
         // Prüfen, ob der Angriff trifft
-        if (!battleCalculationService.MoveHit(executingBeast, defendingBeast, this, out string moveHitMessage))
+        if (!BattleCalculationService.MoveHit(executingBeast, defendingBeast, this, out string moveHitMessage))
         {
             moveExecuteMessage = moveHitMessage;
             return false;
@@ -39,7 +35,7 @@ public class Splash : MoveBase
         // Random ermitteln, welcher Statuseffekt ausgelöst wird
         StatusEffectEnum statusEffect = (StatusEffectEnum)Rnd.Next(2, 7);
 
-        return statusEffectService.TryApplyStatusEffekt(defendingBeast, statusEffect, out moveExecuteMessage);
+        return StatusEffectService.TryApplyStatusEffekt(defendingBeast, statusEffect, out moveExecuteMessage);
     }
 
     #endregion // Methods

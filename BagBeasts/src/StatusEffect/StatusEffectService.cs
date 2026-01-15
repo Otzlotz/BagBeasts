@@ -6,7 +6,7 @@ namespace src.StatusEffect;
 /// <summary>
 /// Methoden für Statuseffekte
 /// </summary>
-public class StatusEffectService
+public static class StatusEffectService
 {
     #region Fields
 
@@ -29,7 +29,7 @@ public class StatusEffectService
     /// </summary>
     /// <param name="bagBeastObject">Bagbeast</param>
     /// <param name="statusMessage">OUT: Message was passiert (string.Empty, wenn nichts passiert)</param>
-    public void RemoveStatusEffect(BagBeastObject bagBeastObject, out string statusMessage)
+    public static void RemoveStatusEffect(BagBeastObject bagBeastObject, out string statusMessage)
     {
         switch (bagBeastObject.StatusEffect)
         {
@@ -73,7 +73,7 @@ public class StatusEffectService
     /// <param name="statusEffect">Anzuwendender Statuseffekt</param>
     /// <param name="statusMessage">OUT: Message was passiert (string.Empty, wenn kein Statuseffekt angewendet wird)</param>
     /// <returns>Ob der Statuseffekt erfolgreich angewendet wurde</returns>
-    public bool TryApplyStatusEffekt(BagBeastObject bagBeastObject, StatusEffectEnum statusEffect, out string statusMessage)
+    public static bool TryApplyStatusEffekt(BagBeastObject bagBeastObject, StatusEffectEnum statusEffect, out string statusMessage)
     {
         // Ein Bagbeast kann nur einen Primären Statuseffekt gleichzeitig haben!
         if (bagBeastObject.StatusEffect != StatusEffectEnum.No)
@@ -131,7 +131,7 @@ public class StatusEffectService
     /// <param name="statusMessage">OUT: Message was passiert (String.Empty, wenn es keinen Status Effekt hat)</param>
     /// <returns>Ob das Bagbeast durch den Statuseffekt Stunned ist oder in EternalEep gefallen ist</returns>
     /// <remarks>Kann die HP des Bagbeast auf 0 setzen, löst aber nicht selber den EternalEep aus!</remarks>
-    public bool TriggerStatusEffect(BagBeastObject bagBeastObject, out string statusMessage)
+    public static bool TriggerStatusEffect(BagBeastObject bagBeastObject, out string statusMessage)
     {
         // TODO: Bei den Damage Effekten ein true zurückgeben wenn das BagBeast stirbt
 
@@ -166,7 +166,7 @@ public class StatusEffectService
     /// </summary>
     /// <param name="bagBeastObject">Bagbeast</param>
     /// <returns>Message, dass das Bagbeast in EternalEep gefallen ist</returns>
-    public string SetEternalEep(BagBeastObject bagBeastObject)
+    public static string SetEternalEep(BagBeastObject bagBeastObject)
     {
         bagBeastObject.StatusEffect = StatusEffectEnum.EternalEep;
 
@@ -190,7 +190,7 @@ public class StatusEffectService
     /// </summary>
     /// <param name="bagBeastObject">Bagbeast</param>
     /// <param name="statusMessage">OUT: Message was passiert (String.Empty, wenn es nicht verwirrt war)</param>
-    public void RemoveConfusion(BagBeastObject bagBeastObject, out string statusMessage)
+    public static void RemoveConfusion(BagBeastObject bagBeastObject, out string statusMessage)
     {
         if (bagBeastObject.Confusion == 0)
         {
@@ -207,7 +207,7 @@ public class StatusEffectService
     /// </summary>
     /// <param name="bagBeastObject">Bagbeast</param>
     /// <returns>Ob die Verwirrung erfolgreich angewendet wurde</returns>
-    public bool TryApplyConfusion(BagBeastObject bagBeastObject)
+    public static bool TryApplyConfusion(BagBeastObject bagBeastObject)
     {
         // Wer schon verwirrt ist, kann nicht nochmal verwirrt werden
         if (bagBeastObject.Confusion > 0)
@@ -228,7 +228,7 @@ public class StatusEffectService
     /// <param name="statusMessage">OUT: Message was passiert (String.Empty, wenn es nicht Verwirrt ist)</param>
     /// <returns>Ob das Bagbeast durch die Verwirrung Stunned ist (oder in EternalEep gefallen ist)</returns>
     /// <remarks>Kann die HP des Bagbeast auf 0 setzen, löst aber nicht selber den EternalEep aus!</remarks>
-    public bool TriggerConfusion(BagBeastObject bagBeastObject, out string statusMessage)
+    public static bool TriggerConfusion(BagBeastObject bagBeastObject, out string statusMessage)
     {
         // Prüfen, ob das Bagbeast überhaupt verwirrt ist
         if (bagBeastObject.Confusion == 0)
@@ -278,7 +278,7 @@ public class StatusEffectService
     /// <param name="bagBeastObject">Bagbeast</param>
     /// <param name="statusMessage">OUT: Message was passiert</param>
     /// <returns>Ob das Bagbeast durch den Statuseffekt Stunned ist</returns>
-    private bool TriggerEep(BagBeastObject bagBeastObject, out string statusMessage)
+    private static bool TriggerEep(BagBeastObject bagBeastObject, out string statusMessage)
     {
         bagBeastObject.StatusCounter--;
 
@@ -300,7 +300,7 @@ public class StatusEffectService
     /// <param name="bagBeastObject">Bagbeast</param>
     /// <param name="statusMessage">OUT: Message was passiert</param>
     /// <returns>Ob das Bagbeast durch den Statuseffekt Stunned ist</returns>
-    private bool TriggerParalysis(BagBeastObject bagBeastObject, out string statusMessage)
+    private static bool TriggerParalysis(BagBeastObject bagBeastObject, out string statusMessage)
     {
         statusMessage = $"{bagBeastObject.Name} is paralysed!";
 
@@ -322,7 +322,7 @@ public class StatusEffectService
     /// <param name="bagBeastObject">Bagbeast</param>
     /// <param name="statusMessage">OUT: Message was passiert</param>
     /// <returns>Ob das Bagbeast durch den Statuseffekt in EternalEep fällt</returns>
-    private bool TriggerPoison(BagBeastObject bagBeastObject, out string statusMessage)
+    private static bool TriggerPoison(BagBeastObject bagBeastObject, out string statusMessage)
     {
         decimal damage = bagBeastObject.MAXHP / 8;
 
@@ -347,7 +347,7 @@ public class StatusEffectService
     /// <param name="bagBeastObject">Bagbeast</param>
     /// <param name="statusMessage">OUT: Message was passiert</param>
     /// <returns>Ob das Bagbeast durch den Statuseffekt in EternalEep fällt</returns>
-    private bool TriggerToxic(BagBeastObject bagBeastObject, out string statusMessage)
+    private static bool TriggerToxic(BagBeastObject bagBeastObject, out string statusMessage)
     {
         decimal damage = bagBeastObject.MAXHP / 16 * bagBeastObject.StatusCounter;
 
@@ -372,7 +372,7 @@ public class StatusEffectService
     /// <param name="bagBeastObject">Bagbeast</param>
     /// <param name="statusMessage">OUT: Message was passiert</param>
     /// <returns>Ob das Bagbeast durch den Statuseffekt in EternalEep fällt</returns>
-    private bool TriggerBurn(BagBeastObject bagBeastObject, out string statusMessage)
+    private static bool TriggerBurn(BagBeastObject bagBeastObject, out string statusMessage)
     {
         decimal damage = bagBeastObject.MAXHP / 8;
 
@@ -397,7 +397,7 @@ public class StatusEffectService
     /// <param name="bagBeastObject">Bagbeast</param>
     /// <param name="statusMessage">OUT: Message was passiert</param>
     /// <returns>Ob das Bagbeast durch den Statuseffekt in EternalEep fällt</returns>
-    private bool TriggerFrostBurn(BagBeastObject bagBeastObject, out string statusMessage)
+    private static bool TriggerFrostBurn(BagBeastObject bagBeastObject, out string statusMessage)
     {
         decimal damage = bagBeastObject.MAXHP / 8;
 

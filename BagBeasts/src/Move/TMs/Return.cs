@@ -11,23 +11,20 @@ public class Return : MoveBase
     /// <inheritdoc/>
     public override bool Execute(BagBeastObject executingBeast, BagBeastObject defendingBeast, BagBeastObject? switchInBeast = null, out string moveExecuteMessage)
     {
-        // TODO: Der müsste irgendwie als Singleton angelegt werden
-        BattleCalculationService battleCalculationService = new BattleCalculationService();
-
         PP--;
 
         // Prüfen, ob der Angriff trifft
-        if (!battleCalculationService.MoveHit(executingBeast, defendingBeast, this, out string moveHitMessage))
+        if (!BattleCalculationService.MoveHit(executingBeast, defendingBeast, this, out string moveHitMessage))
         {
             moveExecuteMessage = moveHitMessage;
             return false;
         }
 
         // Prüfen, ob ein Krit ausgelöst wird
-        bool critTriggered = battleCalculationService.CritTriggered(CritChanceTier, out string critMessage);
+        bool critTriggered = BattleCalculationService.CritTriggered(CritChanceTier, out string critMessage);
 
         // Schaden am Gegner zufügen
-        ExcecuteHit(executingBeast, defendingBeast, this, battleCalculationService.HitDamage(executingBeast, defendingBeast, this, critTriggered), out string executeHitMessage);
+        ExcecuteHit(executingBeast, defendingBeast, this, BattleCalculationService.HitDamage(executingBeast, defendingBeast, this, critTriggered), out string executeHitMessage);
 
         if (critTriggered)
         {
@@ -37,6 +34,8 @@ public class Return : MoveBase
         {
             moveExecuteMessage = executeHitMessage;
         }
+
+        // TODO: Das hier ist eigentlich das Standard Execute, könnte man vieleicht nochmal so in MoveBase packen um Doppelten Code zu verringern
 
         return true;
     }

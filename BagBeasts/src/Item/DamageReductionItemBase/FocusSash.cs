@@ -1,0 +1,23 @@
+﻿using src.Move;
+using src.Move.Base;
+
+namespace src.Item.ItemBase;
+
+public class FocusSash : DamageReductionItemBase
+{
+    #region Methods
+
+    public override string ItemEffect(ref BagBeastObject holderBeast, BagBeastObject attackingBeast, MoveBase attackingMove, ref decimal damage)
+    {
+        if (damage >= holderBeast.MAXHP && holderBeast.MAXHP == holderBeast.CurrentHP)
+        {
+            damage = holderBeast.MAXHP - 1;
+            holderBeast.HeldItem = null;
+
+            return $"Fokussash was used.\n{holderBeast.Name} survived the hit because of Fokussash.";
+        }
+    }
+
+
+    #endregion // Methods
+}

@@ -26,13 +26,19 @@ public class Battle
         Player2Beast = p2;
     }
 
+    private int _turnCounter;
+
     public void BattleInit(CancellationToken ct)
     {
+        var effectService = new StatusEffectService();
+
         while (!ct.IsCancellationRequested)
         {
             // TODO: DO
            //SelectedPlayer1Move = Select();
            //SelectedPlayer2Move = Select();
+
+           
 
             if (TurnOrder(SelectedPlayer1Move.Prio, SelectedPlayer2Move.Prio, Player1Beast.INT, Player2Beast.INT))
             {
@@ -53,24 +59,42 @@ public class Battle
                 }
             }
 
-            if (Player1Beast.Ability is RoundEndAbilityBase ability1)
+            if (Player1Beast.Ability is RoundEndAbilityBase ability1 && Player1Beast.StatusEffect != StatusEffectEnum.EternalEep)
             {
                 ability1.AbilityEffect(ref Player1Beast);
             }
 
-            if (Player2Beast.Ability is RoundEndAbilityBase ability2)
+            if (Player2Beast.Ability is RoundEndAbilityBase ability2 && Player1Beast.StatusEffect != StatusEffectEnum.EternalEep)
             {
                 ability2.AbilityEffect(ref Player2Beast);
             }
 
-            if (Player1Beast.HeldItem is RoundEndItemBase item1)
+            if (Player1Beast.HeldItem is RoundEndItemBase item1 && Player1Beast.StatusEffect != StatusEffectEnum.EternalEep)
             {
                 item1.ItemEffect(Player1Beast);
             }
 
-            if (Player2Beast.HeldItem is RoundEndItemBase item2)
+            if (Player2Beast.HeldItem is RoundEndItemBase item2 && Player1Beast.StatusEffect != StatusEffectEnum.EternalEep)
             {
                 item2.ItemEffect(Player2Beast);
+            }
+
+            if ((Player1Beast.StatusEffect == StatusEffectEnum.Burn
+                || Player1Beast.StatusEffect == StatusEffectEnum.FrostBurn
+                || Player1Beast.StatusEffect == StatusEffectEnum.Poison
+                || Player1Beast.StatusEffect == StatusEffectEnum.Toxic)
+                    && Player1Beast.StatusEffect != StatusEffectEnum.EternalEep)
+            {
+                effectService.TriggerStatusEffect(Player1Beast, out string statusMessage);
+            }
+
+            if ((Player2Beast.StatusEffect == StatusEffectEnum.Burn
+                || Player2Beast.StatusEffect == StatusEffectEnum.FrostBurn
+                || Player2Beast.StatusEffect == StatusEffectEnum.Poison
+                || Player2Beast.StatusEffect == StatusEffectEnum.Toxic)
+                    && Player2Beast.StatusEffect != StatusEffectEnum.EternalEep)
+            {
+                effectService.TriggerStatusEffect(Player2Beast, out string statusMessage);
             }
         }
     }
@@ -83,46 +107,77 @@ public class Battle
     }
     */
 
-    private void Turn(BagBeastObject executingBeast, BagBeastObject defendingBeast, MoveBase selectedMove, MoveBase defenderMove)
+    private string Turn(BagBeastObject executingBeast, BagBeastObject defendingBeast, ActionBase selectedMove, MoveBase defenderMove)
     {
+        var turnResult = "";
+
         if (selectedMove == null)
         {
-            return;
+            turnResult = "NullReference Exception";
+            return turnResult;
         }
 
-        //if (switchout) dann switch out
-        //{
-        //  Mach switch
-        //  if (switchInBeast.Ability is SwitchInAbility)    
-        //}
-        //else mach mov
-
-        if ((executingBeast.StatusEffect == StatusEffectEnum.Paralysis || executingBeast.StatusEffect == StatusEffectEnum.Eep) && StatusEffectService.TriggerStatusEffect(executingBeast))
+        if (selectedMove is Switch)
         {
-            return;
+            var test = new Switch();
+
+            if (executingBeast == Player1Beast)
+            {
+                Player1Beast = test.SwitchOut(executingBeast, TeamPlayer1);
+            }
+            else
+            {
+                Player2Beast = test.SwitchOut(executingBeast, TeamPlayer2);
+            }
+        }
+
+        var effectService = new StatusEffectService();
+
+        if ((executingBeast.StatusEffect == StatusEffectEnum.Paralysis || executingBeast.StatusEffect == StatusEffectEnum.Eep) && effectService.TriggerStatusEffect(executingBeast, out string statusMessage))
+        {
+            return statusMessage;
         }
         //else if (FLINCH)
         //{
         // return;
         //}
-        else if (StatusEffectService.TriggerConfusion(executingBeast))
+        
+        if (effectService.TriggerConfusion(executingBeast, out string confusionMessage))
         {
-            return;
+            if (confusionMessage != string.Empty)
+            {
+                turnResult = turnResult + "\n" + confusionMessage;
+            }
+
+            return turnResult;
         }
 
-        ExecuteResult executeResult = selectedMove.Execute(executingBeast, defendingBeast);
+        if (confusionMessage != string.Empty)
+        {
+            turnResult = turnResult + "\n" + confusionMessage;
+        }
 
-        // switch in Effekte bei U-Turn
+        if (selectedMove.Execute(executingBeast, defendingBeast, out string executeMessage) == false)
+        {
+            turnResult = turnResult + executeMessage;
+            return turnResult;
+        }
+
+        turnResult = turnResult + executeMessage;
+
+        //TODO: switch in Effekte bei U-Turn
 
         if (defendingBeast.Ability is HitTakenAbilityBase ability)
         {
-            ability.AbilityEffect(ref executingBeast, ref defendingBeast, selectedMove);
+            turnResult = turnResult + ability.AbilityEffect(ref executingBeast, ref defendingBeast, selectedMove);
         }
 
         if (defendingBeast.HeldItem is HitTakenItemBase item)
         {
-            item.ItemEffect(executingBeast, defendingBeast, selectedMove);
+            turnResult = turnResult + item.ItemEffect(executingBeast, defendingBeast, selectedMove);
         }
+
+        return turnResult;
     }
 
     #region BattleChecks

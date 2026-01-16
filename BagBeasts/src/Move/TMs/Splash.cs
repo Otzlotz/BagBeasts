@@ -6,22 +6,10 @@ namespace src.Move.TMs;
 
 public class Splash : MoveBase
 {
-    #region Fields
-
-    private Random _rnd;
-
-    #endregion // Fields
-
-    #region Properties
-
-    private Random Rnd = _rnd ??= new Random();
-
-    #endregion // Properties
-
     #region Methods
 
     /// <inheritdoc/>
-    public override bool Execute(BagBeastObject executingBeast, BagBeastObject defendingBeast, BagBeastObject? switchInBeast = null, out string moveExecuteMessage)
+    public override ExecuteResult Execute(BagBeastObject executingBeast, BagBeastObject defendingBeast, out string moveExecuteMessage, BagBeastObject? switchInBeast = null)
     {
         PP--;
 
@@ -29,13 +17,13 @@ public class Splash : MoveBase
         if (!BattleCalculationService.MoveHit(executingBeast, defendingBeast, this, out string moveHitMessage))
         {
             moveExecuteMessage = moveHitMessage;
-            return false;
+            return new ExecuteResult(false);
         }
 
         // Random ermitteln, welcher Statuseffekt ausgelöst wird
         StatusEffectEnum statusEffect = (StatusEffectEnum)Rnd.Next(2, 7);
 
-        return StatusEffectService.TryApplyStatusEffekt(defendingBeast, statusEffect, out moveExecuteMessage);
+        return new ExecuteResult(StatusEffectService.TryApplyStatusEffekt(defendingBeast, statusEffect, out moveExecuteMessage));
     }
 
     #endregion // Methods

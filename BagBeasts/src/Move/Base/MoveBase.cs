@@ -1,10 +1,19 @@
 using src.StatusEffect;
+using System;
 
 namespace src.Move.Base;
 
 public abstract class MoveBase : ActionBase
 {
-    #region Properties 
+    #region Fields
+
+    private Random _rnd;
+
+    #endregion // Fields
+
+    #region Properties
+
+    #region Datenbank
 
     public string Description{get; protected set;}
 
@@ -24,6 +33,33 @@ public abstract class MoveBase : ActionBase
 
     public bool Contact {get; protected set;}
 
+    #endregion // Datenbank
+
+    #region Protected
+
+    #region Services
+
+    protected Random Rnd {get; set;} = _rnd ??= new Random();
+
+    #endregion // Services
+
+    /// <summary>
+    /// Recoildamage in %
+    /// </summary>
+    protected decimal Recoil {get; set;} = 0;
+
+    /// <summary>
+    /// Verliert PP (nur verliert keine Struggle)
+    /// </summary>
+    protected bool LosePP {get; set;} = true;
+
+    /// <summary>
+    /// Chance in % den Gegner zurückzuschrecken
+    /// </summary>
+    protected decimal FlinchEnemyChance {get; set;} = 0;
+
+    #endregion // Protected
+
     #endregion // Properties
 
     #region Public Methods
@@ -33,10 +69,62 @@ public abstract class MoveBase : ActionBase
     /// </summary>
     /// <param name="executingBeast">Ausführendes Bagbeast</param>
     /// <param name="defendingBeast">Angegriffenes Bagbeast</param>
+    /// <param name="moveExecuteMessage">OUT: Message der Ausführung des Move</param>
     /// <param name="switchInBeast">Optional: Babbeast, welches durch die Attacke (nach dem Angriff) eingewechselt wird</param>
-    /// <param name="moveExecuteMessage">OUT: Message der ausführung des Move</param>
-    /// <returns>true: Angriff hat getroffen | false: Angriff hat nicht getroffen</returns>
-    public abstract bool Execute(BagBeastObject executingBeast, BagBeastObject defendingBeast, BagBeastObject? switchInBeast = null, out string moveExecuteMessage);
+    /// <returns>Result</returns>
+    public virtual ExecuteResult Execute(BagBeastObject executingBeast, BagBeastObject defendingBeast, out string moveExecuteMessage, BagBeastObject? switchInBeast = null)
+    {
+        // INFO: Dies ist die Standard Ausführung eines Attack Move
+
+        if (LosePP)
+        {
+            PP--;
+        }
+        
+        // Prüfen, ob der Angriff trifft
+        if (!BattleCalculationService.MoveHit(executingBeast, defendingBeast, this, out string moveHitMessage))
+        {
+            moveExecuteMessage = moveHitMessage;
+            return new ExecuteResult(false);
+        }
+
+        ExecuteResult executeResult = new ExecuteResult(true);
+
+        // Prüfen, ob ein Krit ausgelöst wird
+        bool critTriggered = BattleCalculationService.CritTriggered(CritChanceTier, out string critMessage);
+
+        // Schaden am Gegner zufügen
+        ExcecuteHit(executingBeast, defendingBeast, this, BattleCalculationService.HitDamage(executingBeast, defendingBeast, this, critTriggered), out string executeHitMessage);
+
+        if (critTriggered)
+        {
+            moveExecuteMessage = critMessage + "\n" + executeHitMessage;
+        }
+        else
+        {
+            moveExecuteMessage = executeHitMessage;
+        }
+
+        // Recoil
+        if (Recoil > 0)
+        {
+            executingBeast.CurrentHP =- executingBeast.MAXHP / 100 * Recoil;
+            moveExecuteMessage += "\n" + $"{executingBeast.Name} was damaged by recoil!";
+
+            if (executingBeast.CurrentHP == 0)
+            {
+                moveExecuteMessage += "\n" + StatusEffectService.SetEternalEep(executingBeast);
+            }
+        }
+
+        // Flinch
+        if (FlinchEnemyChance > 0 && Rnd.Next(1, 100) <= FlinchEnemyChance)
+        {
+            executeResult.FlinchEnemy = true;
+        }
+
+        return executeResult;
+    }
 
     /// <summary>
     /// Initialisiert die Aktion mit ihren Daten aus der Datenbank
@@ -70,7 +158,6 @@ public abstract class MoveBase : ActionBase
     /// <param name="executeHitMessage">OUT: Hit Message</param>
     protected void ExcecuteHit(BagBeastObject executingBeast, BagBeastObject defendingBeast, MoveBase move, int damage, out string executeHitMessage)
     {
-        moveHitMessage = string.Empty;
         defendingBeast.CurrentHP =- damage;
 
         // TODO: Diese neue Itembase von Tobias für FocusSash hier einbauen. defendingBeast.CurrentHP darf nicht davor auf 0 gesetzt werden!

@@ -8,7 +8,7 @@
 
 <p>The Team creator</p>
 
-@if (bagbeasts == null)
+@if (bagbeasts != null)
 {
     <p><em>Loading...</em></p>
 }
@@ -24,7 +24,7 @@ else
             </tr>
         </thead>
         <tbody>
-            @foreach (var beast in bagbeasts)
+            @foreach (BagBeast beast in bagbeasts)
             {
                 <tr>
                     <td>@beast.Name</td>
@@ -36,12 +36,13 @@ else
         </tbody>
     </table>
 }
-
 @code {
     private List<BagBeast>? bagbeasts;
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        
+        if(firstRender){
+            //bagbeasts.Add(
+            }
     }
 }

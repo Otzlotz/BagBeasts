@@ -2,12 +2,11 @@ using src.Move.Base;
 
 namespace src.Move.TMs;
 
-public class Struggle : MoveBase
+public class Waterfall : MoveBase
 {
-    public Struggle()
+    public Waterfall()
     {
-        Recoil = 25;
-        LosePP = false;
+        FlinchEnemyChance = 20;
     }
 
     // INFO: Nutzt das Standard Execute!

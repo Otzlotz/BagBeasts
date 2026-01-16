@@ -9,27 +9,21 @@ public class Splash : MoveBase
     #region Methods
 
     /// <inheritdoc/>
-    public override bool Execute(BagBeastObject executingBeast, BagBeastObject defendingBeast, BagBeastObject? switchInBeast = null)
+    public override ExecuteResult Execute(BagBeastObject executingBeast, BagBeastObject defendingBeast, out string moveExecuteMessage, BagBeastObject? switchInBeast = null)
     {
-        // TODO: Der müsste irgendwie als Singleton angelegt werden
-        BattleCalculationService battleCalculationService = new BattleCalculationService();
-        StatusEffectService statusEffectService = new StatusEffectService();
-
         PP--;
 
         // Prüfen, ob der Angriff trifft
-        if (!battleCalculationService.MoveHit(executingBeast, defendingBeast, this))
+        if (!BattleCalculationService.MoveHit(executingBeast, defendingBeast, this, out string moveHitMessage))
         {
-            return false;
+            moveExecuteMessage = moveHitMessage;
+            return new ExecuteResult(false);
         }
 
-        // TODO: Irgendwie StatusEffect.StatusEffect, trotz des using oben. Robin fixt das schon
-
         // Random ermitteln, welcher Statuseffekt ausgelöst wird
-        Random rnd = new Random();
-        StatusEffect.StatusEffectEnum statusEffect = (StatusEffect.StatusEffectEnum)rnd.Next(2, 7);
+        StatusEffectEnum statusEffect = (StatusEffectEnum)Rnd.Next(2, 7);
 
-        return statusEffectService.TryApplyStatusEffekt(defendingBeast, statusEffect);
+        return new ExecuteResult(StatusEffectService.TryApplyStatusEffekt(defendingBeast, statusEffect, out moveExecuteMessage));
     }
 
     #endregion // Methods

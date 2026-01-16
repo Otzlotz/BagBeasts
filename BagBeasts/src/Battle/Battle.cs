@@ -110,7 +110,7 @@ public class Battle
             return;
         }
 
-        selectedMove.Execute(executingBeast, defendingBeast);
+        ExecuteResult executeResult = selectedMove.Execute(executingBeast, defendingBeast);
 
         // switch in Effekte bei U-Turn
 

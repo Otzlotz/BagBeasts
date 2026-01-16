@@ -1,4 +1,4 @@
-
+using System;
 
 namespace src.StatusEffect;
 

@@ -48,6 +48,8 @@ public class BagBeastObject
     public StatChanges StatChange { get; set; }
     public int Confusion { get; set; }
 
+    #endregion // Properties
+
     public BagBeastObject()
     {
         foreach (var move in MoveLocks)

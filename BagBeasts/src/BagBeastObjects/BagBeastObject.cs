@@ -31,5 +31,9 @@ public class BagBeastObject
 
     public BagBeastObject()
     {
+        foreach (var move in MoveLocks)
+        {
+            move = false;
+        }
     }
 }

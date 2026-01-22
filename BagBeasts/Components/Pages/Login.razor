@@ -31,8 +31,6 @@
     private int userID = 0;
     private void btnLoginClick()
     {
-        errorMessage = null;
-
         if (username == "11" && Hashfunction.Hash(password) == Hashfunction.Hash("qq"))
         {
             Nav.NavigateTo(uri: "/MainMenu");

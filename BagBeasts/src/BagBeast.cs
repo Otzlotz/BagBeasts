@@ -24,7 +24,7 @@ namespace BagBeasts.src.Beast
         /// <summary>
         /// Konstruktor
         /// </summary>
-        public BagBeast(string name, int hp, int atk, int spa, int def, int spd, int i, Type type1, Type? typ2 = null)
+        public BagBeast(string name, int hp, int atk, int spa, int def, int spd, int i, Type type1, Type? typ2 = null, int id = 0)
         {
             Name = name;
             HP = hp;
@@ -35,6 +35,7 @@ namespace BagBeasts.src.Beast
             INT = i;
             Type1 = type1;
             Type2 = typ2;
+            ID = id;
         }
     }
 }

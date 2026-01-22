@@ -169,7 +169,7 @@ public abstract class MoveBase : ActionBase
     {
         base.Init(fromDB);
 
-        Description = fromDB.Description.Value;
+        Description = fromDB.Description;
         Damage = (uint)fromDB.Dmg.Value;
         Accuracy = (uint?)fromDB.Acc;
         CritChanceTier = (uint)fromDB.CritChanceTier.Value;

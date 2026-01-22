@@ -1,9 +1,8 @@
 using src.Move.Base;
-using src.Battle;
 
 namespace src.Move.TMs;
 
-public class Crunch : MoveBase
+public class AlluringVoice : MoveBase
 {
     /// <inheritdoc/>
     public override ExecuteResult Execute(BagBeastObject executingBeast, BagBeastObject defendingBeast, out string moveExecuteMessage, BagBeastObject? switchInBeast = null)
@@ -12,11 +11,7 @@ public class Crunch : MoveBase
 
         if (executeResult.MoveHit)
         {
-            // 20% Chance Verteidigung des Gegner um 1 zu senken
-            if (Rnd.Next(1, 100) <= 20)
-            {
-                moveExecuteMessage += "\n" + StatChangeService.ChangeDef(defendingBeast, -1);
-            }
+            // TODO: Braucht noch SOnderbullshit, dass es den Gegner verwirrt, wenn er diese Runde eine Statuserhöhung erhalten hat
         }
 
         return executeResult;

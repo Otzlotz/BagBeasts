@@ -6,7 +6,7 @@ public class Struggle : MoveBase
 {
     public Struggle()
     {
-        Recoil = 25;
+        RecoilBasedOnOwnHp = 25;
         LosePP = false;
     }
 

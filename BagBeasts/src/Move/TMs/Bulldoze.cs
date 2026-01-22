@@ -3,7 +3,7 @@ using src.Battle;
 
 namespace src.Move.TMs;
 
-public class Crunch : MoveBase
+public class Bulldoze : MoveBase
 {
     /// <inheritdoc/>
     public override ExecuteResult Execute(BagBeastObject executingBeast, BagBeastObject defendingBeast, out string moveExecuteMessage, BagBeastObject? switchInBeast = null)
@@ -12,11 +12,8 @@ public class Crunch : MoveBase
 
         if (executeResult.MoveHit)
         {
-            // 20% Chance Verteidigung des Gegner um 1 zu senken
-            if (Rnd.Next(1, 100) <= 20)
-            {
-                moveExecuteMessage += "\n" + StatChangeService.ChangeDef(defendingBeast, -1);
-            }
+            // Senkt die Initiative des Gegner um 1
+            moveExecuteMessage += "\n" + StatChangeService.ChangeInt(defendingBeast, -1);
         }
 
         return executeResult;

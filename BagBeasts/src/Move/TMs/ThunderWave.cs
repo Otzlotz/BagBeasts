@@ -4,7 +4,7 @@ using src.StatusEffect;
 
 namespace src.Move.TMs;
 
-public class Splash : MoveBase
+public class ThunderWave : MoveBase
 {
     #region Methods
 
@@ -22,10 +22,8 @@ public class Splash : MoveBase
             return new ExecuteResult(false);
         }
 
-        // Random ermitteln, welcher Statuseffekt ausgelöst wird
-        StatusEffectEnum statusEffect = (StatusEffectEnum)Rnd.Next(2, 7);
-
-        bool moveHit = StatusEffectService.TryApplyStatusEffekt(defendingBeast, statusEffect, out string statusMessage);
+        // Gegner Bagbeast versuchen zu paralysieren
+        bool moveHit = StatusEffectService.TryApplyStatusEffekt(defendingBeast, StatusEffectEnum.Paralysis, out string statusMessage);
         moveExecuteMessage += "\n" + statusMessage;
 
         return new ExecuteResult(moveHit);

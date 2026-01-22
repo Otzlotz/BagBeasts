@@ -1,10 +1,14 @@
 using src.StatusEffect;
 using System;
+using src.Battle;
 
 namespace src.Move.Base;
 
 public abstract class MoveBase : ActionBase
 {
+    // TODO: Diese Moves ganz am Ende einbauen: Delegator, Schlafrede (vielleicht ganz weg lassen), Schwanzabwurf, Schutzschild, Abgangsbund
+    // TODO: Zuletzt Bürde Implementiert (Moves 50 - 59 fehlen)
+
     #region Fields
 
     private Random _rnd;
@@ -44,9 +48,14 @@ public abstract class MoveBase : ActionBase
     #endregion // Services
 
     /// <summary>
-    /// Recoildamage in %
+    /// Recoildamage in % (Bassierend auf den eigenen HP)
     /// </summary>
-    protected decimal Recoil {get; set;} = 0;
+    protected decimal RecoilBasedOnOwnHp {get; set;} = 0;
+
+    /// <summary>
+    /// Recoildamage in % (Basierend auf verursachten Schaden)
+    /// </summary>
+    protected decimal RecoilBasedOnDmgDealt {get; set;} = 0;
 
     /// <summary>
     /// Verliert PP (nur verliert keine Struggle)
@@ -57,6 +66,11 @@ public abstract class MoveBase : ActionBase
     /// Chance in % den Gegner zurückzuschrecken
     /// </summary>
     protected decimal FlinchEnemyChance {get; set;} = 0;
+
+    /// <summary>
+    /// Lifesteal des zugefügten Schaden in %
+    /// </summary>
+    protected decimal LifeSteal {get; set;} = 0;
 
     #endregion // Protected
 
@@ -76,6 +90,8 @@ public abstract class MoveBase : ActionBase
     {
         // INFO: Dies ist die Standard Ausführung eines Attack Move
 
+        moveExecuteMessage = $"{executingBeast.Name} has used {Name}.";
+
         if (LosePP)
         {
             PP--;
@@ -84,7 +100,7 @@ public abstract class MoveBase : ActionBase
         // Prüfen, ob der Angriff trifft
         if (!BattleCalculationService.MoveHit(executingBeast, defendingBeast, this, out string moveHitMessage))
         {
-            moveExecuteMessage = moveHitMessage;
+            moveExecuteMessage += "\n" + moveHitMessage;
             return new ExecuteResult(false);
         }
 
@@ -93,22 +109,41 @@ public abstract class MoveBase : ActionBase
         // Prüfen, ob ein Krit ausgelöst wird
         bool critTriggered = BattleCalculationService.CritTriggered(CritChanceTier, out string critMessage);
 
-        // Schaden am Gegner zufügen
-        ExcecuteHit(executingBeast, defendingBeast, this, BattleCalculationService.HitDamage(executingBeast, defendingBeast, this, critTriggered), out string executeHitMessage);
-
         if (critTriggered)
         {
-            moveExecuteMessage = critMessage + "\n" + executeHitMessage;
+            moveExecuteMessage += "\n" + critMessage;
         }
-        else
+
+        // Schaden am Gegner zufügen
+        int damage = BattleCalculationService.HitDamage(executingBeast, defendingBeast, this, critTriggered);
+        ExcecuteHit(executingBeast, defendingBeast, this, damage, out string executeHitMessage);
+
+        moveExecuteMessage += "\n" + executeHitMessage;
+
+        // Lifesteal
+        if (LifeSteal > 0)
         {
-            moveExecuteMessage = executeHitMessage;
+            // TODO: Der Lifesteal hier muss vermutlich gerundet werden
+            executingBeast.CurrentHP += damage / 100 * LifeSteal;
         }
 
         // Recoil
-        if (Recoil > 0)
+        if (RecoilBasedOnOwnHp > 0)
         {
-            executingBeast.CurrentHP =- executingBeast.MAXHP / 100 * Recoil;
+            // TODO: Runden?
+            executingBeast.CurrentHP =- executingBeast.MAXHP / 100 * RecoilBasedOnOwnHp;
+            moveExecuteMessage += "\n" + $"{executingBeast.Name} was damaged by recoil!";
+
+            if (executingBeast.CurrentHP == 0)
+            {
+                moveExecuteMessage += "\n" + StatusEffectService.SetEternalEep(executingBeast);
+            }
+        }
+
+        if (RecoilBasedOnDmgDealt > 0)
+        {
+            // TODO: Runden?
+            executingBeast.CurrentHP =- damage / 100 * Recoil;
             moveExecuteMessage += "\n" + $"{executingBeast.Name} was damaged by recoil!";
 
             if (executingBeast.CurrentHP == 0)
@@ -162,18 +197,18 @@ public abstract class MoveBase : ActionBase
 
         // TODO: Diese neue Itembase von Tobias für FocusSash hier einbauen. defendingBeast.CurrentHP darf nicht davor auf 0 gesetzt werden!
 
-        if (defendingBeast.CurrentHP == 0)
-        {
-             executeHitMessage = StatusEffectService.SetEternalEep(defendingBeast);
-        }
-
         if (executeHitMessage == string.Empty)
         {
             executeHitMessage = $"{defendingBeast.Name} was hit by {move.Name} for {damage} damage.";
         }
         else
         {
-            executeHitMessage += "\n" + $"{defendingBeast.Name} was hit by {move.Name} for {damage} damage.";
+            executeHitMessage = "\n" + $"{defendingBeast.Name} was hit by {move.Name} for {damage} damage.";
+        }
+
+        if (defendingBeast.CurrentHP == 0)
+        {
+             executeHitMessage += StatusEffectService.SetEternalEep(defendingBeast);
         }
     }
 

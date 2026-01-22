@@ -263,14 +263,14 @@ public static class StatusEffectService
             Random rnd = new Random();
 
             // 33% Chance sich selbst Schaden zuzufügen
-            if (Rnd.Next(1, 3) == 1)
+            if (rnd.Next(1, 3) == 1)
             {
                 statusMessage += "\n" + $"{bagBeastObject.Name} hurt itself in confusion!";
 
                 // TODO: Abrunden auf ganze Zahl und mindestens 1 schaden
                 decimal damage = bagBeastObject.MAXHP / 8;
 
-                bagBeastObject.CurrentHP =- damage;
+                bagBeastObject.CurrentHP =- (int)damage;
 
                 if (bagBeastObject.CurrentHP == 0)
                 {

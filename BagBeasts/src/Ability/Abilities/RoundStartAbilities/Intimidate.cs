@@ -16,9 +16,10 @@ public abstract class Intimidate : RoundStartAbilityBase
     /// <param name="attackMove">Attacke</param>
     /// <param name="damage">Kalkulierter Schaden</param>
     /// <returns>Neuer Schaden</returns>
-    public override string AbilityEffect(BagBeastObject holderBeast, BagBeastObject defenderBeast, MoveBase attackMove, ref decimal damage)
+    public override decimal AbilityEffect(BagBeastObject holderBeast, BagBeastObject defenderBeast, MoveBase attackMove, decimal damage)
     {
-        
+        // ToDo: implementieren
+        return 0;
     }
 
     #endregion // Methods

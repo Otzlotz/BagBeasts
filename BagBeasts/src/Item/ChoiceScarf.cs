@@ -7,24 +7,24 @@ public abstract class ChoiceScarf : ItemBase
 {
     #region Methods
 
-    public override void ItemEffect(BagBeastObject holderBeast, MoveBase attackMove)
+    public void ItemEffect(BagBeastObject holderBeast, MoveBase attackMove)
     {
-        if (holderBeast.Move1 != attackMove)
+        if (holderBeast.Move1.Move.ID != attackMove.ID)
         {
             holderBeast.Move1.Lock = true;
         }
 
-        if (holderBeast.Move2 != attackMove)
+        if (holderBeast.Move2.Move.ID != attackMove.ID)
         {
             holderBeast.Move2.Lock = true;
         }
 
-        if (holderBeast.Move3 != attackMove)
+        if (holderBeast.Move3.Move.ID != attackMove.ID)
         {
             holderBeast.Move3.Lock = true;
         }
 
-        if (holderBeast.Move4 != attackMove)
+        if (holderBeast.Move4.Move.ID != attackMove.ID)
         {
             holderBeast.Move4.Lock = true;
         }

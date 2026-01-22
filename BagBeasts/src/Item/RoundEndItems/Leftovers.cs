@@ -2,7 +2,7 @@ using src.Move.Base;
 using src.Item.ItemBase;
 
 namespace src.Item.ItemBase;
-public abstract class AssaultVest : StatChangeItemBase
+public abstract class Leftovers : RoundEndItemBase
 {
     #region Methods
 

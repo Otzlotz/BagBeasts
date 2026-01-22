@@ -14,9 +14,9 @@ public abstract class LifeOrb : DamageModifierItemBase
     /// <param name="attackMove">Attacke</param>
     /// <param name="damage">Kalkulierter Schaden</param>
     /// <returns>Neuer Schaden</returns>
-    public override decimal ItemEffect(BagBeastObject holderBeast, BagBeastObject defenderBeast, MoveBase attackMove, decimal damage)
+    public override decimal ItemEffect(ref BagBeastObject holderBeast, BagBeastObject defenderBeast, MoveBase attackMove, decimal damage)
     {
-        damage = damage * 1.3;
+        damage = damage * 1.3m;
         holderBeast.CurrentHP -= holderBeast.MAXHP / 10;
 
         return damage;

@@ -10,7 +10,7 @@ public class Guts : DamageModifierAbilityBase
     {
         if (holderBeast.StatusEffect != StatusEffect.StatusEffectEnum.No)
         {
-            damage *= 1.5;
+            damage *= 1.5m;
         }
 
         return damage;

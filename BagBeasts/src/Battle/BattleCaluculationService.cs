@@ -43,7 +43,7 @@ public static class BattleCalculationService
         // Itemeffekt ggf. auslösen
         if (attacker.HeldItem is DamageModifierItemBase item)
         {
-            damage = item.ItemEffect(attacker, defender, attackMove, damage);
+            damage = item.ItemEffect(ref attacker, defender, attackMove, damage);
         }
 
         // Abilityeffekt ggf. auslösen
@@ -92,6 +92,8 @@ public static class BattleCalculationService
             break;
 
             default:
+                break;
+                // ToDO: implementieren
 
         }
 

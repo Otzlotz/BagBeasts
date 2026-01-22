@@ -2,7 +2,7 @@ using src.Ability.AbilityBase;
 using src.Move.Base;
 
 namespace src.Ability.AbilityBase;
-public class ToughClaws : DamageModifierAbilityBase
+public class HugePower : DamageModifierAbilityBase
 {
     #region Methods
 

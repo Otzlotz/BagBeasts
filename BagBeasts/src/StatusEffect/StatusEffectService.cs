@@ -10,13 +10,13 @@ public static class StatusEffectService
 {
     #region Fields
 
-    private Random _rnd;
+    private static Random _rnd;
 
     #endregion // Fields
 
     #region Properties
 
-    private Random Rnd = _rnd ??= new Random();
+    private static Random Rnd = _rnd ??= new Random();
 
     #endregion // Properties
 
@@ -57,7 +57,7 @@ public static class StatusEffectService
                 statusMessage = $"{bagBeastObject.Name} frostburn was removed!";
                 break;
 
-            case default:
+            default:
                 statusMessage = string.Empty;
                 return;
         }
@@ -145,7 +145,7 @@ public static class StatusEffectService
                 statusMessage = $"{bagBeastObject.Name} was burned (but in cool)!";
                 return true;
 
-            case default:
+            default:
                 // Sollte nicht passieren
                 statusMessage = string.Empty;
                 return false;
@@ -183,7 +183,7 @@ public static class StatusEffectService
             case StatusEffectEnum.FrostBurn:
                 return TriggerFrostBurn(bagBeastObject, out statusMessage);
 
-            case default:
+            default:
                 statusMessage = string.Empty;
                 return false;
         }

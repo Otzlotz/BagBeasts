@@ -30,13 +30,12 @@ public class Battle
 
     public void BattleInit(CancellationToken ct)
     {
-        var effectService = new StatusEffectService();
 
-        var switching = new Switch();
-        switching.SwitchOut(Player1Beast, TeamPlayer1);
+        var switching1 = new Switch();
+        switching1.SwitchOut(Player1Beast, TeamPlayer1);
 
-        var switching = new Switch();
-        switching.SwitchOut(Player2Beast, TeamPlayer2);
+        var switching2 = new Switch();
+        switching2.SwitchOut(Player2Beast, TeamPlayer2);
 
         while (!ct.IsCancellationRequested)
         {
@@ -64,7 +63,7 @@ public class Battle
                 var scarf = (ChoiceScarf)Player1Beast.HeldItem;
                 scarf.ItemEffect(Player1Beast, SelectedPlayer1Move);
 
-                initiativePlayer1 *= 1.5;
+                initiativePlayer1 = Convert.ToInt32(initiativePlayer1 * 1.5);
             }
 
             if (Player2Beast.HeldItem is ChoiceScarf)
@@ -72,7 +71,7 @@ public class Battle
                 var scarf = (ChoiceScarf)Player2Beast.HeldItem;
                 scarf.ItemEffect(Player2Beast, SelectedPlayer1Move);
 
-                initiativePlayer2 *= 1.5;
+                initiativePlayer2 = Convert.ToInt32(initiativePlayer2 * 1.5);
             }
 
             if (TurnOrder(SelectedPlayer1Move.Prio, SelectedPlayer2Move.Prio, initiativePlayer1, initiativePlayer2))
@@ -120,7 +119,7 @@ public class Battle
                 || Player1Beast.StatusEffect == StatusEffectEnum.Toxic)
                     && Player1Beast.StatusEffect != StatusEffectEnum.EternalEep)
             {
-                effectService.TriggerStatusEffect(Player1Beast, out string statusMessage);
+                StatusEffectService.TriggerStatusEffect(Player1Beast, out string statusMessage);
             }
 
             if ((Player2Beast.StatusEffect == StatusEffectEnum.Burn
@@ -129,7 +128,7 @@ public class Battle
                 || Player2Beast.StatusEffect == StatusEffectEnum.Toxic)
                     && Player2Beast.StatusEffect != StatusEffectEnum.EternalEep)
             {
-                effectService.TriggerStatusEffect(Player2Beast, out string statusMessage);
+                StatusEffectService.TriggerStatusEffect(Player2Beast, out string statusMessage);
             }
         }
     }
@@ -166,9 +165,8 @@ public class Battle
             }
         }
 
-        var effectService = new StatusEffectService();
 
-        if ((executingBeast.StatusEffect == StatusEffectEnum.Paralysis || executingBeast.StatusEffect == StatusEffectEnum.Eep) && effectService.TriggerStatusEffect(executingBeast, out string statusMessage))
+        if ((executingBeast.StatusEffect == StatusEffectEnum.Paralysis || executingBeast.StatusEffect == StatusEffectEnum.Eep) && StatusEffectService.TriggerStatusEffect(executingBeast, out string statusMessage))
         {
             return statusMessage;
         }
@@ -177,7 +175,7 @@ public class Battle
         // return;
         //}
         
-        if (effectService.TriggerConfusion(executingBeast, out string confusionMessage))
+        if (StatusEffectService.TriggerConfusion(executingBeast, out string confusionMessage))
         {
             if (confusionMessage != string.Empty)
             {
@@ -192,24 +190,27 @@ public class Battle
             turnResult = turnResult + "\n" + confusionMessage;
         }
 
-        if (selectedMove.Execute(executingBeast, defendingBeast, out string executeMessage) == false)
+        if (selectedMove is MoveBase selectedMoveBase)
         {
-            turnResult = turnResult + executeMessage;
-            return turnResult;
-        }
+            if (selectedMoveBase.Execute(executingBeast, defendingBeast, out string executeMessage).MoveHit == false)
+            {
+                turnResult = turnResult + "\n" + executeMessage;
+                return turnResult;
+            }
 
-        turnResult = turnResult + "\n" + executeMessage;
+            turnResult = turnResult + "\n" + executeMessage;
 
-        //TODO: switch in Effekte bei U-Turn
+            //TODO: switch in Effekte bei U-Turn
 
-        if (defendingBeast.Ability is HitTakenAbilityBase ability)
-        {
-            turnResult = turnResult + ability.AbilityEffect(ref executingBeast, ref defendingBeast, selectedMove);
-        }
+            if (defendingBeast.Ability is HitTakenAbilityBase ability)
+            {
+                turnResult = turnResult + ability.AbilityEffect(ref executingBeast, ref defendingBeast, selectedMoveBase);
+            }
 
-        if (defendingBeast.HeldItem is HitTakenItemBase item)
-        {
-            turnResult = turnResult + item.ItemEffect(executingBeast, defendingBeast, selectedMove);
+            if (defendingBeast.HeldItem is HitTakenItemBase item)
+            {
+                turnResult = turnResult + item.ItemEffect(executingBeast, defendingBeast, selectedMoveBase);
+            }
         }
 
         return turnResult;

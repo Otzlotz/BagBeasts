@@ -13,6 +13,7 @@ public abstract class RockyHelmet : HitTakenItemBase
             attackingBeast.CurrentHP -= attackingBeast.MAXHP / 8;
             return $"{attackingBeast.Name} was hurt by {holderBeast.Name}'s {holderBeast.HeldItem.Name}."; 
         }
+        return string.Empty;
     }
 
     #endregion //Methods

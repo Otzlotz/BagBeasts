@@ -34,24 +34,24 @@ public class Switch : ActionBase
 
             if (switchInBeast.HeldItem is AssaultVest)
             {
-                if (holderBeast.Move1.Move.Category == Category.Status)
+                if (switchInBeast.Move1.Move.Category == Category.Status)
                 {
-                    holderBeast.Move1.Lock = true;
+                    switchInBeast.Move1.Lock = true;
                 }
         
-                if (holderBeast.Move2.Move.Category == Category.Status)
+                if (switchInBeast.Move2.Move.Category == Category.Status)
                 {
-                    holderBeast.Move2.Lock = true;
+                    switchInBeast.Move2.Lock = true;
                 }
         
-                if (holderBeast.Move3.Move.Category == Category.Status)
+                if (switchInBeast.Move3.Move.Category == Category.Status)
                 {
-                    holderBeast.Move3.Lock = true;
+                    switchInBeast.Move3.Lock = true;
                 }
         
-                if (holderBeast.Move4.Move.Category == Category.Status)
+                if (switchInBeast.Move4.Move.Category == Category.Status)
                 {
-                    holderBeast.Move4.Lock = true;
+                    switchInBeast.Move4.Lock = true;
                 }
             }
         }

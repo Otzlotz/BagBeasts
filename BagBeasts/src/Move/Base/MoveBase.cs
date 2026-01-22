@@ -36,7 +36,7 @@ public abstract class MoveBase : ActionBase
     /// <param name="switchInBeast">Optional: Babbeast, welches durch die Attacke (nach dem Angriff) eingewechselt wird</param>
     /// <param name="moveExecuteMessage">OUT: Message der ausführung des Move</param>
     /// <returns>true: Angriff hat getroffen | false: Angriff hat nicht getroffen</returns>
-    public abstract bool Execute(BagBeastObject executingBeast, BagBeastObject defendingBeast, BagBeastObject? switchInBeast = null, out string moveExecuteMessage);
+    public abstract bool Execute(BagBeastObject executingBeast, BagBeastObject defendingBeast, out string moveExecuteMessage, BagBeastObject? switchInBeast = null);
 
     /// <summary>
     /// Initialisiert die Aktion mit ihren Daten aus der Datenbank
@@ -46,7 +46,7 @@ public abstract class MoveBase : ActionBase
     {
         base.Init(fromDB);
 
-        Description = fromDB.Description.Value;
+        Description = fromDB.Description;
         Damage = (uint)fromDB.Dmg.Value;
         Accuracy = (uint?)fromDB.Acc;
         CritChanceTier = (uint)fromDB.CritChanceTier.Value;
@@ -70,7 +70,7 @@ public abstract class MoveBase : ActionBase
     /// <param name="executeHitMessage">OUT: Hit Message</param>
     protected void ExcecuteHit(BagBeastObject executingBeast, BagBeastObject defendingBeast, MoveBase move, int damage, out string executeHitMessage)
     {
-        moveHitMessage = string.Empty;
+        executeHitMessage = string.Empty;
         defendingBeast.CurrentHP =- damage;
 
         // TODO: Diese neue Itembase von Tobias für FocusSash hier einbauen. defendingBeast.CurrentHP darf nicht davor auf 0 gesetzt werden!

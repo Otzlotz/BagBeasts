@@ -1,6 +1,9 @@
 ﻿@using src.Beast;
+@using BagBeasts.src.Database;
+@using System.Text.Json;
 @page "/creator"
-@attribute [StreamRendering]
+@rendermode InteractiveServer
+@inject IJSRuntime JS
 
 <PageTitle>TeamCreator</PageTitle>
 
@@ -8,41 +11,148 @@
 
 <p>The Team creator</p>
 
-@if (bagbeasts != null)
+@if (isLoading)
 {
     <p><em>Loading...</em></p>
 }
 else
 {
-    <table class="table">
-        <thead>
-            <tr>
-                <th>BagBeasts</th>
-                <th aria-label="label1">Temp. (C)</th>
-                <th aria-label="label2">Temp. (F)</th>
-                <th>Summary</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (BagBeast beast in bagbeasts)
-            {
-                <tr>
-                    <td>@beast.Name</td>
-                    <td>@beast.ID</td>
-                    <td>@beast.Type1</td>
-                    <td>@beast.Type2 ?? @string.Empty</td>
-                </tr>
-            }
-        </tbody>
-    </table>
-}
-@code {
-    private List<BagBeast>? bagbeasts;
+    <div class="row">
+        <div class="col-md-8">
+            <h3>Alle BagBeasts</h3>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Select</th>
+                        <th>BagBeasts</th>
+                        <th aria-label="label1">Name</th>
+                        <th aria-label="label2">Type</th>
+                        <th aria-label="label3">Second Type</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (bagbeasts != null)
+                    {
+                        @foreach (BagBeast beast in bagbeasts)
+                        {
+                            <tr>
+                                <td>
+                                    <button class="btn btn-sm @(selectedBeasts.Any(b => b.ID == beast.ID) ? "btn-success" : "btn-outline-success")"
+                                            @onclick="@(() => ToggleSelection(beast))"
+                                            disabled="@(selectedBeasts.Count >= 6 && !selectedBeasts.Any(b => b.ID == beast.ID))">
+                                        @(selectedBeasts.Any(b => b.ID == beast.ID) ? "✓" : "+")
+                                    </button>
+                                </td>
+                                <td>@beast.ID</td>
+                                <td>@beast.Name</td>
+                                <td>@beast.Type1.Name</td>
+                                <td>@beast.Type2?.Name</td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if(firstRender){
-            //bagbeasts.Add(
+        <div class="col-md-4">
+            <h3>Team (@selectedBeasts.Count/6)</h3>
+            @if (selectedBeasts.Count > 0)
+            {
+                <table class="table table-sm">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Type1</th>
+                            <th>Type2</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (BagBeast beast in selectedBeasts)
+                        {
+                            <tr>
+                                <td>@beast.Name</td>
+                                <td>@beast.Type1.Name</td>
+                                <td>@beast.Type2?.Name</td>
+                                <td>
+                                    <button class="btn btn-sm btn-danger" @onclick="@(() => ToggleSelection(beast))">Remove</button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+                @if (!string.IsNullOrEmpty(errorMessage))
+                {
+                    <div class="alert alert-danger" role="alert">
+                        @errorMessage
+                    </div>
+                }
+                <button class="btn btn-primary w-100 mt-3" @onclick="DownloadTeamAsJson">Download Team (JSON)</button>
             }
+            else
+            {
+                <p class="text-muted">Wähle bis zu 6 BagBeasts aus</p>
+            }
+        </div>
+    </div>
+}
+
+@code {
+    private List<BagBeast> bagbeasts = new();
+    private List<BagBeast> selectedBeasts = new();
+    private bool isLoading = true;
+    private string errorMessage = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        bagbeasts = Datareader.GetBagBeasts();
+        isLoading = false;
+    }
+
+    private void ToggleSelection(BagBeast beast)
+    {
+        var existingBeast = selectedBeasts.FirstOrDefault(b => b.ID == beast.ID);
+        
+        if (existingBeast != null)
+        {
+            selectedBeasts.Remove(existingBeast);
+        }
+        else if (selectedBeasts.Count < 6)
+        {
+            selectedBeasts.Add(beast);
+        }
+        
+        StateHasChanged();
+    }
+
+    private async Task DownloadTeamAsJson()
+    {
+        try
+        {
+            errorMessage = string.Empty;
+
+            var team = selectedBeasts.Select(b => new
+            {
+                b.ID,
+                b.Name,
+                Type1 = b.Type1.Name,
+                Type2 = b.Type2?.Name ?? "",
+                b.HP,
+                b.ATK,
+                b.SPA,
+                b.DEF,
+                b.SPD,
+                b.INT
+            }).ToList();
+
+            var json = JsonSerializer.Serialize(team, new JsonSerializerOptions { WriteIndented = true });
+            var bytes = System.Text.Encoding.UTF8.GetBytes(json);
+
+            await JS.InvokeVoidAsync("downloadFile", bytes, "team.json", "application/json");
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Download fehlgeschlagen: {ex.Message}";
+        }
     }
 }

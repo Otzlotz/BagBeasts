@@ -12,7 +12,7 @@ public class Struggle : MoveBase
     #region Methods
 
     /// <inheritdoc/>
-    public override bool Execute(BagBeastObject executingBeast, BagBeastObject defendingBeast, BagBeastObject? switchInBeast = null, out string moveExecuteMessage)
+    public override bool Execute(BagBeastObject executingBeast, BagBeastObject defendingBeast, out string moveExecuteMessage, BagBeastObject? switchInBeast = null)
     {
         // Prüfen, ob ein Krit ausgelöst wird
         bool critTriggered = BattleCalculationService.CritTriggered(CritChanceTier, out string critMessage);

@@ -14,14 +14,14 @@ public class Splash : MoveBase
 
     #region Properties
 
-    private Random Rnd = _rnd ??= new Random();
+    private Random Rnd => _rnd ??= new Random();
 
     #endregion // Properties
 
     #region Methods
 
     /// <inheritdoc/>
-    public override bool Execute(BagBeastObject executingBeast, BagBeastObject defendingBeast, BagBeastObject? switchInBeast = null, out string moveExecuteMessage)
+    public override bool Execute(BagBeastObject executingBeast, BagBeastObject defendingBeast, out string moveExecuteMessage, BagBeastObject? switchInBeast = null)
     {
         PP--;
 

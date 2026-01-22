@@ -8,18 +8,6 @@ namespace src.StatusEffect;
 /// </summary>
 public static class StatusEffectService
 {
-    #region Fields
-
-    private Random _rnd;
-
-    #endregion // Fields
-
-    #region Properties
-
-    private Random Rnd = _rnd ??= new Random();
-
-    #endregion // Properties
-
     #region Public Methods
 
     #region Primary Status
@@ -31,6 +19,7 @@ public static class StatusEffectService
     /// <param name="statusMessage">OUT: Message was passiert (string.Empty, wenn nichts passiert)</param>
     public static void RemoveStatusEffect(BagBeastObject bagBeastObject, out string statusMessage)
     {
+        statusMessage = string.Empty;
         switch (bagBeastObject.StatusEffect)
         {
             case StatusEffectEnum.Eep:
@@ -56,10 +45,6 @@ public static class StatusEffectService
             case StatusEffectEnum.FrostBurn:
                 statusMessage = $"{bagBeastObject.Name} frostburn was removed!";
                 break;
-
-            case default:
-                statusMessage = string.Empty;
-                return;
         }
 
         bagBeastObject.StatusEffect = StatusEffectEnum.No;
@@ -88,6 +73,7 @@ public static class StatusEffectService
             case StatusEffectEnum.Eep:
                 // Schläft 1 - 3 Runden
                 bagBeastObject.StatusEffect = StatusEffectEnum.Eep;
+                Random Rnd = new();
                 bagBeastObject.StatusCounter = Rnd.Next(2, 4);
                 statusMessage = $"{bagBeastObject.Name} makes a wittle nappy :3";
                 return true;
@@ -117,11 +103,9 @@ public static class StatusEffectService
                 bagBeastObject.StatusEffect = StatusEffectEnum.FrostBurn;
                 statusMessage = $"{bagBeastObject.Name} was burned (but in cool)!";
                 return true;
-
-            case default:
-                statusMessage = string.Empty;
-                return false;
         }
+        statusMessage = string.Empty;
+        return false;
     }
 
     /// <summary>
@@ -154,11 +138,9 @@ public static class StatusEffectService
 
             case StatusEffectEnum.FrostBurn:
                 return TriggerFrostBurn(bagBeastObject, out statusMessage);
-
-            case default:
-                statusMessage = string.Empty;
-                return false;
         }
+        statusMessage = string.Empty;
+        return false;
     }
 
     /// <summary>
@@ -216,6 +198,7 @@ public static class StatusEffectService
         }
 
         // Muss 2 - 5 Runden halten (muss also eine Random Zahl von 3 - 6 Berechnen)
+        Random Rnd = new();
         bagBeastObject.Confusion = Rnd.Next(3, 6);
 
         return true;
@@ -305,6 +288,7 @@ public static class StatusEffectService
         statusMessage = $"{bagBeastObject.Name} is paralysed!";
 
         // 25% Chance nicht anzugreifen
+        Random Rnd = new();
         if (Rnd.Next(1, 4) == 1)
         {
             statusMessage = statusMessage + "\n" + $"{bagBeastObject.Name} is unable to move!";
@@ -328,7 +312,8 @@ public static class StatusEffectService
 
         // TODO: Abrunden auf ganze Zahl und mindestens 1 schaden
 
-        bagBeastObject.CurrentHP =- damage;
+        bagBeastObject.CurrentHP =- (int)Math.Round(damage, MidpointRounding.ToZero);
+        
 
         statusMessage = $"{bagBeastObject.Name} was hurt by poison!";
 
@@ -353,7 +338,7 @@ public static class StatusEffectService
 
         // TODO: Abrunden auf ganze Zahl und mindestens 1 schaden
 
-        bagBeastObject.CurrentHP =- damage;
+        bagBeastObject.CurrentHP =-(int)Math.Round(damage, MidpointRounding.ToZero);
 
         statusMessage = $"{bagBeastObject.Name} was hurt by strong poison!";
 
@@ -378,7 +363,7 @@ public static class StatusEffectService
 
         // TODO: Abrunden auf ganze Zahl und mindestens 1 schaden
 
-        bagBeastObject.CurrentHP =- damage;
+        bagBeastObject.CurrentHP =- (int)Math.Round(damage, MidpointRounding.ToZero);
 
         statusMessage = $"{bagBeastObject.Name} was hurt by burn!";
 
@@ -403,7 +388,7 @@ public static class StatusEffectService
 
         // TODO: Abrunden auf ganze Zahl und mindestens 1 schaden
 
-        bagBeastObject.CurrentHP =- damage;
+        bagBeastObject.CurrentHP =-(int)Math.Round(damage, MidpointRounding.ToZero);
 
         statusMessage = $"{bagBeastObject.Name} was hurt by burn (but cooler)!";
 

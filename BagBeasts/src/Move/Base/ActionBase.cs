@@ -22,8 +22,8 @@ public abstract class ActionBase
     /// <param name="fromDB">Datenbankobjekt</param>
     public virtual void Init(BagBeasts.Move fromDB)
     {
-        ID = (int)fromDB.Id;
-        Name = fromDB.Name.Value;
+        ID = (uint)fromDB.Id;
+        Name = fromDB.Name;
         Prio = fromDB.Prio.Value;
     }
 

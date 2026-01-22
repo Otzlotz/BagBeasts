@@ -1,5 +1,6 @@
 ﻿using BagBeasts.src.Beast;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query;
 using System;
 using System.Data.Common;
 using System.Diagnostics;
@@ -11,36 +12,35 @@ namespace BagBeasts.src.Database
     /// <summary>
     /// Reader der Postgres Datenbank
     /// </summary>
-    public class Datareader
+    public static class Datareader
     {
-        /// <summary>
+        /// <summary>s
         /// Holt sich alle Bagbeasts von der Datenbank
         /// </summary>
         /// <returns></returns>
-        public List<BagBeast> GetBagBeasts()
+        public static List<BagBeast> GetBagBeasts()
         {
             try
             {
                 using (PostgresContext context = new PostgresContext())
                 {
+                    var typesDict = context.Types.ToDictionary(t => t.Id);
+
+                    List<Bagbeasts> query = context.Bagbeasts.ToList();
+
                     List<BagBeast> retval = new();
-                    foreach (var beast in context.Bagbeasts)
+                    foreach (var beast in query)
                     {
-                        Type typ1 = new Type
+                        // Type1 aus dem Dictionary mit Name holen
+                        Type typ1 = typesDict[beast.Type1];
+
+                        if (beast.Type2 != null && typesDict.TryGetValue(beast.Type2.Value, out var typ2))
                         {
-                            Id = beast.Type1
-                        };
-                        if (beast.Type2 != null)
-                        {
-                            Type typ2 = new Type
-                            {
-                                Id = beast.Type2.Value
-                            };
-                            retval.Add(new BagBeast(beast.Name, beast.Hp, beast.Atk, beast.Spa, beast.Def, beast.Spd, beast.Initiative, typ1, typ2));
+                            retval.Add(new BagBeast(beast.Name, beast.Hp, beast.Atk, beast.Spa, beast.Def, beast.Spd, beast.Initiative, typ1, typ2, beast.Id));
                         }
                         else
                         {
-                            retval.Add(new BagBeast(beast.Name, beast.Hp, beast.Atk, beast.Spa, beast.Def, beast.Spd, beast.Initiative, typ1));
+                            retval.Add(new BagBeast(beast.Name, beast.Hp, beast.Atk, beast.Spa, beast.Def, beast.Spd, beast.Initiative, typ1, id: beast.Id));
                         }
                     }
                     return retval;
@@ -57,7 +57,7 @@ namespace BagBeasts.src.Database
         /// Holt sich alle Abilities von der Datenbank
         /// </summary>
         /// <returns>Liste der Abilities</returns>
-        public List<Ability> GetAblities()
+        public static List<Ability> GetAblities()
         {
             try
             {
@@ -82,7 +82,7 @@ namespace BagBeasts.src.Database
         /// Holt sich alle Moves von der Datenbank
         /// </summary>
         /// <returns>Liste der Moves</returns>
-        public List<Move> GetMoves()
+        public static List<Move> GetMoves()
         {
             try
             {
@@ -108,7 +108,7 @@ namespace BagBeasts.src.Database
         /// </summary>
         /// <param name="referenz">BeagBeast</param>
         /// <returns>Liste der Moves</returns>
-        public List<Move> GetMovesRef(BagBeast referenz)
+        public static List<Move> GetMovesRef(BagBeast referenz)
         {
             try
             {
@@ -133,7 +133,7 @@ namespace BagBeasts.src.Database
         /// Holt alle Items von der Datenbank
         /// </summary>
         /// <returns>Liste der Items</returns>
-        public List<Item> GetItems()
+        public static List<Item> GetItems()
         {
             try
             {

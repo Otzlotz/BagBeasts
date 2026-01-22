@@ -1,9 +1,9 @@
 using src.Move.Base;
-using src.Battle;
+using src.StatusEffect;
 
 namespace src.Move.TMs;
 
-public class Crunch : MoveBase
+public class Thunder : MoveBase
 {
     /// <inheritdoc/>
     public override ExecuteResult Execute(BagBeastObject executingBeast, BagBeastObject defendingBeast, out string moveExecuteMessage, BagBeastObject? switchInBeast = null)
@@ -12,10 +12,10 @@ public class Crunch : MoveBase
 
         if (executeResult.MoveHit)
         {
-            // 20% Chance Verteidigung des Gegner um 1 zu senken
-            if (Rnd.Next(1, 100) <= 20)
+            // 30% Chance Paralyse zuzufügen (wenn es Fehlschlägt muss die Message nicht hinzugefügt werden!)
+            if (Rnd.Next(1, 100) <= 30 && StatusEffectService.TryApplyStatusEffekt(defendingBeast, StatusEffectEnum.Paralysis, out string statusMessage))
             {
-                moveExecuteMessage += "\n" + StatChangeService.ChangeDef(defendingBeast, -1);
+                moveExecuteMessage += "\n" + statusMessage;
             }
         }
 

@@ -71,7 +71,7 @@ public static class StatChangeService
     /// <param name="effectedBagBeast">Bewirktes BagBeast</param>
     /// <param name="changeValue">Um wie viel der Wert verändert wird (+ und - geht beides)</param>
     /// <returns>Message des Statchange</returns>
-    public static void ChangeSpd(BagBeastObject effectedBagBeast, int changeValue)
+    public static string ChangeSpd(BagBeastObject effectedBagBeast, int changeValue)
     {
         return ChangeStat(effectedBagBeast, changeValue, StatType.SPD);
     }
@@ -82,7 +82,7 @@ public static class StatChangeService
     /// <param name="effectedBagBeast">Bewirktes BagBeast</param>
     /// <param name="changeValue">Um wie viel der Wert verändert wird (+ und - geht beides)</param>
     /// <returns>Message des Statchange</returns>
-    public static void ChangeInt(BagBeastObject effectedBagBeast, int changeValue)
+    public static string ChangeInt(BagBeastObject effectedBagBeast, int changeValue)
     {
         return ChangeStat(effectedBagBeast, changeValue, StatType.INT);
     }
@@ -93,7 +93,7 @@ public static class StatChangeService
     /// <param name="effectedBagBeast">Bewirktes BagBeast</param>
     /// <param name="changeValue">Um wie viel der Wert verändert wird (+ und - geht beides)</param>
     /// <returns>Message des Statchange</returns>
-    public static void ChangeAcc(BagBeastObject effectedBagBeast, int changeValue)
+    public static string ChangeAcc(BagBeastObject effectedBagBeast, int changeValue)
     {
         return ChangeStat(effectedBagBeast, changeValue, StatType.ACC);
     }
@@ -104,7 +104,7 @@ public static class StatChangeService
     /// <param name="effectedBagBeast">Bewirktes BagBeast</param>
     /// <param name="changeValue">Um wie viel der Wert verändert wird (+ und - geht beides)</param>
     /// <returns>Message des Statchange</returns>
-    public static void ChangeDodge(BagBeastObject effectedBagBeast, int changeValue)
+    public static string ChangeDodge(BagBeastObject effectedBagBeast, int changeValue)
     {
         return ChangeStat(effectedBagBeast, changeValue, StatType.DODGE);
     }
@@ -236,7 +236,9 @@ public static class StatChangeService
                 effectedBagBeast.StatChange.DODGE += changeValue;
         }
 
-        return changeValue > 0 ? $"{statName} was raised by {changeValue} stages!" : $"{statName} was lowered by {changeValue * -1} stages!";
+        return changeValue > 0 
+        ? $"{statName} of {effectedBagBeast.Name} was raised by {changeValue} stages!" 
+        : $"{statName} od {effectedBagBeast.Name} was lowered by {changeValue * -1} stages!";
     }
 
     /// <summary>

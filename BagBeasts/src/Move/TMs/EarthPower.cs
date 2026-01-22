@@ -12,10 +12,10 @@ public class Crunch : MoveBase
 
         if (executeResult.MoveHit)
         {
-            // 20% Chance Verteidigung des Gegner um 1 zu senken
-            if (Rnd.Next(1, 100) <= 20)
+            // 10% Chance Spezial Verteidigung des Gegner um 1 zu senken
+            if (Rnd.Next(1, 100) <= 10)
             {
-                moveExecuteMessage += "\n" + StatChangeService.ChangeDef(defendingBeast, -1);
+                moveExecuteMessage += "\n" + StatChangeService.ChangeSpd(defendingBeast, -1);
             }
         }
 

@@ -1,10 +1,9 @@
 using src.Battle;
 using src.Move.Base;
-using src.StatusEffect;
 
 namespace src.Move.TMs;
 
-public class Splash : MoveBase
+public class Endeavor : MoveBase
 {
     #region Methods
 
@@ -22,13 +21,18 @@ public class Splash : MoveBase
             return new ExecuteResult(false);
         }
 
-        // Random ermitteln, welcher Statuseffekt ausgelöst wird
-        StatusEffectEnum statusEffect = (StatusEffectEnum)Rnd.Next(2, 7);
+        // Versuchen die HP des Gegner auf die eigenen zu senken
+        if (defendingBeast.CurrentHP <= executingBeast.CurrentHP)
+        {
+            moveExecuteMessage += "\n" + $"{Name} failed!";
+        }
+        else
+        {
+            int damage = executingBeast.CurrentHP - defendingBeast.CurrentHP;
+            ExcecuteHit(executingBeast, defendingBeast, this, damage, out string executeHitMessage);
+        }
 
-        bool moveHit = StatusEffectService.TryApplyStatusEffekt(defendingBeast, statusEffect, out string statusMessage);
-        moveExecuteMessage += "\n" + statusMessage;
-
-        return new ExecuteResult(moveHit);
+        return new ExecuteResult(true);
     }
 
     #endregion // Methods

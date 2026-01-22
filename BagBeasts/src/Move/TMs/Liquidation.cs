@@ -3,7 +3,7 @@ using src.Battle;
 
 namespace src.Move.TMs;
 
-public class Crunch : MoveBase
+public class Liquidation : MoveBase
 {
     /// <inheritdoc/>
     public override ExecuteResult Execute(BagBeastObject executingBeast, BagBeastObject defendingBeast, out string moveExecuteMessage, BagBeastObject? switchInBeast = null)

@@ -1,22 +1,27 @@
 using src.Move.Base;
+using src.StatusEffect;
 using src.Battle;
 
 namespace src.Move.TMs;
 
-public class Crunch : MoveBase
+public class KnockOff : MoveBase
 {
     /// <inheritdoc/>
     public override ExecuteResult Execute(BagBeastObject executingBeast, BagBeastObject defendingBeast, out string moveExecuteMessage, BagBeastObject? switchInBeast = null)
     {
+        if (defendingBeast.HeldItem != null)
+        {
+            Damage += 30;
+        }
+
         ExecuteResult executeResult = base.Execute(executingBeast, defendingBeast, out moveExecuteMessage, switchInBeast);
 
-        if (executeResult.MoveHit)
+        if (defendingBeast.HeldItem != null)
         {
-            // 20% Chance Verteidigung des Gegner um 1 zu senken
-            if (Rnd.Next(1, 100) <= 20)
-            {
-                moveExecuteMessage += "\n" + StatChangeService.ChangeDef(defendingBeast, -1);
-            }
+            Damage -= 30;
+
+            // TODO: Wenn der Gegner Delegator aktiv hat, dann soll das Item nicht Entfernt werden
+            defendingBeast.HeldItem = null;
         }
 
         return executeResult;

@@ -2,14 +2,17 @@ using src.Move.Base;
 using src.Item.ItemBase;
 
 namespace src.Item.ItemBase;
-public abstract class AssaultVest : StatChangeItemBase
+public abstract class AssaultVest : DamageReductionItemBase
 {
     #region Methods
 
-    public override int ItemEffect(BagBeastObject holderBeast, int modifyingStat)
+    public override int ItemEffect(BagBeastObject holderBeast, BagBeastObject attackingBeast, MoveBase attackingMove, ref decimal damage)
     {
-        var resultStat = modifyingStat * 1.5;
-        
+        if (attackingMove.Category == Category.Special)
+        {
+            damage = damage * 2/3;
+        }
+
         if (holderBeast.Move1.Move.Category == Category.Status)
         {
             holderBeast.Move1.Lock = true;

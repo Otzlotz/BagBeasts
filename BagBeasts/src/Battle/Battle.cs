@@ -32,15 +32,50 @@ public class Battle
     {
         var effectService = new StatusEffectService();
 
+        var switching = new Switch();
+        switching.SwitchOut(Player1Beast, TeamPlayer1);
+
+        var switching = new Switch();
+        switching.SwitchOut(Player2Beast, TeamPlayer2);
+
         while (!ct.IsCancellationRequested)
         {
             // TODO: DO
            //SelectedPlayer1Move = Select();
            //SelectedPlayer2Move = Select();
+           // wenn ein Beast tot auswechsel
+           if (Player1Beast.StatusEffect == StatusEffectEnum.EternalEep)
+            {
+                var switching = new Switch();
+                switching.SwitchOut(Player1Beast, TeamPlayer1);
+            }
 
-           
+            if (Player2Beast.StatusEffect == StatusEffectEnum.EternalEep)
+            {
+                var switching = new Switch();
+                switching.SwitchOut(Player2Beast, TeamPlayer2);
+            }
 
-            if (TurnOrder(SelectedPlayer1Move.Prio, SelectedPlayer2Move.Prio, Player1Beast.INT, Player2Beast.INT))
+            int initiativePlayer1 = Player1Beast.INT;
+            int initiativePlayer2 = Player2Beast.INT;
+            
+            if (Player1Beast.HeldItem is ChoiceScarf)
+            {
+                var scarf = (ChoiceScarf)Player1Beast.HeldItem;
+                scarf.ItemEffect(Player1Beast, SelectedPlayer1Move);
+
+                initiativePlayer1 *= 1.5;
+            }
+
+            if (Player2Beast.HeldItem is ChoiceScarf)
+            {
+                var scarf = (ChoiceScarf)Player2Beast.HeldItem;
+                scarf.ItemEffect(Player2Beast, SelectedPlayer1Move);
+
+                initiativePlayer2 *= 1.5;
+            }
+
+            if (TurnOrder(SelectedPlayer1Move.Prio, SelectedPlayer2Move.Prio, initiativePlayer1, initiativePlayer2))
             {
                 Turn(Player1Beast, Player2Beast, SelectedPlayer1Move, SelectedPlayer2Move);
 
@@ -163,7 +198,7 @@ public class Battle
             return turnResult;
         }
 
-        turnResult = turnResult + executeMessage;
+        turnResult = turnResult + "\n" + executeMessage;
 
         //TODO: switch in Effekte bei U-Turn
 

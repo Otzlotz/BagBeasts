@@ -1,7 +1,7 @@
 
 
 using src.StatusEffect;
-
+using src.Item.ItemBase;
 namespace src.Move.Base;
 
 
@@ -9,15 +9,18 @@ public class Switch : ActionBase
 {
     #region Methods
 
-    public BagBeastObject SwitchOut(BagBeastObject executingBeast, List<BagBeastObject> team)
+    public BagBeastObject SwitchOut(BagBeastObject? executingBeast, List<BagBeastObject> team)
     {
-        // TODO: Auf Robin warten um zu wissen was hier rein muss
-        executingBeast.Move1.Lock = false;
-        executingBeast.Move2.Lock = false;
-        executingBeast.Move3.Lock = false;
-        executingBeast.Move4.Lock = false;
+        if (executingBeast != null)
+        {
+            // TODO: Auf Robin warten um zu wissen was hier rein muss
+            executingBeast.Move1.Lock = false;
+            executingBeast.Move2.Lock = false;
+            executingBeast.Move3.Lock = false;
+            executingBeast.Move4.Lock = false;
 
-        executingBeast.Confusion = 0;
+            executingBeast.Confusion = 0;
+        }
 
         BagBeastObject switchInBeast = executingBeast;
 
@@ -28,6 +31,29 @@ public class Switch : ActionBase
         {
             //TODO: GetUserInput
             switchInBeast = team[userInput - 1];
+
+            if (switchInBeast.HeldItem is AssaultVest)
+            {
+                if (holderBeast.Move1.Move.Category == Category.Status)
+                {
+                    holderBeast.Move1.Lock = true;
+                }
+        
+                if (holderBeast.Move2.Move.Category == Category.Status)
+                {
+                    holderBeast.Move2.Lock = true;
+                }
+        
+                if (holderBeast.Move3.Move.Category == Category.Status)
+                {
+                    holderBeast.Move3.Lock = true;
+                }
+        
+                if (holderBeast.Move4.Move.Category == Category.Status)
+                {
+                    holderBeast.Move4.Lock = true;
+                }
+            }
         }
 
         return switchInBeast;

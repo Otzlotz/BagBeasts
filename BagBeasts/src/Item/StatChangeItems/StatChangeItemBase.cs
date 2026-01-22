@@ -6,7 +6,7 @@ public abstract class StatChangeItemBase : ItemBase
 {
     #region Methods
 
-    public abstract int ItemEffect(int modifyingStat);
+    public abstract int ItemEffect(BagBeastObject holderBeast, int modifyingStat);
 
     #endregion //Methods
 }

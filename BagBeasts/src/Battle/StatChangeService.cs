@@ -210,30 +210,37 @@ public static class StatChangeService
     /// <returns>Message des Statchange</returns>
     private static string ChangeStatDirect(BagBeastObject effectedBagBeast, int changeValue, StatType statType)
     {
-        string statName = {GetStatName(statType)};
+        string statName = GetStatName(statType);
 
         switch (statType)
         {
             case StatType.ATK:
                 effectedBagBeast.StatChange.ATK += changeValue;
+                break;
 
             case StatType.SPA:
                 effectedBagBeast.StatChange.SPA += changeValue;
+                break;
 
             case StatType.DEF:
                 effectedBagBeast.StatChange.DEF += changeValue;
+                break;
 
             case StatType.SPD:
                 effectedBagBeast.StatChange.SPD += changeValue;
+                break;
 
             case StatType.INT:
                 effectedBagBeast.StatChange.INT += changeValue;
+                break;
 
             case StatType.ACC:
                 effectedBagBeast.StatChange.ACC += changeValue;
+                break;
 
             case StatType.DODGE:
                 effectedBagBeast.StatChange.DODGE += changeValue;
+                break;
         }
 
         return changeValue > 0 

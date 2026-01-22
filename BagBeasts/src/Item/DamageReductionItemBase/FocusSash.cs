@@ -16,6 +16,7 @@ public class FocusSash : DamageReductionItemBase
 
             return $"Fokussash was used.\n{holderBeast.Name} survived the hit because of Fokussash.";
         }
+        return string.Empty;
     }
 
 

@@ -13,6 +13,7 @@ public class RoughSkin : HitTakenAbilityBase
             attackingBeast.CurrentHP -= attackingBeast.MAXHP / 8;
             return $"{attackingBeast.Name} was hurt by {holderBeast.Name}'s {holderBeast.Ability.Name}."; 
         }
+        return string.Empty;
     }
 
     #endregion //Methods

@@ -11,7 +11,7 @@ public abstract class MoveBase : ActionBase
 
     #region Fields
 
-    private Random _rnd;
+    private static Random _rnd;
 
     #endregion // Fields
 
@@ -124,14 +124,14 @@ public abstract class MoveBase : ActionBase
         if (LifeSteal > 0)
         {
             // TODO: Der Lifesteal hier muss vermutlich gerundet werden
-            executingBeast.CurrentHP += damage / 100 * LifeSteal;
+            executingBeast.CurrentHP += Convert.ToInt32(damage / 100 * LifeSteal);
         }
 
         // Recoil
         if (RecoilBasedOnOwnHp > 0)
         {
             // TODO: Runden?
-            executingBeast.CurrentHP =- executingBeast.MAXHP / 100 * RecoilBasedOnOwnHp;
+            executingBeast.CurrentHP =- Convert.ToInt32(executingBeast.MAXHP / 100 * RecoilBasedOnOwnHp);
             moveExecuteMessage += "\n" + $"{executingBeast.Name} was damaged by recoil!";
 
             if (executingBeast.CurrentHP == 0)
@@ -143,7 +143,7 @@ public abstract class MoveBase : ActionBase
         if (RecoilBasedOnDmgDealt > 0)
         {
             // TODO: Runden?
-            executingBeast.CurrentHP =- damage / 100 * Recoil;
+            executingBeast.CurrentHP =- Convert.ToInt32(damage / 100 * RecoilBasedOnDmgDealt);
             moveExecuteMessage += "\n" + $"{executingBeast.Name} was damaged by recoil!";
 
             if (executingBeast.CurrentHP == 0)
@@ -196,6 +196,7 @@ public abstract class MoveBase : ActionBase
         defendingBeast.CurrentHP =- damage;
 
         // TODO: Diese neue Itembase von Tobias für FocusSash hier einbauen. defendingBeast.CurrentHP darf nicht davor auf 0 gesetzt werden!
+        executeHitMessage = string.Empty;
 
         if (executeHitMessage == string.Empty)
         {

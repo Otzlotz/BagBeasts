@@ -17,7 +17,8 @@ public class NoGuard : AccuracyModifyingAbilityBase
     /// <returns>Neue Accuracy</returns>
     public override decimal AbilityEffect(BagBeastObject holderBeast, BagBeastObject enemyBeast, MoveBase attackMove, bool isAttacker, decimal? accuracy)
     {
-        return null;
+        return 0;
+        // ToDo: return fixen
     }
 
     #endregion // Methods

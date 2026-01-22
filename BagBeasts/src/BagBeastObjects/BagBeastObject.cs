@@ -53,12 +53,4 @@ public class BagBeastObject
     public int Confusion { get; set; }
 
     #endregion // Properties
-
-    public BagBeastObject()
-    {
-        foreach (var move in MoveLocks)
-        {
-            move = false;
-        }
-    }
 }

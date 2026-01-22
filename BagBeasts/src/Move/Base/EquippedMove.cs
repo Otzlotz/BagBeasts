@@ -20,6 +20,11 @@ public class EquippedMove
     public uint CurrentPP {get; private set;}
     public MoveSonderbullshit Sonderbullshit {get;} = new MoveSonderbullshit();
 
+    /// <summary>
+    /// Wenn true, dann ist der Move gesperrt
+    /// </summary>
+    public bool Lock { get; set; }
+
     #endregion // Properties
     
     #region Methods

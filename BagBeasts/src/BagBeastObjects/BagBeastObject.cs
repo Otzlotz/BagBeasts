@@ -25,9 +25,13 @@ public class BagBeastObject
         {
             _currentHP = value;
 
-            if (_currentHP <= 0)
+            if (_currentHP < 0)
             {
                 _currentHP = 0;
+            }
+            else if (_currentHP > MAXHP)
+            {
+                _currentHP = MAXHP;
             }
         }
     }
@@ -49,4 +53,12 @@ public class BagBeastObject
     public int Confusion { get; set; }
 
     #endregion // Properties
+
+    public BagBeastObject()
+    {
+        foreach (var move in MoveLocks)
+        {
+            move = false;
+        }
+    }
 }

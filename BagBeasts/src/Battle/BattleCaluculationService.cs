@@ -6,6 +6,7 @@ using src.Item.ItemBase;
 using src.Move.Base;
 using src.Reader;
 using src.StatusEffect;
+using src.Move.TMs;
 
 namespace src.Battle;
 
@@ -268,12 +269,17 @@ public static class BattleCalculationService
     {
         // TODO: Noch ist geplannt, dass Reflektor und Lichtschild nicht rein kommt. Wenn doch dann war hier vorher die Damage Calculation davon drin
 
-        // TODO: Weiß nicht wieso der StatusEffect.StatusEffect will, obwohl der namespace drin ist. Kann später von Robin gefixt werden
-        
         // TODO: ggf. Ability Adrenalin beachten
+
+        // Manche Abilities oder Moves ignorieren die DMG Reduction bei Burn (und hier auch Frostburn)
+        if (attacker.Ability is Guts || attackMove is Facade)
+        {
+            return 1;
+        }
+
         // BRT
-        if ((attacker.StatusEffect == StatusEffect.StatusEffectEnum.Burn && attackMove.Category == Category.Physical)
-         || (attacker.StatusEffect == StatusEffect.StatusEffectEnum.FrostBurn && attackMove.Category == Category.Special))
+        if ((attacker.StatusEffect == StatusEffectEnum.Burn && attackMove.Category == Category.Physical)
+         || (attacker.StatusEffect == StatusEffectEnum.FrostBurn && attackMove.Category == Category.Special))
         {
             return 0.5m;
         }

@@ -6,7 +6,7 @@ public abstract class HitTakenAbilityBase : AbilityBase
 {
     #region Methods
 
-    public abstract void AbilityEffect(ref BagBeastObject holderBeast, ref BagBeastObject attackingBeast, MoveBase attackingMove);
+    public abstract string AbilityEffect(ref BagBeastObject holderBeast, ref BagBeastObject attackingBeast, MoveBase attackingMove);
 
     #endregion //Methods
 }

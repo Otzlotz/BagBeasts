@@ -1,24 +1,22 @@
-using BagBeasts.src.Move.Base;
-using BagBeasts.src.StatusEffect;
-using BagBeasts.src.Battle;
+using src.Move.Base;
+using src.Battle;
 
-namespace BagBeasts.src.Move.TMs;
+namespace src.Move.TMs;
 
-public class Hex : MoveBase
+public class ShadowBall : MoveBase
 {
     /// <inheritdoc/>
     public override ExecuteResult Execute(BagBeastObject executingBeast, BagBeastObject defendingBeast, out string moveExecuteMessage, BagBeastObject? switchInBeast = null)
     {
-        if (defendingBeast.StatusEffect != StatusEffectEnum.No)
-        {
-            Damage *= 2;
-        }
-
         ExecuteResult executeResult = base.Execute(executingBeast, defendingBeast, out moveExecuteMessage, switchInBeast);
 
-        if (defendingBeast.StatusEffect != StatusEffectEnum.No)
+        if (executeResult.MoveHit)
         {
-            Damage /= 2;
+            // 20% Chance Spezial Verteidigung des Gegner um 1 zu senken
+            if (Rnd.Next(1, 100) <= 20)
+            {
+                moveExecuteMessage += "\n" + StatChangeService.ChangeSpd(defendingBeast, -1);
+            }
         }
 
         return executeResult;

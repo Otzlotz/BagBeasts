@@ -4,6 +4,7 @@
 @page "/creator"
 @rendermode InteractiveServer
 @inject IJSRuntime JS
+@inject NavigationManager Nav
 
 <PageTitle>TeamCreator</PageTitle>
 
@@ -313,6 +314,19 @@ else
         catch (Exception ex)
         {
             errorMessage = $"Download fehlgeschlagen: {ex.Message}";
+        }
+    }
+}
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if(firstRender){
+            
+            string AuthToken = await JS.InvokeAsync<string>(identifier: "CheckForCookie", new object[] {"UserID"});
+                
+            if (!Authentication.CheckForAuth(AuthToken))
+            {
+                Nav.NavigateTo(uri: "/MainMenu");
+            }
         }
     }
 }

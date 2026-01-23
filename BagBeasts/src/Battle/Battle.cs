@@ -16,9 +16,13 @@ public class Battle
 
     public List<BagBeastObject> TeamPlayer2 { get; }
 
-    public MoveBase SelectedPlayer1Move { get; set; }
+    public ActionBase SelectedPlayer1Move { get; set; }
 
-    public MoveBase SelectedPlayer2Move { get; set; }
+    public ActionBase SelectedPlayer2Move { get; set; }
+
+    public bool IsSecondTurn { get; set; }
+
+    public ExecuteResult? FirstMoveResult { get; set; }
 
     public Battle(BagBeastObject p1, BagBeastObject p2)
     {
@@ -76,21 +80,29 @@ public class Battle
 
             if (TurnOrder(SelectedPlayer1Move.Prio, SelectedPlayer2Move.Prio, initiativePlayer1, initiativePlayer2))
             {
+                IsSecondTurn = false;
                 Turn(Player1Beast, Player2Beast, SelectedPlayer1Move, SelectedPlayer2Move);
 
                 if (Player2Beast.StatusEffect != StatusEffectEnum.EternalEep)
                 {
+                    IsSecondTurn = true;
                     Turn(Player2Beast, Player1Beast, SelectedPlayer2Move, SelectedPlayer1Move);
                 }
+
+                FirstMoveResult = null;
             }
             else
             {
+                IsSecondTurn = false;
                 Turn(Player2Beast, Player1Beast, SelectedPlayer2Move, SelectedPlayer1Move);
                 
                 if (Player2Beast.StatusEffect != StatusEffectEnum.EternalEep)
                 {
+                    IsSecondTurn = true;
                     Turn(Player1Beast, Player2Beast, SelectedPlayer1Move, SelectedPlayer2Move);
                 }
+
+                FirstMoveResult = null;
             }
 
             if (Player1Beast.Ability is RoundEndAbilityBase ability1 && Player1Beast.StatusEffect != StatusEffectEnum.EternalEep)
@@ -158,10 +170,20 @@ public class Battle
             if (executingBeast == Player1Beast)
             {
                 Player1Beast = test.SwitchOut(executingBeast, TeamPlayer1);
+
+                if (Player1Beast.Ability is SwitchInAbilityBase ability)
+                {
+                    turnResult += ability.AbilityEffect(Player1Beast, Player2Beast);
+                }
             }
             else
             {
                 Player2Beast = test.SwitchOut(executingBeast, TeamPlayer2);
+
+                if (Player2Beast.Ability is SwitchInAbilityBase ability)
+                {
+                    turnResult += ability.AbilityEffect(Player2Beast, Player1Beast);
+                }
             }
         }
 
@@ -170,10 +192,13 @@ public class Battle
         {
             return statusMessage;
         }
-        //else if (FLINCH)
-        //{
-        // return;
-        //}
+        else if (IsSecondTurn == true)
+        {
+            if (FirstMoveResult.FlinchEnemy)
+            {
+                return turnResult = turnResult + "\n" + $"{executingBeast} flinched!";
+            }
+        }
         
         if (StatusEffectService.TriggerConfusion(executingBeast, out string confusionMessage))
         {
@@ -192,15 +217,19 @@ public class Battle
 
         if (selectedMove is MoveBase selectedMoveBase)
         {
-            if (selectedMoveBase.Execute(executingBeast, defendingBeast, out string executeMessage).MoveHit == false)
+            var moveResult = selectedMoveBase.Execute(executingBeast, defendingBeast, out string executeMessage);
+            if (moveResult.MoveHit == false)
             {
                 turnResult = turnResult + "\n" + executeMessage;
                 return turnResult;
             }
 
-            turnResult = turnResult + "\n" + executeMessage;
+            if (IsSecondTurn == false)
+            {
+                FirstMoveResult = moveResult;
+            }
 
-            //TODO: switch in Effekte bei U-Turn
+            turnResult = turnResult + "\n" + executeMessage;
 
             if (defendingBeast.Ability is HitTakenAbilityBase ability)
             {

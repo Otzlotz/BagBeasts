@@ -6,7 +6,7 @@ public abstract class AssaultVest : DamageReductionItemBase
 {
     #region Methods
 
-    public override string ItemEffect(ref BagBeastObject holderBeast, BagBeastObject attackingBeast, MoveBase attackingMove, ref decimal damage)
+    public override string ItemEffect(ref BagBeastObject holderBeast, MoveBase attackingMove, ref decimal damage)
     {
         if (attackingMove.Category == Category.Special)
         {
@@ -33,7 +33,6 @@ public abstract class AssaultVest : DamageReductionItemBase
             holderBeast.Move4.Lock = true;
         }
         return string.Empty;
-        // ToDo: fix
     }
 
     #endregion //Methods

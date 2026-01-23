@@ -1,13 +1,14 @@
 using BagBeasts.src.StatusEffect;
 using System;
 using BagBeasts.src.Battle;
+using BagBeasts.src.Ability.AbilityBase;
+using BagBeasts.src.Item.ItemBase;
 
 namespace BagBeasts.src.Move.Base;
 
 public abstract class MoveBase : ActionBase
 {
-    // TODO: Diese Moves ganz am Ende einbauen: Delegator, Schlafrede (vielleicht ganz weg lassen), Schwanzabwurf, Schutzschild, Abgangsbund
-    // TODO: Zuletzt Bürde Implementiert (Moves 50 - 59 fehlen)
+    // TODO: Diese Moves ganz am Ende einbauen: Delegator, Schlafrede (vielleicht ganz weg lassen), Schwanzabwurf, Schutzschild, Abgangsbund, Ausdauer
 
     #region Fields
 
@@ -123,14 +124,12 @@ public abstract class MoveBase : ActionBase
         // Lifesteal
         if (LifeSteal > 0)
         {
-            // TODO: Der Lifesteal hier muss vermutlich gerundet werden
             executingBeast.CurrentHP += Convert.ToInt32(damage / 100 * LifeSteal);
         }
 
         // Recoil
         if (RecoilBasedOnOwnHp > 0)
         {
-            // TODO: Runden?
             executingBeast.CurrentHP =- Convert.ToInt32(executingBeast.MAXHP / 100 * RecoilBasedOnOwnHp);
             moveExecuteMessage += "\n" + $"{executingBeast.Name} was damaged by recoil!";
 
@@ -142,7 +141,6 @@ public abstract class MoveBase : ActionBase
 
         if (RecoilBasedOnDmgDealt > 0)
         {
-            // TODO: Runden?
             executingBeast.CurrentHP =- Convert.ToInt32(damage / 100 * RecoilBasedOnDmgDealt);
             moveExecuteMessage += "\n" + $"{executingBeast.Name} was damaged by recoil!";
 
@@ -193,10 +191,39 @@ public abstract class MoveBase : ActionBase
     /// <param name="executeHitMessage">OUT: Hit Message</param>
     protected void ExcecuteHit(BagBeastObject executingBeast, BagBeastObject defendingBeast, MoveBase move, int damage, out string executeHitMessage)
     {
-        defendingBeast.CurrentHP =- damage;
-
-        // TODO: Diese neue Itembase von Tobias für FocusSash hier einbauen. defendingBeast.CurrentHP darf nicht davor auf 0 gesetzt werden!
         executeHitMessage = string.Empty;
+
+        // Itemeffekt ggf. auslösen
+        if (defendingBeast.HeldItem is DamageReductionItemBase item)
+        {
+            string itemEffectMessage = item.ItemEffect(ref defendingBeast, move, ref damage);
+
+            if (itemEffectMessage != string.Empty)
+            {
+                executeHitMessage = itemEffectMessage;
+            }
+        }
+
+        // Abilityeffekt ggf. auslösen
+        if (defendingBeast.Ability is DamageReductionAbilityBase ability)
+        {
+            string abilityEffectMessage = ability.AbilityEffect(ref defendingBeast, move, ref damage);
+
+            if (abilityEffectMessage != string.Empty)
+            {
+                if (executeHitMessage != string.Empty)
+                {
+                    executeHitMessage += "\n" + abilityEffectMessage;
+                }
+                else
+                {
+                    executeHitMessage = abilityEffectMessage;
+                }
+            }
+        }
+
+        // Damage zufügen
+        defendingBeast.CurrentHP =- damage;
 
         if (executeHitMessage == string.Empty)
         {
@@ -204,9 +231,10 @@ public abstract class MoveBase : ActionBase
         }
         else
         {
-            executeHitMessage = "\n" + $"{defendingBeast.Name} was hit by {move.Name} for {damage} damage.";
+            executeHitMessage += "\n" + $"{defendingBeast.Name} was hit by {move.Name} for {damage} damage.";
         }
 
+        // Prüfen, ob das BagBeast in EternalEep gefallen ist
         if (defendingBeast.CurrentHP == 0)
         {
              executeHitMessage += StatusEffectService.SetEternalEep(defendingBeast);

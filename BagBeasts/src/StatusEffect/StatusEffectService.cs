@@ -67,8 +67,6 @@ public static class StatusEffectService
             return false;
         }
 
-        // TODO: Noch Abfragen ob Typ Multiplier 0 ist
-
         // Statuseffekt anwenden
         switch (statusEffect)
         {
@@ -144,8 +142,6 @@ public static class StatusEffectService
     /// <remarks>Kann die HP des Bagbeast auf 0 setzen, löst aber nicht selber den EternalEep aus!</remarks>
     public static bool TriggerStatusEffect(BagBeastObject bagBeastObject, out string statusMessage)
     {
-        // TODO: Bei den Damage Effekten ein true zurückgeben wenn das BagBeast stirbt
-
         switch (bagBeastObject.StatusEffect)
         {
             case StatusEffectEnum.Eep:
@@ -267,10 +263,8 @@ public static class StatusEffectService
             {
                 statusMessage += "\n" + $"{bagBeastObject.Name} hurt itself in confusion!";
 
-                // TODO: Abrunden auf ganze Zahl und mindestens 1 schaden
-                decimal damage = bagBeastObject.MAXHP / 8;
-
-                bagBeastObject.CurrentHP =- (int)damage;
+                // Damage abrunden auf ganze Zahl und mindestens 1 schaden
+                bagBeastObject.CurrentHP =- RoundDownAndAtLeast1(bagBeastObject.MAXHP / 8);
 
                 if (bagBeastObject.CurrentHP == 0)
                 {
@@ -348,13 +342,9 @@ public static class StatusEffectService
     /// <returns>Ob das Bagbeast durch den Statuseffekt in EternalEep fällt</returns>
     private static bool TriggerPoison(BagBeastObject bagBeastObject, out string statusMessage)
     {
-        decimal damage = bagBeastObject.MAXHP / 8;
-
-        // TODO: Abrunden auf ganze Zahl und mindestens 1 schaden
-
-        bagBeastObject.CurrentHP =- (int)Math.Round(damage, MidpointRounding.ToZero);
+        // Damage abrunden auf ganze Zahl und mindestens 1 schaden
+        bagBeastObject.CurrentHP =- RoundDownAndAtLeast1(bagBeastObject.MAXHP / 8);
         
-
         statusMessage = $"{bagBeastObject.Name} was hurt by poison!";
 
         if (bagBeastObject.CurrentHP == 0)
@@ -374,11 +364,8 @@ public static class StatusEffectService
     /// <returns>Ob das Bagbeast durch den Statuseffekt in EternalEep fällt</returns>
     private static bool TriggerToxic(BagBeastObject bagBeastObject, out string statusMessage)
     {
-        decimal damage = bagBeastObject.MAXHP / 16 * bagBeastObject.StatusCounter;
-
-        // TODO: Abrunden auf ganze Zahl und mindestens 1 schaden
-
-        bagBeastObject.CurrentHP =-(int)Math.Round(damage, MidpointRounding.ToZero);
+        // Damage abrunden auf ganze Zahl und mindestens 1 schaden
+        bagBeastObject.CurrentHP =- RoundDownAndAtLeast1(bagBeastObject.MAXHP / 16 * bagBeastObject.StatusCounter);
 
         statusMessage = $"{bagBeastObject.Name} was hurt by strong poison!";
 
@@ -399,11 +386,8 @@ public static class StatusEffectService
     /// <returns>Ob das Bagbeast durch den Statuseffekt in EternalEep fällt</returns>
     private static bool TriggerBurn(BagBeastObject bagBeastObject, out string statusMessage)
     {
-        decimal damage = bagBeastObject.MAXHP / 8;
-
-        // TODO: Abrunden auf ganze Zahl und mindestens 1 schaden
-
-        bagBeastObject.CurrentHP =- (int)Math.Round(damage, MidpointRounding.ToZero);
+        // Damage abrunden auf ganze Zahl und mindestens 1 schaden
+        bagBeastObject.CurrentHP =- RoundDownAndAtLeast1(bagBeastObject.MAXHP / 8);
 
         statusMessage = $"{bagBeastObject.Name} was hurt by burn!";
 
@@ -424,11 +408,8 @@ public static class StatusEffectService
     /// <returns>Ob das Bagbeast durch den Statuseffekt in EternalEep fällt</returns>
     private static bool TriggerFrostBurn(BagBeastObject bagBeastObject, out string statusMessage)
     {
-        decimal damage = bagBeastObject.MAXHP / 8;
-
-        // TODO: Abrunden auf ganze Zahl und mindestens 1 schaden
-
-        bagBeastObject.CurrentHP =-(int)Math.Round(damage, MidpointRounding.ToZero);
+        // Damage abrunden auf ganze Zahl und mindestens 1 schaden
+        bagBeastObject.CurrentHP =- RoundDownAndAtLeast1(bagBeastObject.MAXHP / 8);
 
         statusMessage = $"{bagBeastObject.Name} was hurt by burn (but cooler)!";
 
@@ -442,6 +423,27 @@ public static class StatusEffectService
     }
 
     #endregion // Trigger
+
+    #region Hilfsmethoden
+
+    /// <summary>
+    /// Rundet <see cref="number"/> ab und gibt diese zurück. Es wird mindestens 1 zurückgegeben
+    /// </summary>
+    /// <param name="number">zu rundene Nummer</param>
+    /// <returns>Gerundete Nummer</returns>
+    private static int RoundDownAndAtLeast1(decimal number)
+    {
+        int roundedNumber = (int)number;
+
+        if (roundedNumber == 0)
+        {
+            roundedNumber = 1;
+        }
+
+        return roundedNumber;
+    }
+
+    #endregion // Hilfsmethoden
 
     #endregion // Private Methods
 }

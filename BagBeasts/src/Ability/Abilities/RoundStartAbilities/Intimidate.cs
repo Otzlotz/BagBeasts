@@ -4,7 +4,7 @@ using BagBeasts.src.Move.Base;
 
 namespace BagBeasts.src.Ability.AbilityBase;
 
-public abstract class Intimidate : RoundStartAbilityBase
+public abstract class Intimidate : SwitchInAbilityBase
 {
     #region Methods
 
@@ -16,10 +16,10 @@ public abstract class Intimidate : RoundStartAbilityBase
     /// <param name="attackMove">Attacke</param>
     /// <param name="damage">Kalkulierter Schaden</param>
     /// <returns>Neuer Schaden</returns>
-    public override decimal AbilityEffect(BagBeastObject holderBeast, BagBeastObject defenderBeast, MoveBase attackMove, decimal damage)
+    public override string AbilityEffect(BagBeastObject holderBeast, BagBeastObject defenderBeast)
     {
-        // ToDo: implementieren
-        return 0;
+        var resultMessage = StatChangeService.ChangeAtk(defenderBeast, -1);
+        return resultMessage;
     }
 
     #endregion // Methods

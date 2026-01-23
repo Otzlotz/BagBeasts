@@ -1,4 +1,5 @@
 using src.Move.Base;
+using src.StatusEffect;
 
 namespace src.Item.ItemBase;
 
@@ -18,6 +19,11 @@ public abstract class LifeOrb : DamageModifierItemBase
     {
         damage = damage * 1.3m;
         holderBeast.CurrentHP -= holderBeast.MAXHP / 10;
+
+        if (holderBeast.CurrentHP <= 0)
+        {
+            StatusEffectService.SetEternalEep(holderBeast);
+        }
 
         return damage;
     }

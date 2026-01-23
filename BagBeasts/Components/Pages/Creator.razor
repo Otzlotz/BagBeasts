@@ -162,6 +162,7 @@ else
         if(firstRender){
             
             string AuthToken = await JS.InvokeAsync<string>(identifier: "CheckForCookie", new object[] {"UserID"});
+                
             if (!Authentication.CheckForAuth(AuthToken))
             {
                 Nav.NavigateTo(uri: "/MainMenu");

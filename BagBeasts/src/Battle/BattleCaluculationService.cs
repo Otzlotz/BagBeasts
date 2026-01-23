@@ -4,7 +4,6 @@ using System;
 using src.Ability.AbilityBase;
 using src.Item.ItemBase;
 using src.Move.Base;
-using src.Reader;
 using src.StatusEffect;
 using src.Move.TMs;
 
@@ -39,14 +38,11 @@ public static class BattleCalculationService
     /// <returns>Berechneter Schaden</returns>
     public static int HitDamage(BagBeastObject attacker, BagBeastObject defender, MoveBase attackMove, bool critTriggered)
     {
-        // TODO: Reader muss irgendwie als Singleton oder so erstellt werden!
-        TypeMatchupReader typeMatchupReader = new TypeMatchupReader();
-
         decimal f1 = GetF1(attacker, attackMove);
         decimal crit = critTriggered ? 1.5m : 1m;
         ushort z = GetZ();
         decimal stab = GetStab(attacker, attackMove);
-        decimal typeMult = typeMatchupReader.GetMultiplier(attackMove.Type, defender.Type1, defender.Type2);
+        decimal typeMult = GetMultiplier(attackMove.Type, defender.Type1, defender.Type2);
         decimal attackStat = GetAttackStat(attacker, attackMove);
         decimal defendStat = GetDefendstat(defender, attackMove, critTriggered);
 
@@ -129,15 +125,12 @@ public static class BattleCalculationService
             return false;
         }
 
-        // TODO: Reader muss irgendwie als Singleton oder so erstellt werden!
-        TypeMatchupReader typeMatchupReader = new TypeMatchupReader();
-
         decimal? accuracy = attackMove.Accuracy;
 
         // Wenn der Type Multiplier 0 ist, dann ist der Defender Immun gegen Attacken dieses Typen
-        if (typeMatchupReader.GetMultiplier(attackMove.Type, defender.Type1, defender.Type2) == 0)
+        if (GetMultiplier(attackMove.Type, defender.Type1, defender.Type2) == 0)
         {
-            moveHitMessage = $"{defender.Name} avoided {attackMove.Name} from {attacker.Name}.";
+            moveHitMessage = $"{attackMove.Name} has no effect on {attacker.Name}!";
             return false;
         }
 
@@ -342,6 +335,19 @@ public static class BattleCalculationService
         }
 
         return x / y;
+    }
+
+    /// <summary>
+    /// Ermittelt den Type Damage Multiplier für einen Angriff
+    /// </summary>
+    /// <param name="attackType">Typ der Attacke</param>
+    /// <param name="defenderType1">Typ 1 des angegriffenen BagBeast</param>
+    /// <param name="defenderType2">Optional: Typ 2 des angegriffenen BagBeast</param>
+    /// <returns>Type Damage Multiplier</returns>
+    private decimal GetMultiplier(Type attackType, Type defenderType1, Type? defenderType2)
+    {
+        // TODO: Nur TEmporäre Methode! Muss stattdessen aus der Datenbank gelesen werden!
+        return 1;
     }
 
     #endregion // Private Methods

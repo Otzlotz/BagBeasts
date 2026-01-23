@@ -7,7 +7,7 @@ public class FocusSash : DamageReductionItemBase
 {
     #region Methods
 
-    public override string ItemEffect(ref BagBeastObject holderBeast, MoveBase attackingMove, ref decimal damage)
+    public override string ItemEffect(ref BagBeastObject holderBeast, MoveBase attackingMove, ref int damage)
     {
         if (damage >= holderBeast.MAXHP && holderBeast.MAXHP == holderBeast.CurrentHP)
         {

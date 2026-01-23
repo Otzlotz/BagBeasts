@@ -81,12 +81,12 @@ public class Battle
             if (TurnOrder(SelectedPlayer1Move.Prio, SelectedPlayer2Move.Prio, initiativePlayer1, initiativePlayer2))
             {
                 IsSecondTurn = false;
-                Turn(Player1Beast, Player2Beast, SelectedPlayer1Move, SelectedPlayer2Move);
+                Turn(Player1Beast, Player2Beast, SelectedPlayer1Move);
 
                 if (Player2Beast.StatusEffect != StatusEffectEnum.EternalEep)
                 {
                     IsSecondTurn = true;
-                    Turn(Player2Beast, Player1Beast, SelectedPlayer2Move, SelectedPlayer1Move);
+                    Turn(Player2Beast, Player1Beast, SelectedPlayer2Move);
                 }
 
                 FirstMoveResult = null;
@@ -94,12 +94,12 @@ public class Battle
             else
             {
                 IsSecondTurn = false;
-                Turn(Player2Beast, Player1Beast, SelectedPlayer2Move, SelectedPlayer1Move);
+                Turn(Player2Beast, Player1Beast, SelectedPlayer2Move);
                 
                 if (Player2Beast.StatusEffect != StatusEffectEnum.EternalEep)
                 {
                     IsSecondTurn = true;
-                    Turn(Player1Beast, Player2Beast, SelectedPlayer1Move, SelectedPlayer2Move);
+                    Turn(Player1Beast, Player2Beast, SelectedPlayer1Move);
                 }
 
                 FirstMoveResult = null;
@@ -153,7 +153,7 @@ public class Battle
     }
     */
 
-    private string Turn(BagBeastObject executingBeast, BagBeastObject defendingBeast, ActionBase selectedMove, MoveBase defenderMove)
+    private string Turn(BagBeastObject executingBeast, BagBeastObject defendingBeast, ActionBase selectedMove)
     {
         var turnResult = "";
 

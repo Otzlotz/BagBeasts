@@ -15,6 +15,18 @@ namespace src.Battle;
 /// </summary>
 public static class BattleCalculationService
 {
+    #region Fields
+
+    private static Random _rnd;
+
+    #endregion // Fields
+
+    #region Properties
+
+    private static Random Rnd {get; set;} = _rnd ??= new Random();
+
+    #endregion // Properties
+
     #region Public Methods
 
     /// <summary>
@@ -69,39 +81,36 @@ public static class BattleCalculationService
     /// <returns>Ob ein Krit ausgelöst wird</returns>
     public static bool CritTriggered(uint critChanceTier, out string critMessage)
     {
-        // TODO: Chancen einbauen (zum testen auf True gesetzt)
-        bool critTriggerd = true;
-
         switch (critChanceTier)
         {
             case 1:
-            // 4,16%
-            break;
+                // 4,16%
+                critTriggerd = Rnd.Next(1, 10000) <= 416;
+                break;
 
             case 2:
-            // 12,5%
-            break;
+                // 12,5%
+                critTriggerd = Rnd.Next(1, 10000) <= 1250;
+                break;
 
             case 3:
-            // 50%
-            break;
+                // 50%
+                critTriggerd = Rnd.Next(1, 10000) <= 5000;
+                break;
 
             case 4:
-            // 100%
-            critTriggerd = true;
-            break;
+                // 100%
+                critTriggerd = true;
+                break;
 
             default:
+                critTriggerd = false;
                 break;
-                // ToDO: implementieren
-
         }
 
         // Message setzen, wenn ein Krit ausgelöst wurde
         critMessage = critTriggerd ? "A critical hit!" : string.Empty;
-
-        // Sollte nicht passieren, aber lieber false als eine Exception
-        return false;
+        return critTriggerd;
     }
 
     /// <summary>
@@ -114,6 +123,12 @@ public static class BattleCalculationService
     /// <returns>Ob der Angriff trifft</returns>
     public static bool MoveHit(BagBeastObject attacker, BagBeastObject defender, MoveBase attackMove, out string moveHitMessage)
     {
+        if (defender.StatusEffect == StatusEffectEnum.EternalEep)
+        {
+            moveHitMessage = $"{attackMove.Name} failed!";
+            return false;
+        }
+
         // TODO: Reader muss irgendwie als Singleton oder so erstellt werden!
         TypeMatchupReader typeMatchupReader = new TypeMatchupReader();
 
@@ -166,8 +181,7 @@ public static class BattleCalculationService
         }
 
         // Random ermitteln, ob der Move trifft
-        Random rnd = new Random();
-        if (rnd.Next(1, 100) > hitChance)
+        if (Rnd.Next(1, 100) <= hitChance)
         {
             moveHitMessage = $"{defender.Name} avoided {attackMove.Name} from {attacker.Name}.";
             return false;
@@ -189,8 +203,6 @@ public static class BattleCalculationService
     /// <returns>Passender Attackstat</returns>
     private static decimal GetAttackStat(BagBeastObject attacker, MoveBase attackMove)
     {
-        // TODO: Wenn Bodypress implementiert wird muss hier vielleicht Sonderbullshit rein
-
         int x = 2;
         int y = 2;
         int attackValue = attackMove.Category == Category.Physical ? attacker.ATK : attacker.SPA;
@@ -219,8 +231,6 @@ public static class BattleCalculationService
     /// <returns>Passender Defensestat</returns>
     private static decimal GetDefendstat(BagBeastObject defender, MoveBase attackMove, bool critTriggered)
     {
-        // TODO: Wenn Psyshock implementiert wird muss hier vielleicht Sonderbullshit rein
-
         int x = 2;
         int y = 2;
         int defendValue = attackMove.Category == Category.Physical ? defender.DEF : defender.SPD;
@@ -246,8 +256,7 @@ public static class BattleCalculationService
     /// <returns>Z (zwischen 85 - 100)</returns>
     private static ushort GetZ()
     {
-        // TODO: Random Wert zwischen 85 - 100 berechnen und zurückgeben
-        return 100;
+        return Rnd.Next(85, 100);
     }
 
     /// <summary>
@@ -269,10 +278,6 @@ public static class BattleCalculationService
 
     private static decimal GetF1(BagBeastObject attacker, MoveBase attackMove)
     {
-        // TODO: Noch ist geplannt, dass Reflektor und Lichtschild nicht rein kommt. Wenn doch dann war hier vorher die Damage Calculation davon drin
-
-        // TODO: ggf. Ability Adrenalin beachten
-
         // Manche Abilities oder Moves ignorieren die DMG Reduction bei Burn (und hier auch Frostburn)
         if (attacker.Ability is Guts || attackMove is Facade)
         {
@@ -301,20 +306,16 @@ public static class BattleCalculationService
         int x = 3;
         int y = 3;
 
-        // TODO: Hier DEES Nochmal drüber schauen
-
-        /*
         if (attacker.StatChange.ACC < 0)
         {
             // Accuracy wird verringert
-            y += statChange * -1;
+            y += attacker.StatChange.ACC * -1;
         }
         else
         {
             // Accuracy wird erhöht (Bei StatChange = 0 bleibt es unverändert!)
-            x += statChange;
+            x += attacker.StatChange.ACC;
         }
-        */
 
         return x / y;
     }
@@ -329,20 +330,16 @@ public static class BattleCalculationService
         int x = 3;
         int y = 3;
 
-        // TODO: Hier DEES Nochmal drüber schauen
-
-        /*
-        if (statChange < 0)
+        if (defender.StatChange.DODGE < 0)
         {
             // Dodge wird erhöht
-            x += statChange * -1;
+            x += defender.StatChange.DODGE * -1;
         }
         else
         {
             // Dodge wird verringert (Bei StatChange = 0 bleibt es unverändert!)
-            y += statChange;
+            y += defender.StatChange.DODGE;
         }
-        */
 
         return x / y;
     }

@@ -77,6 +77,7 @@ public static class BattleCalculationService
     /// <returns>Ob ein Krit ausgelöst wird</returns>
     public static bool CritTriggered(uint critChanceTier, out string critMessage)
     {
+        bool critTriggerd;
         switch (critChanceTier)
         {
             case 1:
@@ -249,7 +250,7 @@ public static class BattleCalculationService
     /// <returns>Z (zwischen 85 - 100)</returns>
     private static ushort GetZ()
     {
-        return Rnd.Next(85, 100);
+        return (ushort)Rnd.Next(85, 100);
     }
 
     /// <summary>

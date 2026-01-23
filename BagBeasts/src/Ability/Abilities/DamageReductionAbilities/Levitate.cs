@@ -15,7 +15,7 @@ public abstract class Levitate : DamageReductionAbilityBase
     /// <param name="attackMove">Attacke</param>
     /// <param name="damage">Kalkulierter Schaden</param>
     /// <returns>Neuer Schaden</returns>
-    public override string AbilityEffect(BagBeastObject holderBeast, MoveBase attackMove, ref decimal damage)
+    public override string AbilityEffect(BagBeastObject holderBeast, MoveBase attackMove, ref int damage)
     {
         if (attackMove.Type == TypeDB.Ground)
         {

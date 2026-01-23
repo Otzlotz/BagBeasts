@@ -1,6 +1,6 @@
 using System;
 
-namespace src.StatusEffect;
+namespace BagBeasts.src.StatusEffect;
 
 
 /// <summary>
@@ -81,7 +81,7 @@ public static class StatusEffectService
                 return true;
 
             case StatusEffectEnum.Paralysis:
-                if (bagBeastObject.Type1 == Type.Electric || bagBeastObject.Type2 == Type.Electric)
+                if (bagBeastObject.Type1 == TypeDB.Electric || bagBeastObject.Type2 == TypeDB.Electric)
                 {
                     statusMessage = $"{bagBeastObject.Name} can not be paralysed!";
                     return false;
@@ -94,7 +94,7 @@ public static class StatusEffectService
                 }
 
             case StatusEffectEnum.Poison:
-                if (bagBeastObject.Type1 == Type.Poison || bagBeastObject.Type2 == Type.Poison)
+                if (bagBeastObject.Type1 == TypeDB.Poison || bagBeastObject.Type2 == TypeDB.Poison)
                 {
                     statusMessage = $"{bagBeastObject.Name} can not be poisoned!";
                     return false;
@@ -108,7 +108,7 @@ public static class StatusEffectService
 
 
             case StatusEffectEnum.Toxic:
-                if (bagBeastObject.Type1 == Type.Poison || bagBeastObject.Type2 == Type.Poison)
+                if (bagBeastObject.Type1 == TypeDB.Poison || bagBeastObject.Type2 == TypeDB.Poison)
                 {
                     statusMessage = $"{bagBeastObject.Name} can not be poisoned!";
                     return false;

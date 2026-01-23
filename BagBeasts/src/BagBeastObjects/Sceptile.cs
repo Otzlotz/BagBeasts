@@ -1,9 +1,9 @@
 using System;
-using src.Move.Base;
-using src.Item.Base;
-using src.Item.ItemBase;
-using src.Ability.AbilityBase;
-using src.StatusEffect;
+using BagBeasts.src.Move.Base;
+using BagBeasts.src.Item.Base;
+using BagBeasts.src.Item.ItemBase;
+using BagBeasts.src.Ability.AbilityBase;
+using BagBeasts.src.StatusEffect;
 
 public class Sceptile : BagBeastObject
 {

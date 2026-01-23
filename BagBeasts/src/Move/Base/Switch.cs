@@ -1,8 +1,8 @@
 
 
-using src.StatusEffect;
-using src.Item.ItemBase;
-namespace src.Move.Base;
+using BagBeasts.src.StatusEffect;
+using BagBeasts.src.Item.ItemBase;
+namespace BagBeasts.src.Move.Base;
 
 
 public class Switch : ActionBase

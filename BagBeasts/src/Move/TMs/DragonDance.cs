@@ -1,7 +1,7 @@
-using src.Battle;
-using src.Move.Base;
+using BagBeasts.src.Battle;
+using BagBeasts.src.Move.Base;
 
-namespace src.Move.TMs;
+namespace BagBeasts.src.Move.TMs;
 
 public class DragonDance : MoveBase
 {

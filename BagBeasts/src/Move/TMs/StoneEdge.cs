@@ -1,6 +1,6 @@
-using src.Move.Base;
+using BagBeasts.src.Move.Base;
 
-namespace src.Move.TMs;
+namespace BagBeasts.src.Move.TMs;
 
 public class StoneEdge : MoveBase
 {

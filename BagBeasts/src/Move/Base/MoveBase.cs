@@ -1,8 +1,8 @@
-using src.StatusEffect;
+using BagBeasts.src.StatusEffect;
 using System;
-using src.Battle;
+using BagBeasts.src.Battle;
 
-namespace src.Move.Base;
+namespace BagBeasts.src.Move.Base;
 
 public abstract class MoveBase : ActionBase
 {
@@ -31,7 +31,7 @@ public abstract class MoveBase : ActionBase
 
     public uint PP {get; protected set;}
 
-    public Type Type {get; protected set;}
+    public TypeDB Type {get; protected set;}
 
     public Category Category {get; protected set;}
 
@@ -165,7 +165,7 @@ public abstract class MoveBase : ActionBase
     /// Initialisiert die Aktion mit ihren Daten aus der Datenbank
     /// </summary>
     /// <param name="fromDB">Datenbankobjekt</param>
-    public override void Init(BagBeasts.Move fromDB)
+    public override void Init(BagBeasts.MoveDB fromDB)
     {
         base.Init(fromDB);
 
@@ -174,7 +174,7 @@ public abstract class MoveBase : ActionBase
         Accuracy = (uint?)fromDB.Acc;
         CritChanceTier = (uint)fromDB.CritChanceTier.Value;
         PP = (uint)fromDB.Pp.Value;
-        Type = (Type)fromDB.Type.Value;
+        Type = (TypeDB)fromDB.Type.Value;
         Category = (Category)fromDB.Category.Value;
         Contact = fromDB.Contact.Value;
     }

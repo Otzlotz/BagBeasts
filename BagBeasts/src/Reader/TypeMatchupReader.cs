@@ -1,5 +1,5 @@
 
-namespace src.Reader;
+namespace BagBeasts.src.Reader;
 
 /// <summary>
 /// Klasse für Methoden mit Datenbankabfragen für die Tabelle TypeMatchup (besitzt einen Cache!)
@@ -12,7 +12,7 @@ public class TypeMatchupReader
     /// Cached Multiplier aus der Datenbank
     /// </summary>
     /// <remarks>Type (1) = TypeIDAtk, Type (2) = TypeIdDef, decimal = Multiplier</remarks>
-    private Dictionary<Tuple<Type, Type>, decimal> MultiplierCache {get;} = new Dictionary<Tuple<Type, Type>, decimal>();
+    private Dictionary<Tuple<TypeDB, TypeDB>, decimal> MultiplierCache {get;} = new Dictionary<Tuple<TypeDB, TypeDB>, decimal>();
 
     #endregion // Properties
 
@@ -25,16 +25,16 @@ public class TypeMatchupReader
     /// <param name="defenderType1">Typ 1 des angegriffenen BagBeast</param>
     /// <param name="defenderType2">Optional: Typ 2 des angegriffenen BagBeast</param>
     /// <returns>Type Damage Multiplier</returns>
-    public decimal GetMultiplier(Type attackType, Type defenderType1, Type? defenderType2)
+    public decimal GetMultiplier(TypeDB attackType, TypeDB defenderType1, TypeDB? defenderType2)
     {
         ReadMultiplierInCache(attackType, defenderType1);
-        decimal multiplier1 = MultiplierCache[new Tuple<Type, Type>(attackType, defenderType1)];
+        decimal multiplier1 = MultiplierCache[new Tuple<TypeDB, TypeDB>(attackType, defenderType1)];
         decimal multiplier2 = 1;
 
         if (defenderType2.HasValue)
         {
             ReadMultiplierInCache(attackType, defenderType2.Value);
-            multiplier2 = MultiplierCache[new Tuple<Type, Type>(attackType, defenderType2.Value)];
+            multiplier2 = MultiplierCache[new Tuple<TypeDB, TypeDB>(attackType, defenderType2.Value)];
         }
 
         return multiplier1 * multiplier2;
@@ -58,10 +58,10 @@ public class TypeMatchupReader
     /// </summary>
     /// <param name="attackType">Typ der Attacke</param>
     /// <param name="defenderType">Typ des angegriffenen BagBeast</param>
-    private void ReadMultiplierInCache(Type attackType, Type defenderType)
+    private void ReadMultiplierInCache(TypeDB attackType, TypeDB defenderType)
     {
         // Wenn der Multiplier bereits eingelesen wurde, dann muss dieser nicht nochmal eingelesen werden
-        if (MultiplierCache.ContainsKey(new Tuple<Type, Type>(attackType, defenderType)))
+        if (MultiplierCache.ContainsKey(new Tuple<TypeDB, TypeDB>(attackType, defenderType)))
         {
             return;
         }

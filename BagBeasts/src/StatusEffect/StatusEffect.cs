@@ -1,6 +1,6 @@
 
 
-namespace src.StatusEffect;
+namespace BagBeasts.src.StatusEffect;
 
 /// <summary>
 /// Die Primären Statuseffekte (es kann nur einen geben...)

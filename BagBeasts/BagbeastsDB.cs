@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace BagBeasts;
 
-public partial class Bagbeasts
+public partial class BagbeastsDB
 {
     public int Id { get; set; }
 
@@ -25,5 +25,5 @@ public partial class Bagbeasts
 
     public int Initiative { get; set; }
 
-    public virtual ICollection<Move> Moves { get; set; } = new List<Move>();
+    public virtual ICollection<MoveDB> Moves { get; set; } = new List<MoveDB>();
 }

@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Diagnostics.Eventing.Reader;
-using src.Move.Base;
-using src.Ability.AbilityBase;
-using src.Item.ItemBase;
-using src.StatusEffect;
+using BagBeasts.src.Move.Base;
+using BagBeasts.src.Ability.AbilityBase;
+using BagBeasts.src.Item.ItemBase;
+using BagBeasts.src.StatusEffect;
 
-namespace src.Battle;
+namespace BagBeasts.src.Battle;
 public class Battle
 {
     public BagBeastObject Player1Beast;

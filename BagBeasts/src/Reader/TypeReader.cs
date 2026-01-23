@@ -1,6 +1,6 @@
 
 
-namespace src.Reader;
+namespace BagBeasts.src.Reader;
 
 /// <summary>
 /// Klasse für Methoden mit Datenbankabfragen für die Tabelle Type (besitzt einen Cache!)
@@ -13,7 +13,7 @@ public class TypeReader
     /// Cached Namen der Types aus der Datenbank
     /// </summary>
     /// <remarks>Type = Typ, string = Name</remarks>
-    private Dictionary<Type, string> TypeCache {get;} = new Dictionary<Type, string>();
+    private Dictionary<TypeDB, string> TypeCache {get;} = new Dictionary<TypeDB, string>();
 
     #endregion // Properties
 
@@ -24,7 +24,7 @@ public class TypeReader
     /// </summary>
     /// <param name="type">Typ</param>
     /// <returns>Name aus der Datenbank</returns>
-    public string GetName(Type type)
+    public string GetName(TypeDB type)
     {
         ReadTypeInCache(type);
         return TypeCache[type];
@@ -47,7 +47,7 @@ public class TypeReader
     /// Ließt einen Eintrag in den Cache ein
     /// </summary>
     /// <param name="type">Type</param>
-    private void ReadTypeInCache(Type type)
+    private void ReadTypeInCache(TypeDB type)
     {
         // Wenn der Type bereits eingelesen wurde, dann muss dieser nicht nochmal eingelesen werden
         if (TypeCache.ContainsKey(type))

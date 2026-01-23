@@ -1,6 +1,6 @@
 
 
-namespace src.Move.Base;
+namespace BagBeasts.src.Move.Base;
 
 public class MoveSonderbullshit
 {

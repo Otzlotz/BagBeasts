@@ -1,7 +1,7 @@
 
 
 
-namespace src.Move.Base;
+namespace BagBeasts.src.Move.Base;
 
 public abstract class ActionBase
 {
@@ -20,7 +20,7 @@ public abstract class ActionBase
     /// Initialisiert die Aktion mit ihren Daten aus der Datenbank
     /// </summary>
     /// <param name="fromDB">Datenbankobjekt</param>
-    public virtual void Init(BagBeasts.Move fromDB)
+    public virtual void Init(BagBeasts.MoveDB fromDB)
     {
         ID = (uint)fromDB.Id;
         Name = fromDB.Name;

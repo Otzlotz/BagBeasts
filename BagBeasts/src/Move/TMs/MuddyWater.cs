@@ -1,7 +1,7 @@
-using src.Move.Base;
-using src.Battle;
+using BagBeasts.src.Move.Base;
+using BagBeasts.src.Battle;
 
-namespace src.Move.TMs;
+namespace BagBeasts.src.Move.TMs;
 
 public class MuddyWater : MoveBase
 {

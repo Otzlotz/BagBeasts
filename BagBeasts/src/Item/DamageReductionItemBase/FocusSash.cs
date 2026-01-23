@@ -1,7 +1,7 @@
-﻿using src.Move;
-using src.Move.Base;
+﻿using BagBeasts.src.Move;
+using BagBeasts.src.Move.Base;
 
-namespace src.Item.ItemBase;
+namespace BagBeasts.src.Item.ItemBase;
 
 public class FocusSash : DamageReductionItemBase
 {

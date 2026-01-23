@@ -1,5 +1,5 @@
 
-namespace src.Reader;
+namespace BagBeasts.src.Reader;
 
 /// <summary>
 /// Klasse für Methoden mit Datenbankabfragen für die Tabelle BagBeastAbility (besitzt einen Cache!)

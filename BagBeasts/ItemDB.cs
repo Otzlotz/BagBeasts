@@ -3,9 +3,11 @@ using System.Collections.Generic;
 
 namespace BagBeasts;
 
-public partial class Ability
+public partial class ItemDB
 {
     public int Id { get; set; }
 
     public string? Name { get; set; }
+
+    public string? Description { get; set; }
 }

@@ -1,4 +1,5 @@
 ﻿using BagBeasts.src.Beast;
+using BagBeasts.src.Database;
 using System.Diagnostics;
 
 namespace BagBeasts.src.Database

@@ -1,8 +1,8 @@
 
 
-using src.Move.Base;
+using BagBeasts.src.Move.Base;
 
-namespace src.Ability.AbilityBase;
+namespace BagBeasts.src.Ability.AbilityBase;
 
 public abstract class Levitate : DamageReductionAbilityBase
 {
@@ -18,7 +18,7 @@ public abstract class Levitate : DamageReductionAbilityBase
     /// <returns>Neuer Schaden</returns>
     public override string AbilityEffect(BagBeastObject holderBeast, BagBeastObject defenderBeast, MoveBase attackMove, ref decimal damage)
     {
-        if (attackMove.Type == Type.Ground)
+        if (attackMove.Type == TypeDB.Ground)
         {
             damage = 0;
         }

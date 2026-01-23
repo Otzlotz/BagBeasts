@@ -1,6 +1,6 @@
-using src.Move.Base;
+using BagBeasts.src.Move.Base;
 
-namespace src.Ability.AbilityBase;
+namespace BagBeasts.src.Ability.AbilityBase;
 
 public class NoGuard : AccuracyModifyingAbilityBase
 {

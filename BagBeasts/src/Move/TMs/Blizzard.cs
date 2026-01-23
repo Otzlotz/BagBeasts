@@ -1,7 +1,7 @@
-using src.Move.Base;
-using src.StatusEffect;
+using BagBeasts.src.Move.Base;
+using BagBeasts.src.StatusEffect;
 
-namespace src.Move.TMs;
+namespace BagBeasts.src.Move.TMs;
 
 public class Blizzard : MoveBase
 {

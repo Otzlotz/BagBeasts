@@ -1,8 +1,8 @@
-using src.Battle;
-using src.Move.Base;
-using src.StatusEffect;
+using BagBeasts.src.Battle;
+using BagBeasts.src.Move.Base;
+using BagBeasts.src.StatusEffect;
 
-namespace src.Move.TMs;
+namespace BagBeasts.src.Move.TMs;
 
 public class ConfuseRay : MoveBase
 {

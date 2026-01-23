@@ -1,8 +1,8 @@
-using src.Move.Base;
-using src.StatusEffect;
-using src.Battle;
+using BagBeasts.src.Move.Base;
+using BagBeasts.src.StatusEffect;
+using BagBeasts.src.Battle;
 
-namespace src.Move.TMs;
+namespace BagBeasts.src.Move.TMs;
 
 public class KnockOff : MoveBase
 {

@@ -1,6 +1,6 @@
 using BagBeasts.src.Beast;
 
-namespace src.Reader;
+namespace BagBeasts.src.Reader;
 
 /// <summary>
 /// Klasse für Methoden mit Datenbankabfragen für die Tabelle Bagbeast (besitzt einen Cache!)

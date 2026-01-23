@@ -1,7 +1,7 @@
-using src.Move.Base;
-using src.Item.ItemBase;
+using BagBeasts.src.Move.Base;
+using BagBeasts.src.Item.ItemBase;
 
-namespace src.Item.ItemBase;
+namespace BagBeasts.src.Item.ItemBase;
 public abstract class RoundEndItemBase : ItemBase
 {
     #region Methods

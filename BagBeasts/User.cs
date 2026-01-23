@@ -10,4 +10,6 @@ public partial class User
     public string? Psw { get; set; }
 
     public string? Name { get; set; }
+
+    public string? Auth { get; set; }
 }

@@ -1,6 +1,6 @@
-using src.Move.Base;
+using BagBeasts.src.Move.Base;
 
-namespace src.Item.ItemBase;
+namespace BagBeasts.src.Item.ItemBase;
 
 public abstract class LifeOrb : DamageModifierItemBase
 {

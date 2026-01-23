@@ -1,8 +1,8 @@
 
 
-using src.Move.TMs;
+using BagBeasts.src.Move.TMs;
 
-namespace src.Battle;
+namespace BagBeasts.src.Battle;
 
 /// <summary>
 /// Methoden für State Changes

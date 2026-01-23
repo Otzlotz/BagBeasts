@@ -1,8 +1,8 @@
-using src.Move.Base;
-using src.Item.ItemBase;
-using src.Move.Base;
+using BagBeasts.src.Move.Base;
+using BagBeasts.src.Item.ItemBase;
+using BagBeasts.src.Move.Base;
 
-namespace src.Item.ItemBase;
+namespace BagBeasts.src.Item.ItemBase;
 public abstract class ChoiceScarf : ItemBase
 {
     #region Methods

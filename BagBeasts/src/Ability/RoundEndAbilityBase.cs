@@ -1,7 +1,7 @@
-using src.Ability.AbilityBase;
-using src.Move.Base;
+using BagBeasts.src.Ability.AbilityBase;
+using BagBeasts.src.Move.Base;
 
-namespace src.Ability.AbilityBase;
+namespace BagBeasts.src.Ability.AbilityBase;
 public abstract class RoundEndAbilityBase : AbilityBase
 {
     #region Methods

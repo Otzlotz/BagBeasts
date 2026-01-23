@@ -1,14 +1,14 @@
 
 
 using System;
-using src.Ability.AbilityBase;
-using src.Item.ItemBase;
-using src.Move.Base;
-using src.Reader;
-using src.StatusEffect;
-using src.Move.TMs;
+using BagBeasts.src.Ability.AbilityBase;
+using BagBeasts.src.Item.ItemBase;
+using BagBeasts.src.Move.Base;
+using BagBeasts.src.Reader;
+using BagBeasts.src.StatusEffect;
+using BagBeasts.src.Move.TMs;
 
-namespace src.Battle;
+namespace BagBeasts.src.Battle;
 
 /// <summary>
 /// Service zum Berechnen des Schaden

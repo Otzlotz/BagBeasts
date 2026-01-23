@@ -17,44 +17,42 @@ public partial class PostgresContext : DbContext
     {
     }
 
-    public virtual DbSet<Ability> Abilities { get; set; }
+    public virtual DbSet<AbilityDB> Abilities { get; set; }
 
-    public virtual DbSet<Bagbeasts> Bagbeasts { get; set; }
+    public virtual DbSet<BagbeastsDB> Bagbeasts { get; set; }
 
-    public virtual DbSet<Item> Items { get; set; }
+    public virtual DbSet<ItemDB> Items { get; set; }
 
-    public virtual DbSet<Move> Moves { get; set; }
+    public virtual DbSet<MoveDB> Moves { get; set; }
 
-    public virtual DbSet<Type> Types { get; set; }
+    public virtual DbSet<TypeDB> Types { get; set; }
 
     public virtual DbSet<User> Users { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseNpgsql("Host=localhost;Database=postgres;Username=singularsh;Password=;Persist Security Info=True");
+        => optionsBuilder.UseNpgsql("Host=localhost;Database=postgres;Username=postgres;Password=simon");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<Ability>(entity =>
+        modelBuilder.Entity<AbilityDB>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("abilities_pkey");
+            entity.HasKey(e => e.BagbeastId).HasName("abilities_pkey");
 
-            entity.Property(e => e.Id)
+            entity.Property(e => e.BagbeastId)
                 .ValueGeneratedNever()
-                .HasColumnName("id");
-            entity.Property(e => e.Name).HasColumnName("name");
+                .HasColumnName("bagbeast_id");
+            entity.Property(e => e.AbilityId).HasColumnName("ability_id");
         });
 
-        modelBuilder.Entity<Bagbeasts>(entity =>
+        modelBuilder.Entity<BagbeastsDB>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("Id");
 
             entity.Property(e => e.Id)
-                .UseIdentityAlwaysColumn()
+                .ValueGeneratedNever()
                 .HasColumnName("id");
-            entity.Property(e => e.Atk)
-                .HasDefaultValueSql("0")
-                .HasColumnName("atk");
+            entity.Property(e => e.Atk).HasColumnName("atk");
             entity.Property(e => e.Def).HasColumnName("def");
             entity.Property(e => e.Hp).HasColumnName("hp");
             entity.Property(e => e.Initiative).HasColumnName("initiative");
@@ -67,11 +65,11 @@ public partial class PostgresContext : DbContext
             entity.HasMany(d => d.Moves).WithMany(p => p.Bagbeasts)
                 .UsingEntity<Dictionary<string, object>>(
                     "BagbeastMove",
-                    r => r.HasOne<Move>().WithMany()
+                    r => r.HasOne<MoveDB>().WithMany()
                         .HasForeignKey("MoveId")
                         .OnDelete(DeleteBehavior.ClientSetNull)
                         .HasConstraintName("MoveId"),
-                    l => l.HasOne<Bagbeasts>().WithMany()
+                    l => l.HasOne<BagbeastsDB>().WithMany()
                         .HasForeignKey("BagbeastId")
                         .OnDelete(DeleteBehavior.ClientSetNull)
                         .HasConstraintName("Bagbeastid"),
@@ -82,7 +80,7 @@ public partial class PostgresContext : DbContext
                     });
         });
 
-        modelBuilder.Entity<Item>(entity =>
+        modelBuilder.Entity<ItemDB>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("items_pkey");
 
@@ -93,18 +91,32 @@ public partial class PostgresContext : DbContext
             entity.Property(e => e.Name).HasColumnName("name");
         });
 
-        modelBuilder.Entity<Move>(entity =>
+        modelBuilder.Entity<MoveDB>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("moves_pkey");
 
             entity.Property(e => e.Id)
                 .UseIdentityAlwaysColumn()
                 .HasColumnName("id");
+            entity.Property(e => e.Acc).HasColumnName("acc");
+            entity.Property(e => e.Category).HasColumnName("category");
+            entity.Property(e => e.Contact).HasColumnName("contact");
+            entity.Property(e => e.CritChanceTier).HasColumnName("critChanceTier");
             entity.Property(e => e.Description).HasColumnName("description");
+            entity.Property(e => e.Dmg).HasColumnName("dmg");
             entity.Property(e => e.Name).HasColumnName("name");
+            entity.Property(e => e.Pp).HasColumnName("pp");
+            entity.Property(e => e.Prio)
+                .HasDefaultValue(0)
+                .HasColumnName("prio");
+            entity.Property(e => e.Type).HasColumnName("type");
+
+            entity.HasOne(d => d.TypeNavigation).WithMany(p => p.Moves)
+                .HasForeignKey(d => d.Type)
+                .HasConstraintName("type");
         });
 
-        modelBuilder.Entity<Type>(entity =>
+        modelBuilder.Entity<TypeDB>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("Types_pkey");
 
@@ -119,6 +131,7 @@ public partial class PostgresContext : DbContext
             entity.ToTable("User");
 
             entity.Property(e => e.Id).UseIdentityAlwaysColumn();
+            entity.Property(e => e.Auth).HasColumnName("auth");
             entity.Property(e => e.Name).HasColumnName("name");
             entity.Property(e => e.Psw).HasColumnName("psw");
         });

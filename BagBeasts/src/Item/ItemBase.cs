@@ -1,6 +1,6 @@
 using System.ComponentModel;
 
-namespace src.Item.ItemBase;
+namespace BagBeasts.src.Item.ItemBase;
 
 public abstract class ItemBase
 {

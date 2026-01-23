@@ -1,6 +1,6 @@
 using BagBeasts.src.Beast;
 
-namespace src.Item.ItemBase;
+namespace BagBeasts.src.Item.ItemBase;
 public abstract class PermanentItemBase : ItemBase
 {
     #region Methods

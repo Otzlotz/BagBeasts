@@ -1,10 +1,6 @@
+using BagBeasts.src.Move.TMs;
 
-
-
-
-using src.Move.TMs;
-
-namespace src.Move.Base;
+namespace BagBeasts.src.Move.Base;
 
 public static class MoveService
 {
@@ -27,7 +23,7 @@ public static class MoveService
     /// </summary>
     /// <param name="fromDB">Datenbankobjekt</param>
     /// <returns>Gefülltes ActionBase Objekt</returns>
-    public static ActionBase CreateActionObject(BagBeasts.Move fromDB)
+    public static ActionBase CreateActionObject(MoveDB fromDB)
     {
         // Objekt erstellen
         ActionBase action = GetObject((uint)fromDB.Id);
@@ -35,6 +31,7 @@ public static class MoveService
         // TODO: Testen ob das funktioniert, dass der bei Attacken das Init aus MoveBase statt aus ActionBase nutzt
 
         // Objekt initialisieren
+
         action.Init(fromDB);
 
         return action;

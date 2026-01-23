@@ -4,7 +4,6 @@ using System;
 using BagBeasts.src.Ability.AbilityBase;
 using BagBeasts.src.Item.ItemBase;
 using BagBeasts.src.Move.Base;
-using BagBeasts.src.Reader;
 using BagBeasts.src.StatusEffect;
 using BagBeasts.src.Move.TMs;
 
@@ -43,7 +42,7 @@ public static class BattleCalculationService
         decimal crit = critTriggered ? 1.5m : 1m;
         ushort z = GetZ();
         decimal stab = GetStab(attacker, attackMove);
-        decimal typeMult = GetMultiplier(attackMove.Type, defender.Type1, defender.Type2);
+        decimal typeMult = GetMultiplier((Type)attackMove.Type.Id, defender.Type1, defender.Type2);
         decimal attackStat = GetAttackStat(attacker, attackMove);
         decimal defendStat = GetDefendstat(defender, attackMove, critTriggered);
 
@@ -345,7 +344,7 @@ public static class BattleCalculationService
     /// <param name="defenderType1">Typ 1 des angegriffenen BagBeast</param>
     /// <param name="defenderType2">Optional: Typ 2 des angegriffenen BagBeast</param>
     /// <returns>Type Damage Multiplier</returns>
-    private decimal GetMultiplier(Type attackType, Type defenderType1, Type? defenderType2)
+    private static decimal GetMultiplier(Type attackType, Type defenderType1, Type? defenderType2)
     {
         // TODO: Nur TEmporäre Methode! Muss stattdessen aus der Datenbank gelesen werden!
         return 1;

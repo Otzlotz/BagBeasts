@@ -1,6 +1,7 @@
 ﻿@page "/battle"
 @using System.Text.Json
 @using BagBeasts.src.Database
+@using BagBeasts.src.Move.Base
 @rendermode InteractiveServer
 
 <div class="battle-wrap">
@@ -109,19 +110,19 @@
 
                     <div class="move-grid">
                         <button class="btn-move type-fire">
-                            <span class="move-name">Flammenwurf</span>
+                            <span class="move-name">@PlayerTeam.Active.Move1.Move.Name</span>
                             <span class="move-type">Feuer</span>
                         </button>
                         <button class="btn-move type-water">
-                            <span class="move-name">Hydropumpe</span>
+                            <span class="move-name">@PlayerTeam.Active.Move2.Move.Name</span>
                             <span class="move-type">Wasser</span>
                         </button>
                         <button class="btn-move type-electric">
-                            <span class="move-name">Donnerblitz</span>
+                            <span class="move-name">@PlayerTeam.Active.Move3.Move.Name</span>
                             <span class="move-type">Elektro</span>
                         </button>
                         <button class="btn-move type-grass">
-                            <span class="move-name">Solarstrahl</span>
+                            <span class="move-name">@PlayerTeam.Active.Move4.Move.Name</span>
                             <span class="move-type">Pflanze</span>
                         </button>
                     </div>
@@ -768,20 +769,33 @@
             {
                 BagbeastsDB beastFromDB = Datareader.GetBagBeastById(jb.Id);
 
-                MoveService
-
-                importedBagBeasts.Add(new BagBeastObject()
+                if (jb.Moves.Count == 4)
                 {
-                    Id = jb.Id,
-                    Name = beastFromDB.Name,
-                    ATK = beastFromDB.Atk,
-                    DEF = beastFromDB.Def,
-                    SPA = beastFromDB.Spa,
-                    SPD = beastFromDB.Spd,
-                    MAXHP = beastFromDB.Hp,
-                    CurrentHP = beastFromDB.Hp,
-                    Move1 = new EquippedMove( Return)
-                });
+                    List <MoveDB> moves = jb.Moves.ToList();
+                    
+                    EquippedMove move1 = new EquippedMove((MoveBase)MoveService.CreateActionObject(Datareader.GetMoveById(moves[0].Id).First()));
+                    EquippedMove move2 = new EquippedMove((MoveBase)MoveService.CreateActionObject(Datareader.GetMoveById(moves[1].Id).First()));
+                    EquippedMove move3 = new EquippedMove((MoveBase)MoveService.CreateActionObject(Datareader.GetMoveById(moves[2].Id).First()));
+                    EquippedMove move4 = new EquippedMove((MoveBase)MoveService.CreateActionObject(Datareader.GetMoveById(moves[3].Id).First()));
+
+                    importedBagBeasts.Add(new BagBeastObject()
+                    {
+                        Id = jb.Id,
+                        Name = beastFromDB.Name,
+                        ATK = beastFromDB.Atk,
+                        DEF = beastFromDB.Def,
+                        SPA = beastFromDB.Spa,
+                        SPD = beastFromDB.Spd,
+                        MAXHP = beastFromDB.Hp,
+                        CurrentHP = beastFromDB.Hp,
+                        Move1 = move1,
+                        Move2 = move2,
+                        Move3 = move3,
+                        Move4 = move4,
+                    });
+                }
+
+
             }
 
             if (importedBagBeasts != null && importedBagBeasts.Any())

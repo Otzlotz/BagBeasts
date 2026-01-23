@@ -1,24 +1,22 @@
 using src.Move.Base;
 using src.StatusEffect;
-using src.Battle;
 
 namespace src.Move.TMs;
 
-public class Hex : MoveBase
+public class Thunderbolt : MoveBase
 {
     /// <inheritdoc/>
     public override ExecuteResult Execute(BagBeastObject executingBeast, BagBeastObject defendingBeast, out string moveExecuteMessage, BagBeastObject? switchInBeast = null)
     {
-        if (defendingBeast.StatusEffect != StatusEffectEnum.No)
-        {
-            Damage *= 2;
-        }
-
         ExecuteResult executeResult = base.Execute(executingBeast, defendingBeast, out moveExecuteMessage, switchInBeast);
 
-        if (defendingBeast.StatusEffect != StatusEffectEnum.No)
+        if (executeResult.MoveHit)
         {
-            Damage /= 2;
+            // 10% Chance Paralyse zuzufügen (wenn es Fehlschlägt muss die Message nicht hinzugefügt werden!)
+            if (Rnd.Next(1, 100) <= 10 && StatusEffectService.TryApplyStatusEffekt(defendingBeast, StatusEffectEnum.Paralysis, out string statusMessage))
+            {
+                moveExecuteMessage += "\n" + statusMessage;
+            }
         }
 
         return executeResult;

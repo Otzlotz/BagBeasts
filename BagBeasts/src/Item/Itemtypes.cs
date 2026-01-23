@@ -1,4 +1,4 @@
-﻿namespace src.Item.Base;
+﻿namespace BagBeasts.src.Item.Base;
 
 public class Itemtypes
 {

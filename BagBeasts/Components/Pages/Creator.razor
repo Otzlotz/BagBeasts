@@ -1,5 +1,10 @@
-﻿@page "/creator"
-@attribute [StreamRendering]
+﻿@using BagBeasts.src.Beast;
+@using BagBeasts.src.Database;
+@using System.Text.Json;
+@page "/creator"
+@rendermode InteractiveServer
+@inject IJSRuntime JS
+@inject NavigationManager Nav
 
 <PageTitle>TeamCreator</PageTitle>
 
@@ -7,40 +12,321 @@
 
 <p>The Team creator</p>
 
-@if (bagbeasts == null)
+@if (isLoading)
 {
     <p><em>Loading...</em></p>
 }
 else
 {
-    <table class="table">
-        <thead>
-            <tr>
-                <th>BagBeasts</th>
-                <th aria-label="label1">Temp. (C)</th>
-                <th aria-label="label2">Temp. (F)</th>
-                <th>Summary</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var beast in bagbeasts)
+    <div class="row">
+        <div class="col-md-8">
+            <h3>Alle BagBeasts</h3>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Select</th>
+                        <th>BagBeasts</th>
+                        <th aria-label="label1">Name</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (bagbeasts != null)
+                    {
+                        @foreach (BagbeastsDB beast in bagbeasts)
+                        {
+                            <tr>
+                                <td>
+                                    <button class="btn btn-sm @(selectedBeasts.Any(b => b.Id == beast.Id) ? "btn-success" : "btn-outline-success")"
+                                            @onclick="@(() => ToggleSelection(beast))"
+                                            disabled="@(selectedBeasts.Count >= 6 && !selectedBeasts.Any(b => b.Id == beast.Id))">
+                                        @(selectedBeasts.Any(b => b.Id == beast.Id) ? "✓" : "+")
+                                    </button>
+                                </td>
+                                <td>@beast.Id</td>
+                                <td>@beast.Name</td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <div class="col-md-4">
+            <h3>Team (@selectedBeasts.Count/6)</h3>
+            @if (selectedBeasts.Count > 0)
             {
-                <tr>
-                    <td>@beast.Name</td>
-                    <td>@beast.ID</td>
-                    <td>@beast.Type1</td>
-                    <td>@beast.Type2.HasValue ? @beast.Type2.Value : @string.Empty</td>
-                </tr>
+                <table class="table table-sm">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Type1</th>
+                            <th>Type2</th>
+                            <th>Moves</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (BagbeastsDB beast in selectedBeasts)
+                        {
+                            <tr>
+                                <td>@beast.Name</td>
+                                <td>
+                                    <button class="btn btn-sm btn-info" @onclick="@(() => OpenMoveSelection(beast))">
+                                        @(beastMoves.ContainsKey(beast.Id) ? $"{beastMoves[beast.Id].Count}/4" : "0/4")
+                                    </button>
+                                </td>
+                                <td>
+                                    <button class="btn btn-sm btn-danger" @onclick="@(() => RemoveBeast(beast))">Remove</button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+                @if (!string.IsNullOrEmpty(errorMessage))
+                {
+                    <div class="alert alert-danger" role="alert">
+                        @errorMessage
+                    </div>
+                }
+                <button class="btn btn-primary w-100 mt-3" @onclick="DownloadTeamAsJson">Download Team (JSON)</button>
             }
-        </tbody>
-    </table>
+            else
+            {
+                <p class="text-muted">Wähle bis zu 6 BagBeasts aus</p>
+            }
+        </div>
+    </div>
 }
 
+@* Move Selection Popup *@
+@if (showMovePopup && currentBeast != null)
+{
+    <div class="modal-backdrop show"></div>
+    <div class="modal show d-block" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Wähle Moves für @currentBeast.Name (@GetSelectedMovesCount()/4)</h5>
+                    <button type="button" class="btn-close" @onclick="CloseMoveSelection"></button>
+                </div>
+                <div class="modal-body">
+                    @if (availableMoves != null && availableMoves.Count > 0)
+                    {
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Select</th>
+                                    <th>Move Name</th>
+                                    <th>Type</th>
+                                    <th>Power</th>
+                                    <th>Accuracy</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var move in availableMoves)
+                                {
+                                    var isSelected = IsMovesSelected(move);
+                                    <tr class="@(isSelected ? "table-primary" : "")">
+                                        <td>
+                                            <button class="btn btn-sm @(isSelected ? "btn-success" : "btn-outline-success")"
+                                                    @onclick="@(() => ToggleMoveSelection(move))"
+                                                    disabled="@(GetSelectedMovesCount() >= 4 && !isSelected)">
+                                                @(isSelected ? "✓" : "+")
+                                            </button>
+                                        </td>
+                                        <td>@move.Name</td>
+                                        <td>@move.Type</td>
+                                        <td>@move.Category</td>
+                                        <td>@move.Pp</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    }
+                    else
+                    {
+                        <p class="text-muted">Keine Moves verfügbar für dieses BagBeast</p>
+                    }
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" @onclick="CloseMoveSelection">Abbrechen</button>
+                    <button type="button" class="btn btn-primary" @onclick="SaveMoveSelection">Speichern</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<style>
+    .modal-backdrop {
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: 1040;
+        width: 100vw;
+        height: 100vh;
+        background-color: rgba(0, 0, 0, 0.5);
+    }
+
+    .modal.show {
+        display: block;
+        z-index: 1050;
+    }
+</style>
+
 @code {
-    private List<BagBeast>? bagbeasts;
+    private List<BagbeastsDB> bagbeasts = new();
+    private List<BagbeastsDB> selectedBeasts = new();
+    private Dictionary<int, List<MoveDB>> beastMoves = new();
+    private List<MoveDB> availableMoves = new();
+    private List<MoveDB> tempSelectedMoves = new();
+    private BagbeastsDB? currentBeast = null;
+    private bool showMovePopup = false;
+    private bool isLoading = true;
+    private string errorMessage = string.Empty;
 
     protected override async Task OnInitializedAsync()
     {
-        
+        bagbeasts = Datareader.GetBagBeasts();
+        isLoading = false;
+    }
+
+    private void ToggleSelection(BagbeastsDB beast)
+    {
+        var existingBeast = selectedBeasts.FirstOrDefault(b => b.Id == beast.Id);
+
+        if (existingBeast != null)
+        {
+            selectedBeasts.Remove(existingBeast);
+            beastMoves.Remove(beast.Id);
+        }
+        else if (selectedBeasts.Count < 6)
+        {
+            selectedBeasts.Add(beast);
+            OpenMoveSelection(beast);
+        }
+
+        StateHasChanged();
+    }
+
+    private void RemoveBeast(BagbeastsDB beast)
+    {
+        selectedBeasts.Remove(beast);
+        beastMoves.Remove(beast.Id);
+        StateHasChanged();
+    }
+
+    private void OpenMoveSelection(BagbeastsDB beast)
+    {
+        currentBeast = beast;
+        availableMoves = Datareader.GetMovesRef(beast);
+
+        if (beastMoves.ContainsKey(beast.Id))
+        {
+            tempSelectedMoves = new List<MoveDB>(beastMoves[beast.Id]);
+        }
+        else
+        {
+            tempSelectedMoves = new List<MoveDB>();
+        }
+
+        showMovePopup = true;
+        StateHasChanged();
+    }
+
+    private void ToggleMoveSelection(MoveDB move)
+    {
+        var existingMove = tempSelectedMoves.FirstOrDefault(m => m.Id == move.Id);
+
+        if (existingMove != null)
+        {
+            tempSelectedMoves.Remove(existingMove);
+        }
+        else if (tempSelectedMoves.Count < 4)
+        {
+            tempSelectedMoves.Add(move);
+        }
+
+        StateHasChanged();
+    }
+
+    private bool IsMovesSelected(MoveDB move)
+    {
+        return tempSelectedMoves.Any(m => m.Id == move.Id);
+    }
+
+    private int GetSelectedMovesCount()
+    {
+        return tempSelectedMoves.Count;
+    }
+
+    private void SaveMoveSelection()
+    {
+        if (currentBeast != null)
+        {
+            if (tempSelectedMoves.Count > 0)
+            {
+                beastMoves[currentBeast.Id] = new List<MoveDB>(tempSelectedMoves);
+            }
+            else if (beastMoves.ContainsKey(currentBeast.Id))
+            {
+                beastMoves.Remove(currentBeast.Id);
+            }
+        }
+
+        CloseMoveSelection();
+    }
+
+    private void CloseMoveSelection()
+    {
+        showMovePopup = false;
+        currentBeast = null;
+        tempSelectedMoves.Clear();
+        StateHasChanged();
+    }
+
+    private async Task DownloadTeamAsJson()
+    {
+        try
+        {
+            errorMessage = string.Empty;
+            List<BagbeastsDB> team = new List<BagbeastsDB>();
+
+            foreach (BagbeastsDB bagBeast in selectedBeasts)
+            {
+                team.Add(new BagbeastsDB
+             {
+                 Id = bagBeast.Id,
+                 Name = bagBeast.Name,
+                 Type1 = bagBeast.Type1,
+                 Type2 = bagBeast.Type2,
+                 Moves = beastMoves.ContainsKey(bagBeast.Id)
+                     ? new List<MoveDB>(beastMoves[bagBeast.Id])
+                     : new List<MoveDB>()
+                });
+            }
+
+            var json = JsonSerializer.Serialize(team, new JsonSerializerOptions { WriteIndented = true });
+            var bytes = System.Text.Encoding.UTF8.GetBytes(json);
+
+            await JS.InvokeVoidAsync("downloadFile", bytes, "team.json", "application/json");
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Download fehlgeschlagen: {ex.Message}";
+        }
+    }
+}
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if(firstRender){
+            
+            string AuthToken = await JS.InvokeAsync<string>(identifier: "CheckForCookie", new object[] {"UserID"});
+                
+            if (!Authentication.CheckForAuth(AuthToken))
+            {
+                Nav.NavigateTo(uri: "/MainMenu");
+            }
+        }
     }
 }

@@ -1,0 +1,64 @@
+@page "/SignUp"
+@rendermode InteractiveServer
+@inject NavigationManager Nav
+@using System.Diagnostics.Eventing.Reader
+@using System.Diagnostics
+@using BagBeasts.src.Hashfunction
+
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Account erstellen</title>
+</head>
+<div class ="page">
+    <div class="login-container">
+        @if (!string.IsNullOrEmpty(errorMessage))
+        {
+            <div class="error-banner">
+                @errorMessage
+            </div>
+        }
+        <h2>Account erstellen</h2>
+            <input type="text" placeholder="Benutzername" @bind="username" required>
+            <input type="password" placeholder="Passwort" @bind="password" required>
+            <input type="password" placeholder="Passwort bestätigen" @bind="passwordrepeated" required>
+            <button @onclick="btnSignUpClick">Benutzer erstellen</button>
+    </div>
+</div>
+
+@code{
+    UserAccessor UA = new UserAccessor();
+
+    string username;
+    string password;
+    string passwordrepeated;
+    private string errorMessage = null;
+
+    public void btnSignUpClick()
+    {
+        if (password != passwordrepeated)
+        {
+            errorMessage = "Die Passwörter stimmen nicht überein.";
+            StateHasChanged();
+        }
+        else if (UA.GetUser(username) != null) 
+        {
+            errorMessage = "Dieser Username existiert bereits.";
+        }
+        else if (UA.InsertUser(user: new User{Name = username, Psw = Hashfunction.Hash(password), Auth = Hashfunction.Hash(password + username)}))
+        {
+                Nav.NavigateTo(uri: "/login");
+        }
+        else
+        {
+            errorMessage = "Insert kapot.";
+            Debug.WriteLine("Insert Kapot.");
+            StateHasChanged();
+        }
+        
+        }
+    }
+}
+
+

@@ -1,4 +1,4 @@
-﻿public struct StatChanges
+﻿public class StatChanges
 {
     public int ATK { get; set; }
     public int SPA { get; set; }

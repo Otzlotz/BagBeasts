@@ -1,29 +1,41 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 
-/// <summary>
-/// Klasse eines BagBeasts aus der Datenbank
-/// </summary>
-public class BagBeast
+namespace BagBeasts.src.Beast
 {
-    #region Properties
-    public string Name { get; private set; }
-    public int ID { get; private set; }
-    public Type Type1 { get; private set; }
-    public Type? Type2 { get; private set; }
-    public int HP { get; private set; }
-    public int ATK { get; private set; }
-    public int SPA { get; private set; }
-    public int DEF { get; private set; }
-    public int SPD { get; private set; }
-    public int INT { get; private set; }
-    #endregion // Properties
-
     /// <summary>
-    /// Konstruktor
+    /// Klasse eines BagBeasts aus der Datenbank
     /// </summary>
-    public BagBeast()
+    public class BagBeast
     {
+        #region Properties
+        public int ID { get; private set; }
+        public string Name { get; private set; }
+        public TypeDB Type1 { get; private set; }
+        public TypeDB? Type2 { get; private set; }
+        public int HP { get; private set; }
+        public int ATK { get; private set; }
+        public int SPA { get; private set; }
+        public int DEF { get; private set; }
+        public int SPD { get; private set; }
+        public int INT { get; private set; }
+        #endregion // Properties
 
+        /// <summary>
+        /// Konstruktor
+        /// </summary>
+        public BagBeast(string name, int hp, int atk, int spa, int def, int spd, int i, TypeDB type1, TypeDB? typ2 = null, int id = 0)
+        {
+            Name = name;
+            HP = hp;
+            ATK = atk;
+            SPA = spa;
+            DEF = def;
+            SPD = spd;
+            INT = i;
+            Type1 = type1;
+            Type2 = typ2;
+            ID = id;
+        }
     }
-
 }

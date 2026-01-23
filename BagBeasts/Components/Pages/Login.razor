@@ -1,0 +1,67 @@
+﻿@page "/Login"
+@rendermode InteractiveServer
+@using Microsoft.AspNetCore.Mvc.RazorPages
+@using BagBeasts.src.Hashfunction
+@using System.Runtime.CompilerServices
+@using BagBeasts.src.Authentication
+@inject NavigationManager Nav
+@inject IJSRuntime JS
+
+<div class ="page"> 
+    <div class="login-container">
+        <h2>Login</h2>
+
+        @if (!string.IsNullOrEmpty(errorMessage))
+        {
+            <div class="error-banner">
+                @errorMessage
+            </div>
+        }
+
+        <input type="text" name="username" placeholder="Benutzername" required is @bind="username">
+        <input type="password" name="password" placeholder="Passwort" required @bind="password">
+        <button @onclick="btnLoginClick">Einloggen</button>    
+        <span>Kein Account?</span>
+        <NavLink href="/SignUp">Account erstellen</NavLink>
+    </div>
+</div>
+
+@code {
+    UserAccessor UA = new UserAccessor();
+    private User currentUser;
+    private string username = null;
+    private string password = null;
+    private string errorMessage = null;
+    private int userID = 0;
+    private void btnLoginClick()
+    {
+        if (UA.userExist(username))
+        {
+            currentUser = UA.GetUser(username);
+            if (username == currentUser.Name && Hashfunction.Hash(password) == currentUser.Psw)
+            {
+                Nav.NavigateTo(uri: "/MainMenu");
+                JS.InvokeVoidAsync("SetAuthCookie", new object[] {currentUser.Auth});
+            }
+            else
+            {
+                // Login fehlgeschlagen: Setzen der Fehlermeldung
+                errorMessage = "Die eingegebenen Anmeldedaten sind ungültig. Bitte versuchen Sie es erneut.";
+                // Erzwingen eines Rerenders, um das Banner anzuzeigen
+                StateHasChanged();
+            }
+        } 
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if(firstRender){
+            
+            string AuthToken = await JS.InvokeAsync<string>(identifier: "CheckForCookie", new object[] {"UserID"});
+            if (!Authentication.CheckForAuth(AuthToken))
+            {
+                Nav.NavigateTo(uri: "/MainMenu");
+            }
+        }
+    }
+}

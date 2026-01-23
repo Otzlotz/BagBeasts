@@ -1,0 +1,40 @@
+@page "/MainMenu"
+@using BagBeasts.src.Hashfunction;
+@inject NavigationManager Nav
+@inject IJSRuntime JS
+@rendermode InteractiveServer
+
+
+<div class="page">
+    <div class="menu-container">
+        <h2>Menü</h2>
+        <div class="button-group">
+            <button class="menu-button" @onclick="btnCreatorClick">Team erstellen</button>
+            <button class="menu-button" @onclick="btnBattleClick">Kämpfen!</button>
+        </div>
+    </div>
+</div>
+
+@code{
+    private string UserIDdb = "1";
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if(firstRender){
+            
+            string AuthToken = await JS.InvokeAsync<string>(identifier: "CheckForCookie", new object[] {"UserID"});
+            if (Authentication.CheckForAuth(AuthToken))
+            {
+                Nav.NavigateTo(uri: "/Login");
+            }
+        }
+    }
+    private void btnCreatorClick()
+    {
+        Nav.NavigateTo(uri: "/Creator/", forceLoad: true);
+    }
+
+    private void btnBattleClick()
+    {
+        Nav.NavigateTo(uri: "/Battle", forceLoad: true);
+    }
+}

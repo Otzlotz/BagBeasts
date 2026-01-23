@@ -1,32 +1,8 @@
-using src.Move.Base;
-namespace src.Move.TMs;
+using BagBeasts.src.Move.Base;
+
+namespace BagBeasts.src.Move.TMs;
 
 public class Return : MoveBase
 {
-    #region Properties 
-
-    public override uint ID {get;} = 1;
-
-    public override uint Damage {get;} = 100;
-
-    public override uint? Accuracy {get;} = 100;
-
-    public override uint CritChanceTier {get;} = 1;
-
-    public override uint PP {get;} = 20;
-
-    public override Type Type {get;} = Type.Normal;
-
-    public override Category Category {get;} = Category.Physical;
-
-    #endregion // Properties
-
-    #region Methods
-
-    public override void Execute(MoveBase enemyMove)
-    {
-        // TODO: DO
-    }
-
-    #endregion // Methods
+    // INFO: Nutzt das Standard Execute!
 }

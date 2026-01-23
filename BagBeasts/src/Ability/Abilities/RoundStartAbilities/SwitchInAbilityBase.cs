@@ -4,7 +4,7 @@ using src.Move.Base;
 
 namespace src.Ability.AbilityBase;
 
-public abstract class RoundStartAbilityBase : AbilityBase
+public abstract class SwitchInAbilityBase : AbilityBase
 {
     #region Methods
 
@@ -16,7 +16,7 @@ public abstract class RoundStartAbilityBase : AbilityBase
     /// <param name="attackMove">Attacke</param>
     /// <param name="damage">Kalkulierter Schaden</param>
     /// <returns>Neuer Schaden</returns>
-    public abstract decimal AbilityEffect(BagBeastObject holderBeast, BagBeastObject defenderBeast, MoveBase attackMove, decimal damage);
+    public abstract string AbilityEffect(BagBeastObject holderBeast, BagBeastObject defenderBeast);
 
     #endregion // Methods
 }

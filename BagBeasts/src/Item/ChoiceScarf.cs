@@ -7,7 +7,7 @@ public abstract class ChoiceScarf : ItemBase
 {
     #region Methods
 
-    public void ItemEffect(BagBeastObject holderBeast, MoveBase attackMove)
+    public void ItemEffect(BagBeastObject holderBeast, ActionBase attackMove)
     {
         if (holderBeast.Move1.Move.ID != attackMove.ID)
         {

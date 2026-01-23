@@ -77,6 +77,7 @@ public static class BattleCalculationService
     /// <returns>Ob ein Krit ausgelöst wird</returns>
     public static bool CritTriggered(uint critChanceTier, out string critMessage)
     {
+        bool critTriggerd;
         switch (critChanceTier)
         {
             case 1:
@@ -249,7 +250,7 @@ public static class BattleCalculationService
     /// <returns>Z (zwischen 85 - 100)</returns>
     private static ushort GetZ()
     {
-        return Rnd.Next(85, 100);
+        return (ushort)Rnd.Next(85, 100);
     }
 
     /// <summary>
@@ -344,7 +345,7 @@ public static class BattleCalculationService
     /// <param name="defenderType1">Typ 1 des angegriffenen BagBeast</param>
     /// <param name="defenderType2">Optional: Typ 2 des angegriffenen BagBeast</param>
     /// <returns>Type Damage Multiplier</returns>
-    private decimal GetMultiplier(Type attackType, Type defenderType1, Type? defenderType2)
+    private static decimal GetMultiplier(Type attackType, Type defenderType1, Type? defenderType2)
     {
         // TODO: Nur TEmporäre Methode! Muss stattdessen aus der Datenbank gelesen werden!
         return 1;

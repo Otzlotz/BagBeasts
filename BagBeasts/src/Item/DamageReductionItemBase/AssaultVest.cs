@@ -6,7 +6,7 @@ public abstract class AssaultVest : DamageReductionItemBase
 {
     #region Methods
 
-    public override string ItemEffect(ref BagBeastObject holderBeast, MoveBase attackingMove, ref decimal damage)
+    public override string ItemEffect(ref BagBeastObject holderBeast, MoveBase attackingMove, ref int damage)
     {
         if (attackingMove.Category == Category.Special)
         {

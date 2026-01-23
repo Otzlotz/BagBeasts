@@ -207,7 +207,7 @@ public abstract class MoveBase : ActionBase
         // Abilityeffekt ggf. auslösen
         if (defendingBeast.Ability is DamageReductionAbilityBase ability)
         {
-            string abilityEffectMessage = ability.AbilityEffect(ref defendingBeast, move, ref damage);
+            string abilityEffectMessage = ability.AbilityEffect(defendingBeast, move, ref damage);
 
             if (abilityEffectMessage != string.Empty)
             {

@@ -15,7 +15,7 @@ public abstract class DamageReductionAbilityBase : AbilityBase
     /// <param name="attackMove">Attacke</param>
     /// <param name="damage">Kalkulierter Schaden</param>
     /// <returns>Neuer Schaden</returns>
-    public abstract string AbilityEffect(BagBeastObject holderBeast, MoveBase attackMove, ref decimal damage);
+    public abstract string AbilityEffect(BagBeastObject holderBeast, MoveBase attackMove, ref int damage);
 
     #endregion // Methods
 }

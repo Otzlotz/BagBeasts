@@ -15,10 +15,9 @@ public class NoGuard : AccuracyModifyingAbilityBase
     /// <param name="isAttacker">true: <see cref="holderBeast"/> ist der Angreifer | false: <see cref="enemyBeast"/> ist der Angreifer</param>
     /// <param name="accuracy">Genauigkeit der Attacke (ggf. bereits angepasst)</param>
     /// <returns>Neue Accuracy</returns>
-    public override decimal AbilityEffect(BagBeastObject holderBeast, BagBeastObject enemyBeast, MoveBase attackMove, bool isAttacker, decimal? accuracy)
+    public override decimal? AbilityEffect(BagBeastObject holderBeast, BagBeastObject enemyBeast, MoveBase attackMove, bool isAttacker, decimal? accuracy)
     {
-        return 0;
-        // ToDo: return fixen
+        return null;
     }
 
     #endregion // Methods

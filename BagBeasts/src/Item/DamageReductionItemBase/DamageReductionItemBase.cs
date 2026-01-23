@@ -6,7 +6,7 @@ public abstract class DamageReductionItemBase : ItemBase
 {
     #region Methods
 
-    public abstract string ItemEffect(ref BagBeastObject holderBeast, BagBeastObject attackingBeast, MoveBase attackingMove, ref decimal damage);
+    public abstract string ItemEffect(ref BagBeastObject holderBeast, MoveBase attackingMove, ref decimal damage);
 
     #endregion //Methods
 }

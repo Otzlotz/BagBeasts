@@ -2,6 +2,8 @@
 @rendermode InteractiveServer
 @using Microsoft.AspNetCore.Mvc.RazorPages
 @using BagBeasts.src.Hashfunction
+@using System.Runtime.CompilerServices
+@using BagBeasts.src.Authentication
 @inject NavigationManager Nav
 @inject IJSRuntime JS
 
@@ -25,39 +27,40 @@
 </div>
 
 @code {
+    UserAccessor UA = new UserAccessor();
+    private User currentUser;
     private string username = null;
     private string password = null;
     private string errorMessage = null;
     private int userID = 0;
     private void btnLoginClick()
     {
-        if (username == "11" && Hashfunction.Hash(password) == Hashfunction.Hash("qq"))
+        if (UA.userExist(username))
         {
-            Nav.NavigateTo(uri: "/MainMenu");
-            JS.InvokeVoidAsync("SetAuthCookie", new object[] {Hashfunction.Hash("1")}); // ToDo; UserID aus Datenbank lesen um Cookie zu setzen
-        }
-        else
-        {
-            // Login fehlgeschlagen: Setzen der Fehlermeldung
-            errorMessage = "Die eingegebenen Anmeldedaten sind ungültig. Bitte versuchen Sie es erneut.";
-            // Erzwingen eines Rerenders, um das Banner anzuzeigen
-            StateHasChanged();
-        }
+            currentUser = UA.GetUser(username);
+            if (username == currentUser.Name && Hashfunction.Hash(password) == currentUser.Psw)
+            {
+                Nav.NavigateTo(uri: "/MainMenu");
+                JS.InvokeVoidAsync("SetAuthCookie", new object[] {currentUser.Auth});
+            }
+            else
+            {
+                // Login fehlgeschlagen: Setzen der Fehlermeldung
+                errorMessage = "Die eingegebenen Anmeldedaten sind ungültig. Bitte versuchen Sie es erneut.";
+                // Erzwingen eines Rerenders, um das Banner anzuzeigen
+                StateHasChanged();
+            }
+        } 
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if(firstRender){
-            string userIdString;
-            userIdString = await JS.InvokeAsync<string>(identifier: "CheckForCookie", new object[] {1}); // ToDo; DB lesen und nach BenutzerID prüfen
-            if (int.TryParse(userIdString, out int parsedUserID))
+            
+            string AuthToken = await JS.InvokeAsync<string>(identifier: "CheckForCookie", new object[] {"UserID"});
+            if (!Authentication.CheckForAuth(AuthToken))
             {
-                userID = parsedUserID;
-                // Wenn ein gültiger Cookie gefunden wurde, leiten Sie den Benutzer weiter
-                if (userID > 0)
-                {
-                    Nav.NavigateTo(uri: "/MainMenu");
-                }
+                Nav.NavigateTo(uri: "/MainMenu");
             }
         }
     }

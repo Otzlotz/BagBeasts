@@ -28,6 +28,50 @@ namespace BagBeasts.src.Database
         }
 
         /// <summary>
+        /// Holt den User anhand des Authtokens
+        /// </summary>
+        /// <param name="authToken"></param>
+        /// <returns></returns>
+        public bool userExist(string username)
+        {
+            try
+            {
+                using (PostgresContext context = new PostgresContext())
+                {
+                    bool retval = context.Users.Any(x => x.Name == username);
+                    return retval;
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex.Message);
+            }
+            return false;
+        }
+        
+        /// <summary>
+        /// Prüft, ob ein Auth token valide ist
+        /// </summary>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        public bool validateAuthToken(string token)
+        {
+            try
+            {
+                using (PostgresContext context = new PostgresContext())
+                {
+                    bool retval = context.Users.Any(x => x.Auth == token);
+                    return retval;
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex.Message);
+            }
+            return false;
+        }
+
+        /// <summary>
         /// Ändert einen User in der Datenbank
         /// </summary>
         /// <param name="user">Userobjekt</param>

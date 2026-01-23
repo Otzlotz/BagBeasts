@@ -1,7 +1,6 @@
 @page "/SignUp"
 @rendermode InteractiveServer
 @inject NavigationManager Nav
-@using BagBeasts.src.Database
 @using System.Diagnostics.Eventing.Reader
 @using System.Diagnostics
 @using BagBeasts.src.Hashfunction
@@ -47,7 +46,7 @@
         {
             errorMessage = "Dieser Username existiert bereits.";
         }
-        else if (UA.InsertUser(new User{Name = username, Psw = Hashfunction.Hash(password)}))
+        else if (UA.InsertUser(user: new User{Name = username, Psw = Hashfunction.Hash(password), Auth = Hashfunction.Hash(password + username)}))
         {
                 Nav.NavigateTo(uri: "/login");
         }

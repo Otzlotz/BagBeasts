@@ -19,16 +19,12 @@
     private string UserIDdb = "1";
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        UserIDdb = Hashfunction.Hash(UserIDdb);
         if(firstRender){
-            string userIDlocal = await JS.InvokeAsync<string>(identifier: "CheckForCookie", new object[] {"UserID"});
-                
-            // Wenn ein gültiger Cookie gefunden wurde, User weiterleiten
-            if(UserIDdb == userIDlocal){
-                
-            }
-            else{
-                Nav.NavigateTo("/login");
+            
+            string AuthToken = await JS.InvokeAsync<string>(identifier: "CheckForCookie", new object[] {"UserID"});
+            if (Authentication.CheckForAuth(AuthToken))
+            {
+                Nav.NavigateTo(uri: "/Login");
             }
         }
     }

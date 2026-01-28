@@ -1,7 +1,12 @@
-﻿@page "/battle"
+@page "/battle"
 @using System.Text.Json
+@using BagBeasts.Database
+@using BagBeasts.Entities
+@using BagBeasts.src.Beast
 @using BagBeasts.src.Database
 @using BagBeasts.src.Move.Base
+@using BagBeasts.src.Battle
+@using BagBeasts.src.StatusEffect
 @rendermode InteractiveServer
 
 <div class="battle-wrap">
@@ -41,14 +46,26 @@
                         </div>
                     </label>
                 </div>
+
+                @if (playerWins > 0 || opponentWins > 0)
+                {
+                    <div class="win-counter">
+                        <div class="win-stat">
+                            <span class="stat-label">🏆 Siege Spieler:</span>
+                            <span class="stat-value">@playerWins</span>
+                        </div>
+                        <div class="win-stat">
+                            <span class="stat-label">👹 Siege Gegner:</span>
+                            <span class="stat-value">@opponentWins</span>
+                        </div>
+                    </div>
+                }
             </div>
         }
         else
         {
             <div class="battle-main">
                 <div class="battle-scene">
-                    <div class="scene-background"></div>
-
                     <div class="side opponent-side">
                         <div class="status-card opponent-status">
                             <div class="status-header">
@@ -56,10 +73,10 @@
                             </div>
                             <div class="hp-bar-container">
                                 <div class="hp-bar @GetHpColor(OpponentTeam.Active)"
-                                     style="width: @CalculateHpPercentage(OpponentTeam.Active)%">
+                                     style="width: @(CalculateHpPercentage(OpponentTeam.Active) + "%")">
                                 </div>
                             </div>
-                            @if (!string.IsNullOrEmpty(OpponentTeam.Active.StatusEffect.ToString()))
+                            @if (OpponentTeam.Active.StatusEffect != StatusEffectEnum.No)
                             {
                                 <div class="status-badge">@OpponentTeam.Active.StatusEffect.ToString()</div>
                             }
@@ -79,11 +96,11 @@
                             </div>
                             <div class="hp-bar-container">
                                 <div class="hp-bar @GetHpColor(PlayerTeam.Active)"
-                                     style="width: @CalculateHpPercentage(PlayerTeam.Active)%">
+                                     style="width: @(CalculateHpPercentage(PlayerTeam.Active) + "%")">
                                 </div>
                             </div>
                             <div class="hp-text">@PlayerTeam.Active.CurrentHP / @PlayerTeam.Active.MAXHP KP</div>
-                            @if (!string.IsNullOrEmpty(PlayerTeam.Active.StatusEffect.ToString()))
+                            @if (PlayerTeam.Active.StatusEffect != StatusEffectEnum.No)
                             {
                                 <div class="status-badge">@PlayerTeam.Active.StatusEffect</div>
                             }
@@ -94,38 +111,90 @@
                 <div class="battle-controls">
                     <div class="controls-header">
                         <span class="question-prompt">Was soll @PlayerTeam.Active.Name tun?</span>
-                        <button class="btn-reset" @onclick="ResetBattle" title="Kampf neu starten">🔄</button>
+                        <button class="btn-reset" @onclick="ResetBattle" title="Kampf neu starten" disabled="@isProcessing">🔄</button>
                     </div>
 
-                    <div class="action-row">
-                        <button class="btn-action attack" @onclick="@(() => OnApplyDamage(true, 20))">
-                            <span class="btn-icon">⚔️</span>
-                            <span>Angriff</span>
-                        </button>
-                        <button class="btn-action switch" @onclick="@(() => SwitchBeast())">
-                            <span class="btn-icon">🔄</span>
-                            <span>Wechseln</span>
-                        </button>
-                    </div>
+                    @if (showSwitchMenu)
+                    {
+                        <div class="switch-menu">
+                            <div class="switch-header">
+                                <h3>Pokémon wechseln</h3>
+                                <button class="btn-cancel" @onclick="CancelSwitch">❌ Abbrechen</button>
+                            </div>
+                            <div class="switch-grid">
+                                @for (int i = 0; i < PlayerTeam.BagBeasts.Count; i++)
+                                {
+                                    var index = i;
+                                    var pokemon = PlayerTeam.BagBeasts[i];
+                                    var isActive = index == PlayerTeam.ActiveIndex;
+                                    var isFainted = pokemon.CurrentHP == 0;
+                                    
+                                    <button class="switch-option @(isActive ? "is-active" : "") @(isFainted ? "is-fainted" : "")" 
+                                            @onclick="@(() => ConfirmSwitch(index))"
+                                            disabled="@(isActive || isFainted)">
+                                        <div class="switch-pokemon-info">
+                                            <span class="switch-pokemon-name">@pokemon.Name</span>
+                                            <div class="switch-hp-bar-container">
+                                                <div class="hp-bar @GetHpColor(pokemon)"
+                                                     style="width: @(CalculateHpPercentage(pokemon) + "%")">
+                                                </div>
+                                            </div>
+                                            <span class="switch-pokemon-hp">@pokemon.CurrentHP / @pokemon.MAXHP KP</span>
+                                        </div>
+                                        @if (isActive)
+                                        {
+                                            <span class="active-indicator">⭐ Aktiv</span>
+                                        }
+                                        @if (isFainted)
+                                        {
+                                            <span class="fainted-indicator">💀 Kampfunfähig</span>
+                                        }
+                                    </button>
+                                }
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="action-row">
+                            <button class="btn-action switch" @onclick="@(() => SwitchBeast())" 
+                                    disabled="@(isProcessing || !HasSwitchablePokemon())">
+                                <span class="btn-icon">🔄</span>
+                                <span>Wechseln</span>
+                            </button>
+                        </div>
 
-                    <div class="move-grid">
-                        <button class="btn-move type-fire">
-                            <span class="move-name">@PlayerTeam.Active.Move1.Move.Name</span>
-                            <span class="move-type">Feuer</span>
-                        </button>
-                        <button class="btn-move type-water">
-                            <span class="move-name">@PlayerTeam.Active.Move2.Move.Name</span>
-                            <span class="move-type">Wasser</span>
-                        </button>
-                        <button class="btn-move type-electric">
-                            <span class="move-name">@PlayerTeam.Active.Move3.Move.Name</span>
-                            <span class="move-type">Elektro</span>
-                        </button>
-                        <button class="btn-move type-grass">
-                            <span class="move-name">@PlayerTeam.Active.Move4.Move.Name</span>
-                            <span class="move-type">Pflanze</span>
-                        </button>
-                    </div>
+                        <div class="move-grid">
+                            @if (PlayerTeam.Active.Move1 != null)
+                            {
+                                <button class="btn-move type-fire" @onclick="@(() => ExecuteTurn(PlayerTeam.Active.Move1))" disabled="@isProcessing">
+                                    <span class="move-name">@PlayerTeam.Active.Move1.Move.Name</span>
+                                    <span class="move-type">@PlayerTeam.Active.Move1.Move.Type</span>
+                                </button>
+                            }
+                            @if (PlayerTeam.Active.Move2 != null)
+                            {
+                                <button class="btn-move type-water" @onclick="@(() => ExecuteTurn(PlayerTeam.Active.Move2))" disabled="@isProcessing">
+                                    <span class="move-name">@PlayerTeam.Active.Move2.Move.Name</span>
+                                    <span class="move-type">@PlayerTeam.Active.Move2.Move.Type</span>
+                                </button>
+                            }
+                            @if (PlayerTeam.Active.Move3 != null)
+                            {
+                                <button class="btn-move type-electric" @onclick="@(() => ExecuteTurn(PlayerTeam.Active.Move3))" disabled="@isProcessing">
+                                    <span class="move-name">@PlayerTeam.Active.Move3.Move.Name</span>
+                                    <span class="move-type">@PlayerTeam.Active.Move3.Move.Type</span>
+                                </button>
+                            }
+                            @if (PlayerTeam.Active.Move4 != null)
+                            {
+                                <button class="btn-move type-grass" @onclick="@(() => ExecuteTurn(PlayerTeam.Active.Move4))" disabled="@isProcessing">
+                                    <span class="move-name">@PlayerTeam.Active.Move4.Move.Name</span>
+                                    <span class="move-type">@PlayerTeam.Active.Move4.Move.Type</span>
+                                </button>
+                            }
+                        </div>
+                    }
                 </div>
             </div>
 
@@ -154,594 +223,757 @@
         }
     </div>
 </div>
+
+
 <style>
-    :root {
-        --sidebar-width: 380px;
-        --controls-height: 240px;
-        --bg-dark: #1a1a2e;
-        --bg-darker: #0f0f1e;
-        --accent-blue: #3498db;
-        --accent-purple: #9b59b6;
-        --ready-green: #27ae60;
-        --battle-height: 820px; 
-        --text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+:root {
+    --sidebar-width: 380px;
+    --controls-height: 240px;
+    --bg-dark: #1a1a2e;
+    --bg-darker: #0f0f1e;
+    --accent-blue: #3498db;
+    --accent-purple: #9b59b6;
+    --ready-green: #27ae60;
+    --battle-height: 820px; 
+    --text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+}
+
+* {
+    box-sizing: border-box;
+}
+
+.battle-wrap {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: linear-gradient(135deg, var(--bg-darker) 0%, var(--bg-dark) 100%);
+    padding: 20px;
+}
+
+.battle-container {
+    display: grid;
+    grid-template-columns: 1fr var(--sidebar-width);
+    width: 100%;
+    max-width: 1400px;
+    height: var(--battle-height);
+    background: transparent;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.9), 0 0 0 1px rgba(255,255,255,0.1);
+}
+
+/* ========== SETUP SCREEN ========== */
+.setup-screen {
+    grid-column: span 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    gap: 30px;
+    padding: 40px;
+}
+
+.setup-title {
+    font-size: 3rem;
+    color: white;
+    margin: 0;
+    text-shadow: var(--text-shadow);
+    font-weight: 800;
+}
+
+.setup-subtitle {
+    color: #bdc3c7;
+    font-size: 1.1rem;
+    margin: 0;
+}
+
+.error-message {
+    background: #e74c3c;
+    color: white;
+    padding: 15px 25px;
+    border-radius: 8px;
+    font-weight: bold;
+    box-shadow: 0 4px 12px rgba(231, 76, 60, 0.4);
+}
+
+.upload-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 30px;
+}
+
+.big-upload-btn {
+    width: 300px;
+    height: 220px;
+    border: 4px dashed #7f8c8d;
+    border-radius: 20px;
+    color: white;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    background: rgba(255,255,255,0.03);
+}
+
+    .big-upload-btn:hover {
+        background: rgba(255,255,255,0.08);
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.3);
     }
 
-    * {
-        box-sizing: border-box;
+    .big-upload-btn.is-ready {
+        border-style: solid;
+        border-color: var(--ready-green);
+        background: linear-gradient(135deg, #1e4d2b 0%, #27ae60 100%);
+        box-shadow: 0 10px 30px rgba(39, 174, 96, 0.3);
     }
 
-    .battle-wrap {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        min-height: 100vh;
-        background: linear-gradient(135deg, var(--bg-darker) 0%, var(--bg-dark) 100%);
-        padding: 20px;
+.btn-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    text-align: center;
+}
+
+    .btn-content .icon {
+        font-size: 4rem;
     }
 
-    .battle-container {
-        display: grid;
-        grid-template-columns: 1fr var(--sidebar-width);
-        width: 100%;
-        max-width: 1400px;
-        height: var(--battle-height);
-        background: transparent; /* GEÄNDERT: Von #1c1c1c zu transparent */
-        border-radius: 16px;
-        overflow: hidden;
-        box-shadow: 0 20px 60px rgba(0,0,0,0.9), 0 0 0 1px rgba(255,255,255,0.1);
-    }
-
-    /* ========== SETUP SCREEN ========== */
-    .setup-screen {
-        grid-column: span 2;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-        gap: 30px;
-        padding: 40px;
-    }
-
-    .setup-title {
-        font-size: 3rem;
-        color: white;
-        margin: 0;
-        text-shadow: var(--text-shadow);
-        font-weight: 800;
-    }
-
-    .setup-subtitle {
-        color: #bdc3c7;
-        font-size: 1.1rem;
-        margin: 0;
-    }
-
-    .error-message {
-        background: #e74c3c;
-        color: white;
-        padding: 15px 25px;
-        border-radius: 8px;
-        font-weight: bold;
-        box-shadow: 0 4px 12px rgba(231, 76, 60, 0.4);
-    }
-
-    .upload-grid {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 30px;
-    }
-
-    .big-upload-btn {
-        width: 300px;
-        height: 220px;
-        border: 4px dashed #7f8c8d;
-        border-radius: 20px;
-        color: white;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        background: rgba(255,255,255,0.03);
-    }
-
-        .big-upload-btn:hover {
-            background: rgba(255,255,255,0.08);
-            transform: translateY(-5px);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-        }
-
-        .big-upload-btn.is-ready {
-            border-style: solid;
-            border-color: var(--ready-green);
-            background: linear-gradient(135deg, #1e4d2b 0%, #27ae60 100%);
-            box-shadow: 0 10px 30px rgba(39, 174, 96, 0.3);
-        }
-
-    .btn-content {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 15px;
-        text-align: center;
-    }
-
-        .btn-content .icon {
-            font-size: 4rem;
-        }
-
-        .btn-content .label-text {
-            font-size: 1.5rem;
-            font-weight: bold;
-        }
-
-        .btn-content .sub-text {
-            font-size: 0.95rem;
-            color: #bdc3c7;
-        }
-
-    /* ========== BATTLE MAIN LAYOUT ========== */
-    .battle-main {
-        display: flex;
-        flex-direction: column;
-        height: 100%;
-        position: relative;
-        background: transparent; /* GEÄNDERT: Transparent statt farbig */
-    }
-
-    .battle-scene {
-        flex: 1;
-        position: relative;
-        background: #87CEEB; /* Fallback Himmelblau */
-        overflow: hidden;
-        min-height: 0;
-        z-index: 0; /* GEÄNDERT: Niedriger z-index */
-    }
-
-    .scene-background {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-image: linear-gradient(to bottom, rgba(0,0,0,0.05), rgba(0,0,0,0.3)), url('https://play.pokemonshowdown.com/fx/bg-beach.jpg');
-        background-size: cover;
-        background-position: center;
-        z-index: 0;
-    }
-
-    /* ========== POKEMON POSITIONING ========== */
-    .side {
-        position: absolute; /* GEÄNDERT: Von relative zu absolute */
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        z-index: 1;
-        pointer-events: none; /* GEÄNDERT: Ermöglicht Klicks durch den Container */
-    }
-
-    .side > * {
-        pointer-events: auto; /* GEÄNDERT: Kinder können wieder Klicks empfangen */
-    }
-
-    .status-card {
-        position: absolute;
-        background: rgba(255,255,255,0.95);
-        backdrop-filter: blur(10px);
-        padding: 15px;
-        border-radius: 12px;
-        width: 280px;
-        border: 3px solid #2c3e50;
-        box-shadow: 0 8px 20px rgba(0,0,0,0.3);
-        transition: all 0.3s ease;
-        z-index: 10; /* GEÄNDERT: Höherer z-index für bessere Sichtbarkeit */
-    }
-
-    .status-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 8px;
-    }
-
-    .status-card .name {
-        font-size: 1.3rem;
-        font-weight: bold;
-        color: #2c3e50;
-    }
-
-    .status-card .level {
-        font-size: 1rem;
-        color: #7f8c8d;
-        font-weight: 600;
-    }
-
-    .status-badge {
-        margin-top: 8px;
-        padding: 4px 10px;
-        background: #e74c3c;
-        color: white;
-        border-radius: 6px;
-        font-size: 0.85rem;
-        font-weight: bold;
-        display: inline-block;
-    }
-
-    .opponent-status {
-        top: 50px;
-        left: 50px;
-    }
-
-    .player-status {
-        bottom: 30px; /* GEÄNDERT: Angepasst, da controls-height reduziert wurde */
-        right: 50px;
-    }
-
-    .sprite-container {
-        transition: all 0.3s ease;
-        position: absolute;
-        z-index: 5; /* GEÄNDERT: Sprites über dem Hintergrund */
-    }
-
-        .sprite-container img {
-            width: 260px;
-            height: auto;
-            image-rendering: pixelated;
-            filter: drop-shadow(5px 5px 10px rgba(0,0,0,0.4));
-        }
-
-    .opponent-sprite {
-        top: 12%;
-        right: 12%;
-    }
-
-    .player-sprite {
-        bottom: 5%; /* GEÄNDERT: Angepasst für bessere Positionierung */
-        left: 12%;
-    }
-
-    /* ========== HP BAR ========== */
-    .hp-bar-container {
-        height: 18px;
-        background: #34495e;
-        border-radius: 10px;
-        border: 2px solid #2c3e50;
-        overflow: hidden;
-        margin: 8px 0;
-        box-shadow: inset 0 2px 4px rgba(0,0,0,0.3);
-    }
-
-    .hp-bar {
-        height: 100%;
-        transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-        box-shadow: inset 0 2px 8px rgba(255,255,255,0.3);
-    }
-
-    .hp-green {
-        background: linear-gradient(to bottom, #2ecc71, #27ae60);
-    }
-
-    .hp-yellow {
-        background: linear-gradient(to bottom, #f1c40f, #f39c12);
-    }
-
-    .hp-red {
-        background: linear-gradient(to bottom, #e74c3c, #c0392b);
-    }
-
-    .hp-text {
-        text-align: right;
-        font-size: 0.95rem;
-        color: #2c3e50;
-        font-weight: bold;
-        margin-top: 4px;
-    }
-
-    /* ========== BATTLE CONTROLS (FIXIERT) ========== */
-    .battle-controls {
-        min-height: var(--controls-height); /* GEÄNDERT: Von height zu min-height */
-        height: auto; /* HINZUGEFÜGT: Erlaubt automatische Höhenanpassung */
-        background: linear-gradient(to bottom, #ecf0f1, #d5dbdb);
-        padding: 15px;
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-        border-top: 4px solid #95a5a6;
-        box-shadow: 0 -8px 20px rgba(0,0,0,0.2);
-        z-index: 20;
-        position: relative;
-        flex-shrink: 0;
-        overflow: visible; /* HINZUGEFÜGT: Stellt sicher, dass Inhalt sichtbar ist */
-    }
-
-    .controls-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 5px;
-    }
-
-    .question-prompt {
-        font-size: 1.1rem;
-        font-weight: bold;
-        color: #2c3e50;
-    }
-
-    .btn-reset {
-        background: #95a5a6;
-        border: none;
-        border-radius: 6px;
-        padding: 8px 12px;
-        cursor: pointer;
-        font-size: 1.2rem;
-        transition: all 0.2s;
-    }
-
-        .btn-reset:hover {
-            background: #7f8c8d;
-            transform: scale(1.1);
-        }
-
-    .action-row {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr); /* GEÄNDERT: Von 4 zu 2 Spalten */
-        gap: 10px;
-    }
-
-    .btn-action {
-        padding: 12px;
-        border: none;
-        border-radius: 10px;
-        font-weight: bold;
-        font-size: 0.95rem;
-        color: white;
-        cursor: pointer;
-        text-transform: uppercase;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 5px;
-        transition: all 0.2s;
-        box-shadow: 0 4px 0 rgba(0,0,0,0.2);
-    }
-
-        .btn-action:active {
-            transform: translateY(2px);
-            box-shadow: 0 2px 0 rgba(0,0,0,0.2);
-        }
-
-        .btn-action:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 0 rgba(0,0,0,0.2);
-        }
-
-    .btn-icon {
+    .btn-content .label-text {
         font-size: 1.5rem;
-    }
-
-    .attack {
-        background: linear-gradient(135deg, #e74c3c, #c0392b);
-    }
-
-    .switch {
-        background: linear-gradient(135deg, #3498db, #2980b9);
-    }
-
-    .move-grid {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 10px;
-        flex: 1;
-    }
-
-    .btn-move {
-        background: white;
-        border: 3px solid #bdc3c7;
-        border-radius: 10px;
-        font-weight: bold;
-        cursor: pointer;
-        padding: 12px;
-        display: flex;
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 5px;
-        transition: all 0.2s;
-    }
-
-        .btn-move:hover {
-            background: #ecf0f1;
-            border-color: #7f8c8d;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-        }
-
-    .move-name {
-        font-size: 1rem;
-        color: #2c3e50;
-    }
-
-    .move-type {
-        font-size: 0.75rem;
-        padding: 3px 8px;
-        border-radius: 5px;
-        text-transform: uppercase;
-        color: white;
         font-weight: bold;
     }
 
-    .type-fire .move-type {
-        background: #e74c3c;
-    }
-
-    .type-water .move-type {
-        background: #3498db;
-    }
-
-    .type-electric .move-type {
-        background: #f1c40f;
-        color: #2c3e50;
-    }
-
-    .type-grass .move-type {
-        background: #27ae60;
-    }
-
-    /* ========== SIDEBAR (RECHTS, SCROLLBAR) ========== */
-    .battle-sidebar {
-        display: flex;
-        flex-direction: column;
-        background: #ffffff;
-        height: 100%;
-        border-left: 4px solid #34495e;
-        overflow: hidden;
-        z-index: 15; /* GEÄNDERT: Sidebar über battle-scene */
-    }
-
-    .sidebar-header {
-        background: linear-gradient(135deg, #2c3e50, #34495e);
-        color: white;
-        padding: 20px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        border-bottom: 3px solid #1abc9c;
-        flex-shrink: 0;
-    }
-
-        .sidebar-header h3 {
-            margin: 0;
-            font-size: 1.4rem;
-        }
-
-    .btn-clear-log {
-        background: rgba(255,255,255,0.2);
-        border: none;
-        border-radius: 6px;
-        padding: 8px 12px;
-        cursor: pointer;
-        font-size: 1.2rem;
-        transition: all 0.2s;
-    }
-
-        .btn-clear-log:hover {
-            background: rgba(255,255,255,0.3);
-            transform: scale(1.1);
-        }
-
-    .log-container {
-        flex: 1;
-        overflow-y: auto;
-        padding: 20px;
-        background: #fafafa;
-        color: #2c3e50;
-        display: flex;
-        flex-direction: column;
-        gap: 8px;
-        min-height: 0;
-    }
-
-        .log-container::-webkit-scrollbar {
-            width: 10px;
-        }
-
-        .log-container::-webkit-scrollbar-track {
-            background: #ecf0f1;
-        }
-
-        .log-container::-webkit-scrollbar-thumb {
-            background: #95a5a6;
-            border-radius: 5px;
-        }
-
-            .log-container::-webkit-scrollbar-thumb:hover {
-                background: #7f8c8d;
-            }
-
-    .log-entry {
-        padding: 12px 15px;
-        background: white;
-        border-left: 4px solid #3498db;
-        border-radius: 6px;
+    .btn-content .sub-text {
         font-size: 0.95rem;
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.08);
-        display: flex;
-        align-items: flex-start;
-        gap: 10px;
-        animation: slideIn 0.3s ease-out;
+        color: #bdc3c7;
     }
 
-    .log-bullet {
-        color: #3498db;
-        font-weight: bold;
-        flex-shrink: 0;
+/* ========== WIN COUNTER ========== */
+.win-counter {
+    display: flex;
+    gap: 40px;
+    background: rgba(255,255,255,0.05);
+    padding: 20px 40px;
+    border-radius: 12px;
+    border: 2px solid rgba(255,255,255,0.1);
+}
+
+.win-stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
+.stat-label {
+    color: #bdc3c7;
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.stat-value {
+    color: white;
+    font-size: 2.5rem;
+    font-weight: bold;
+    text-shadow: var(--text-shadow);
+}
+
+/* ========== BATTLE MAIN LAYOUT ========== */
+.battle-main {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    position: relative;
+    background: transparent;
+}
+
+.battle-scene {
+    flex: 1;
+    position: relative;
+    background-image: linear-gradient(to bottom, rgba(0,0,0,0.05), rgba(0,0,0,0.3)), url('https://play.pokemonshowdown.com/fx/bg-beach.jpg');
+    background-size: cover;
+    background-position: center;
+    background-color: #87CEEB;
+    overflow: hidden;
+    min-height: 0;
+    z-index: 0;
+}
+
+/* ========== POKEMON POSITIONING ========== */
+.side {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    pointer-events: none;
+}
+
+.side > * {
+    pointer-events: auto;
+}
+
+.status-card {
+    position: absolute;
+    background: rgba(255,255,255,0.95);
+    backdrop-filter: blur(10px);
+    padding: 15px;
+    border-radius: 12px;
+    width: 280px;
+    border: 3px solid #2c3e50;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+    transition: all 0.3s ease;
+    z-index: 10;
+}
+
+.status-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.status-card .name {
+    font-size: 1.3rem;
+    font-weight: bold;
+    color: #2c3e50;
+}
+
+.status-card .level {
+    font-size: 1rem;
+    color: #7f8c8d;
+    font-weight: 600;
+}
+
+.status-badge {
+    margin-top: 8px;
+    padding: 4px 10px;
+    background: #e74c3c;
+    color: white;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: bold;
+    display: inline-block;
+}
+
+.opponent-status {
+    top: 50px;
+    left: 50px;
+}
+
+.player-status {
+    bottom: 30px;
+    right: 50px;
+}
+
+.sprite-container {
+    transition: all 0.3s ease;
+    position: absolute;
+    z-index: 5;
+}
+
+    .sprite-container img {
+        width: 260px;
+        height: auto;
+        image-rendering: pixelated;
+        filter: drop-shadow(5px 5px 10px rgba(0,0,0,0.4));
     }
 
-    .log-empty {
-        text-align: center;
-        color: #95a5a6;
-        font-style: italic;
-        padding: 40px 20px;
-        font-size: 1.1rem;
+.opponent-sprite {
+    top: 12%;
+    right: 12%;
+}
+
+.player-sprite {
+    bottom: 5%;
+    left: 12%;
+}
+
+/* ========== HP BAR ========== */
+.hp-bar-container {
+    height: 18px;
+    background: #34495e;
+    border-radius: 10px;
+    border: 2px solid #2c3e50;
+    overflow: hidden;
+    margin: 8px 0;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.3);
+}
+
+.hp-bar {
+    height: 100%;
+    transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: inset 0 2px 8px rgba(255,255,255,0.3);
+}
+
+.hp-green {
+    background: linear-gradient(to bottom, #2ecc71, #27ae60);
+}
+
+.hp-yellow {
+    background: linear-gradient(to bottom, #f1c40f, #f39c12);
+}
+
+.hp-red {
+    background: linear-gradient(to bottom, #e74c3c, #c0392b);
+}
+
+.hp-text {
+    text-align: right;
+    font-size: 0.95rem;
+    color: #2c3e50;
+    font-weight: bold;
+    margin-top: 4px;
+}
+
+/* ========== BATTLE CONTROLS (FIXIERT) ========== */
+.battle-controls {
+    min-height: var(--controls-height);
+    height: auto;
+    background: linear-gradient(to bottom, #ecf0f1, #d5dbdb);
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    border-top: 4px solid #95a5a6;
+    box-shadow: 0 -8px 20px rgba(0,0,0,0.2);
+    z-index: 20;
+    position: relative;
+    flex-shrink: 0;
+    overflow: visible;
+}
+
+.controls-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 5px;
+}
+
+.question-prompt {
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: #2c3e50;
+}
+
+.btn-reset {
+    background: #95a5a6;
+    border: none;
+    border-radius: 6px;
+    padding: 8px 12px;
+    cursor: pointer;
+    font-size: 1.2rem;
+    transition: all 0.2s;
+}
+
+    .btn-reset:hover {
+        background: #7f8c8d;
+        transform: scale(1.1);
     }
 
-    /* ========== ANIMATIONS ========== */
-    .anim-shake {
-        animation: shake 0.5s cubic-bezier(0.36, 0.07, 0.19, 0.97);
+.action-row {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+}
+
+.btn-action {
+    padding: 12px;
+    border: none;
+    border-radius: 10px;
+    font-weight: bold;
+    font-size: 0.95rem;
+    color: white;
+    cursor: pointer;
+    text-transform: uppercase;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    transition: all 0.2s;
+    box-shadow: 0 4px 0 rgba(0,0,0,0.2);
+}
+
+    .btn-action:active {
+        transform: translateY(2px);
+        box-shadow: 0 2px 0 rgba(0,0,0,0.2);
     }
 
-    @@keyframes shake {
-        0%, 100% {
-            transform: translateX(0);
-        }
-
-        10%, 30%, 50%, 70%, 90% {
-            transform: translateX(-10px);
-        }
-
-        20%, 40%, 60%, 80% {
-            transform: translateX(10px);
-        }
+    .btn-action:hover:not(:disabled) {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 0 rgba(0,0,0,0.2);
     }
 
-    @@keyframes slideIn {
-        from {
-            opacity: 0;
-            transform: translateX(-20px);
-        }
-
-        to {
-            opacity: 1;
-            transform: translateX(0);
-        }
+    .btn-action:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
     }
 
-    /* ========== RESPONSIVE ========== */
-    @@media (max-width: 1200px) {
-        .battle-container {
-            grid-template-columns: 1fr;
-            grid-template-rows: 1fr auto;
-            max-width: 900px;
+.btn-icon {
+    font-size: 1.5rem;
+}
+
+.attack {
+    background: linear-gradient(135deg, #e74c3c, #c0392b);
+}
+
+.switch {
+    background: linear-gradient(135deg, #3498db, #2980b9);
+}
+
+.move-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    flex: 1;
+}
+
+.btn-move {
+    background: white;
+    border: 3px solid #bdc3c7;
+    border-radius: 10px;
+    font-weight: bold;
+    cursor: pointer;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 5px;
+    transition: all 0.2s;
+}
+
+    .btn-move:hover {
+        background: #ecf0f1;
+        border-color: #7f8c8d;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+
+.move-name {
+    font-size: 1rem;
+    color: #2c3e50;
+}
+
+.move-type {
+    font-size: 0.75rem;
+    padding: 3px 8px;
+    border-radius: 5px;
+    text-transform: uppercase;
+    color: white;
+    font-weight: bold;
+}
+
+.type-fire .move-type {
+    background: #e74c3c;
+}
+
+.type-water .move-type {
+    background: #3498db;
+}
+
+.type-electric .move-type {
+    background: #f1c40f;
+    color: #2c3e50;
+}
+
+.type-grass .move-type {
+    background: #27ae60;
+}
+
+/* ========== SWITCH MENU ========== */
+.switch-menu {
+    background: white;
+    border-radius: 12px;
+    padding: 15px;
+    border: 3px solid #3498db;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+}
+
+.switch-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #ecf0f1;
+}
+
+    .switch-header h3 {
+        margin: 0;
+        color: #2c3e50;
+        font-size: 1.2rem;
+    }
+
+.btn-cancel {
+    background: #e74c3c;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 8px 15px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.2s;
+}
+
+    .btn-cancel:hover {
+        background: #c0392b;
+        transform: scale(1.05);
+    }
+
+.switch-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.switch-option {
+    background: white;
+    border: 3px solid #bdc3c7;
+    border-radius: 10px;
+    padding: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+}
+
+    .switch-option:hover:not(:disabled) {
+        background: #ecf0f1;
+        border-color: #3498db;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(52, 152, 219, 0.2);
+    }
+
+    .switch-option.is-active {
+        border-color: #27ae60;
+        background: #e8f8f5;
+        cursor: not-allowed;
+        opacity: 0.7;
+    }
+
+    .switch-option.is-fainted {
+        border-color: #95a5a6;
+        background: #f8f9fa;
+        cursor: not-allowed;
+        opacity: 0.5;
+    }
+
+    .switch-option:disabled {
+        cursor: not-allowed;
+    }
+
+.switch-pokemon-info {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.switch-pokemon-name {
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: #2c3e50;
+}
+
+.switch-hp-bar-container {
+    height: 12px;
+    background: #34495e;
+    border-radius: 6px;
+    border: 1px solid #2c3e50;
+    overflow: hidden;
+}
+
+.switch-pokemon-hp {
+    font-size: 0.85rem;
+    color: #7f8c8d;
+    font-weight: 600;
+}
+
+.active-indicator, .fainted-indicator {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    font-size: 0.75rem;
+    font-weight: bold;
+    padding: 3px 8px;
+    border-radius: 4px;
+    color: white;
+}
+
+.active-indicator {
+    background: #27ae60;
+}
+
+.fainted-indicator {
+    background: #95a5a6;
+}
+
+/* ========== SIDEBAR (RECHTS, SCROLLBAR) ========== */
+.battle-sidebar {
+    display: flex;
+    flex-direction: column;
+    background: #ffffff;
+    height: 100%;
+    border-left: 4px solid #34495e;
+    overflow: hidden;
+    z-index: 15;
+}
+
+.sidebar-header {
+    background: linear-gradient(135deg, #2c3e50, #34495e);
+    color: white;
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 3px solid #1abc9c;
+    flex-shrink: 0;
+}
+
+    .sidebar-header h3 {
+        margin: 0;
+        font-size: 1.4rem;
+    }
+
+.btn-clear-log {
+    background: rgba(255,255,255,0.2);
+    border: none;
+    border-radius: 6px;
+    padding: 8px 12px;
+    cursor: pointer;
+    font-size: 1.2rem;
+    transition: all 0.2s;
+}
+
+    .btn-clear-log:hover {
+        background: rgba(255,255,255,0.3);
+        transform: scale(1.1);
+    }
+
+.log-container {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+    background: #fafafa;
+    color: #2c3e50;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-height: 0;
+}
+
+    .log-container::-webkit-scrollbar {
+        width: 10px;
+    }
+
+    .log-container::-webkit-scrollbar-track {
+        background: #ecf0f1;
+    }
+
+    .log-container::-webkit-scrollbar-thumb {
+        background: #95a5a6;
+        border-radius: 5px;
+    }
+
+        .log-container::-webkit-scrollbar-thumb:hover {
+            background: #7f8c8d;
         }
 
-        .battle-sidebar {
-            border-left: none;
-            border-top: 4px solid #34495e;
-            max-height: 300px;
-        }
+.log-entry {
+    padding: 12px 15px;
+    background: white;
+    border-left: 4px solid #3498db;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.08);
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    animation: slideIn 0.3s ease-out;
+}
+
+.log-bullet {
+    color: #3498db;
+    font-weight: bold;
+    flex-shrink: 0;
+}
+
+.log-empty {
+    text-align: center;
+    color: #95a5a6;
+    font-style: italic;
+    padding: 40px 20px;
+    font-size: 1.1rem;
+}
+
+/* ========== ANIMATIONS ========== */
+.anim-shake {
+    animation: shake 0.5s cubic-bezier(0.36, 0.07, 0.19, 0.97);
+}
+
+@@keyframes shake {
+    0%, 100% {
+        transform: translateX(0);
     }
+
+    10%, 30%, 50%, 70%, 90% {
+        transform: translateX(-10px);
+    }
+
+    20%, 40%, 60%, 80% {
+        transform: translateX(10px);
+    }
+}
+
+@@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateX(-20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* ========== RESPONSIVE ========== */
+@@media (max-width: 1200px) {
+    .battle-container {
+        grid-template-columns: 1fr;
+        grid-template-rows: 1fr auto;
+        max-width: 900px;
+    }
+
+    .battle-sidebar {
+        border-left: none;
+        border-top: 4px solid #34495e;
+        max-height: 300px;
+    }
+}
 </style>
 
 @code {
+    private src.Battle.Battle _battle;
     private BattleTeam PlayerTeam;
     private BattleTeam OpponentTeam;
     private List<string> BattleLog = new();
     private string PlayerAnimationClass = "";
     private string OpponentAnimationClass = "";
     private string UploadError = "";
+    private bool isProcessing = false;
+    private bool showSwitchMenu = false;
+    
+    // Win/Lose Counter
+    private int playerWins = 0;
+    private int opponentWins = 0;
 
     private async Task HandleFileUpload(InputFileChangeEventArgs e, bool isPlayer)
     {
@@ -761,41 +993,41 @@
             var json = await reader.ReadToEndAsync();
 
             var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
-            List<BagbeastsDB> jsonBagBeasts = JsonSerializer.Deserialize<List<BagbeastsDB>>(json, options);
+            var jsonBagBeasts = JsonSerializer.Deserialize<List<KeyValuePair<Beast, List<int>>>>(json, options);
 
             var importedBagBeasts = new List<BagBeastObject>();
 
-            foreach (BagbeastsDB jb in jsonBagBeasts)
+            if (jsonBagBeasts != null)
             {
-                BagbeastsDB beastFromDB = Datareader.GetBagBeastById(jb.Id);
-
-                if (jb.Moves.Count == 4)
+                foreach (var jb in jsonBagBeasts)
                 {
-                    List <MoveDB> moves = jb.Moves.ToList();
-                    
-                    EquippedMove move1 = new EquippedMove((MoveBase)MoveService.CreateActionObject(Datareader.GetMoveById(moves[0].Id).First()));
-                    EquippedMove move2 = new EquippedMove((MoveBase)MoveService.CreateActionObject(Datareader.GetMoveById(moves[1].Id).First()));
-                    EquippedMove move3 = new EquippedMove((MoveBase)MoveService.CreateActionObject(Datareader.GetMoveById(moves[2].Id).First()));
-                    EquippedMove move4 = new EquippedMove((MoveBase)MoveService.CreateActionObject(Datareader.GetMoveById(moves[3].Id).First()));
+                    Beast beastFromDB = Datareader.GetBagBeastById(jb.Key.Id);
 
-                    importedBagBeasts.Add(new BagBeastObject()
+                    if (jb.Value.Count == 4)
                     {
-                        Id = jb.Id,
-                        Name = beastFromDB.Name,
-                        ATK = beastFromDB.Atk,
-                        DEF = beastFromDB.Def,
-                        SPA = beastFromDB.Spa,
-                        SPD = beastFromDB.Spd,
-                        MAXHP = beastFromDB.Hp,
-                        CurrentHP = beastFromDB.Hp,
-                        Move1 = move1,
-                        Move2 = move2,
-                        Move3 = move3,
-                        Move4 = move4,
-                    });
+                        EquippedMove move1 = new EquippedMove((MoveBase)MoveService.CreateActionObject(Datareader.GetMoveById(jb.Value[0]).First()));
+                        EquippedMove move2 = new EquippedMove((MoveBase)MoveService.CreateActionObject(Datareader.GetMoveById(jb.Value[1]).First()));
+                        EquippedMove move3 = new EquippedMove((MoveBase)MoveService.CreateActionObject(Datareader.GetMoveById(jb.Value[2]).First()));
+                        EquippedMove move4 = new EquippedMove((MoveBase)MoveService.CreateActionObject(Datareader.GetMoveById(jb.Value[3]).First()));
+
+                        importedBagBeasts.Add(new BagBeastObject()
+                        {
+                            Id = jb.Key.Id,
+                            Name = beastFromDB.Name,
+                            ATK = beastFromDB.Atk.Value,
+                            DEF = beastFromDB.Def.Value,
+                            SPA = beastFromDB.Spa.Value,
+                            SPD = beastFromDB.Spd.Value,
+                            INT = beastFromDB.Initiative.Value,
+                            MAXHP = beastFromDB.MaxHp.Value,
+                            CurrentHP = beastFromDB.MaxHp.Value,
+                            Move1 = move1,
+                            Move2 = move2,
+                            Move3 = move3,
+                            Move4 = move4,
+                        });
+                    }
                 }
-
-
             }
 
             if (importedBagBeasts != null && importedBagBeasts.Any())
@@ -830,43 +1062,258 @@
         }
     }
 
-    private async Task OnApplyDamage(bool toOpponent, int amount)
+    private async Task ExecuteTurn(EquippedMove playerMove)
     {
-        if (toOpponent && OpponentTeam != null)
-        {
-            OpponentAnimationClass = "anim-shake";
-            var oldHp = OpponentTeam.Active.CurrentHP;
-            OpponentTeam.Active.CurrentHP = Math.Max(0, OpponentTeam.Active.CurrentHP - amount);
-            BattleLog.Add($"💥 {OpponentTeam.Active.Name} wurde getroffen! (-{amount} KP)");
+        if (isProcessing || PlayerTeam == null || OpponentTeam == null || playerMove == null) return;
+        isProcessing = true;
 
-            if (OpponentTeam.Active.CurrentHP == 0)
+        try
+        {
+            // Random opponent move
+            var opponentMoves = new List<EquippedMove> { 
+                OpponentTeam.Active.Move1, 
+                OpponentTeam.Active.Move2, 
+                OpponentTeam.Active.Move3, 
+                OpponentTeam.Active.Move4 
+            }.Where(m => m != null).ToList();
+            
+            if (!opponentMoves.Any()) return;
+            var opponentMove = opponentMoves[new Random().Next(opponentMoves.Count)];
+
+            var battle = new BagBeasts.src.Battle.Battle(PlayerTeam.Active, OpponentTeam.Active);
+            
+            // Determine initiative
+            int p1Init = PlayerTeam.Active.INT;
+            if (PlayerTeam.Active.HeldItem is BagBeasts.src.Item.ItemBase.ChoiceScarf scarf1)
             {
-                BattleLog.Add($"💀 {OpponentTeam.Active.Name} wurde besiegt!");
+                scarf1.ItemEffect(PlayerTeam.Active, playerMove.Move);
+                p1Init = (int)(p1Init * 1.5);
             }
-        }
-        else if (PlayerTeam != null)
-        {
-            PlayerAnimationClass = "anim-shake";
-            var oldHp = PlayerTeam.Active.CurrentHP;
-            PlayerTeam.Active.CurrentHP = Math.Max(0, PlayerTeam.Active.CurrentHP - amount);
-            BattleLog.Add($"💥 {PlayerTeam.Active.Name} wurde getroffen! (-{amount} KP)");
+            
+            int p2Init = OpponentTeam.Active.INT;
+            if (OpponentTeam.Active.HeldItem is BagBeasts.src.Item.ItemBase.ChoiceScarf scarf2)
+            {
+                scarf2.ItemEffect(OpponentTeam.Active, opponentMove.Move);
+                p2Init = (int)(p2Init * 1.5);
+            }
 
+            bool playerFirst = battle.TurnOrder(playerMove.Move.Prio, opponentMove.Move.Prio, p1Init, p2Init);
+
+            if (playerFirst)
+            {
+                battle.IsSecondTurn = false;
+                await RunSingleTurn(battle, PlayerTeam.Active, OpponentTeam.Active, playerMove.Move, true);
+                if (OpponentTeam.Active.CurrentHP > 0 && PlayerTeam.Active.CurrentHP > 0)
+                {
+                    battle.IsSecondTurn = true;
+                    await RunSingleTurn(battle, OpponentTeam.Active, PlayerTeam.Active, opponentMove.Move, false);
+                }
+            }
+            else
+            {
+                battle.IsSecondTurn = false;
+                await RunSingleTurn(battle, OpponentTeam.Active, PlayerTeam.Active, opponentMove.Move, false);
+                if (PlayerTeam.Active.CurrentHP > 0 && OpponentTeam.Active.CurrentHP > 0)
+                {
+                    battle.IsSecondTurn = true;
+                    await RunSingleTurn(battle, PlayerTeam.Active, OpponentTeam.Active, playerMove.Move, true);
+                }
+            }
+
+            // Check faints
             if (PlayerTeam.Active.CurrentHP == 0)
             {
                 BattleLog.Add($"💀 {PlayerTeam.Active.Name} wurde besiegt!");
+                await CheckBattleEnd();
+            }
+            if (OpponentTeam.Active.CurrentHP == 0)
+            {
+                BattleLog.Add($"💀 {OpponentTeam.Active.Name} wurde besiegt!");
+                await CheckBattleEnd();
+            }
+
+            // Round end
+            var roundEndLogs = battle.ProcessRoundEnd();
+            if (!string.IsNullOrEmpty(roundEndLogs))
+            {
+                foreach (var line in roundEndLogs.Split('\n', StringSplitOptions.RemoveEmptyEntries))
+                {
+                    BattleLog.Add(line);
+                }
             }
         }
+        finally
+        {
+            isProcessing = false;
+            StateHasChanged();
+        }
+    }
 
+    private async Task RunSingleTurn(BagBeasts.src.Battle.Battle battle, BagBeastObject attacker, BagBeastObject defender, MoveBase move, bool isPlayerAttacking)
+    {
+        // Das GETROFFENE Pokemon wird animiert, nicht der Angreifer
+        if (isPlayerAttacking) OpponentAnimationClass = "anim-shake";
+        else PlayerAnimationClass = "anim-shake";
+        
+        string result = battle.Turn(attacker, defender, move);
+        foreach (var line in result.Split('\n', StringSplitOptions.RemoveEmptyEntries))
+        {
+            BattleLog.Add(line);
+        }
+        
         StateHasChanged();
-        await Task.Delay(500);
-        OpponentAnimationClass = "";
+        await Task.Delay(1000);
+        
         PlayerAnimationClass = "";
+        OpponentAnimationClass = "";
         StateHasChanged();
+    }
+
+    private bool HasSwitchablePokemon()
+    {
+        return PlayerTeam?.BagBeasts.Any(p => p.CurrentHP > 0 && PlayerTeam.BagBeasts.IndexOf(p) != PlayerTeam.ActiveIndex) ?? false;
     }
 
     private async Task SwitchBeast()
     {
+        if (isProcessing) return;
+        showSwitchMenu = true;
+        StateHasChanged();
+    }
+
+    private async Task ConfirmSwitch(int newIndex)
+    {
+        if (isProcessing || newIndex == PlayerTeam.ActiveIndex) 
+        {
+            showSwitchMenu = false;
+            StateHasChanged();
+            return;
+        }
+
+        isProcessing = true;
+        showSwitchMenu = false;
+
+        try
+        {
+            var oldPokemon = PlayerTeam.Active.Name;
+            PlayerTeam.ActiveIndex = newIndex;
+            BattleLog.Add($"🔄 {oldPokemon} wurde zurückgerufen!");
+            BattleLog.Add($"⭐ Los, {PlayerTeam.Active.Name}!");
+
+            StateHasChanged();
+            await Task.Delay(500);
+
+            // Gegner greift an während Spieler wechselt
+            var opponentMoves = new List<EquippedMove> { 
+                OpponentTeam.Active.Move1, 
+                OpponentTeam.Active.Move2, 
+                OpponentTeam.Active.Move3, 
+                OpponentTeam.Active.Move4 
+            }.Where(m => m != null).ToList();
+            
+            if (opponentMoves.Any())
+            {
+                var opponentMove = opponentMoves[new Random().Next(opponentMoves.Count)];
+                var battle = new BagBeasts.src.Battle.Battle(OpponentTeam.Active, PlayerTeam.Active);
+                battle.IsSecondTurn = false;
+                
+                // Spieler wird getroffen beim Wechsel
+                PlayerAnimationClass = "anim-shake";
+                StateHasChanged();
+                
+                string result = battle.Turn(OpponentTeam.Active, PlayerTeam.Active, opponentMove.Move);
+                foreach (var line in result.Split('\n', StringSplitOptions.RemoveEmptyEntries))
+                {
+                    BattleLog.Add(line);
+                }
+                
+                await Task.Delay(1000);
+                PlayerAnimationClass = "";
+                
+                if (PlayerTeam.Active.CurrentHP == 0)
+                {
+                    BattleLog.Add($"💀 {PlayerTeam.Active.Name} wurde besiegt!");
+                    await CheckBattleEnd();
+                }
+                
+                var roundEndLogs = battle.ProcessRoundEnd();
+                if (!string.IsNullOrEmpty(roundEndLogs))
+                {
+                    foreach (var line in roundEndLogs.Split('\n', StringSplitOptions.RemoveEmptyEntries))
+                    {
+                        BattleLog.Add(line);
+                    }
+                }
+            }
+        }
+        finally
+        {
+            isProcessing = false;
+            StateHasChanged();
+        }
+    }
+
+    private void CancelSwitch()
+    {
+        if (PlayerTeam.Active.StatusEffect != StatusEffectEnum.EternalEep)
+        {
+            showSwitchMenu = false;
+            StateHasChanged();
+        }
+        else
+        {
+            BattleLog.Add("Kann wechseln nicht abbrechen!");
+        }
+    }
+
+    private async Task CheckBattleEnd()
+    {
+        bool playerHasAlivePokemon = PlayerTeam.BagBeasts.Any(p => p.CurrentHP > 0);
+        bool opponentHasAlivePokemon = OpponentTeam.BagBeasts.Any(p => p.CurrentHP > 0);
+
+        if (!playerHasAlivePokemon)
+        {
+            BattleLog.Add("💔 Alle deine Pokémon wurden besiegt!");
+            BattleLog.Add("👹 Der Gegner hat gewonnen!");
+            opponentWins++;
+            await Task.Delay(3000);
+            ResetBattle();
+        }
+        else if (!opponentHasAlivePokemon)
+        {
+            BattleLog.Add("🎉 Alle gegnerischen Pokémon wurden besiegt!");
+            BattleLog.Add("🏆 Du hast gewonnen!");
+            playerWins++;
+            await Task.Delay(3000);
+            ResetBattle();
+        }
+        else
+        {
+            // Automatisch zum nächsten lebenden Pokémon wechseln, falls das aktive besiegt wurde
+            if (PlayerTeam.Active.CurrentHP == 0)
+            {
+                var nextAliveIndex = PlayerTeam.BagBeasts.FindIndex(p => p.CurrentHP > 0);
+                if (nextAliveIndex != -1)
+                {
+                    await Task.Delay(1000);
+                    showSwitchMenu = true;
+                    BattleLog.Add("⚠️ Du musst ein neues Pokémon wählen!");
+                }
+            }
+            
+            if (OpponentTeam.Active.CurrentHP == 0)
+            {
+                var nextAliveIndex = OpponentTeam.BagBeasts.FindIndex(p => p.CurrentHP > 0);
+                if (nextAliveIndex != -1)
+                {
+                    var oldName = OpponentTeam.Active.Name;
+                    OpponentTeam.ActiveIndex = nextAliveIndex;
+                    BattleLog.Add($"👹 Gegner sendet {OpponentTeam.Active.Name} in den Kampf!");
+                }
+            }
+        }
         
+        StateHasChanged();
     }
 
     private void ResetBattle()
@@ -875,6 +1322,7 @@
         OpponentTeam = null;
         BattleLog.Clear();
         UploadError = "";
+        showSwitchMenu = false;
     }
 
     private string GetHpColor(BagBeastObject p)
@@ -909,6 +1357,12 @@
         }
     }
 
+
+    private string UseMove(BagBeastObject current)
+    {
+        return "";
+    }
+    
     // Hilfsklassen
     public class BattleTeam
     {

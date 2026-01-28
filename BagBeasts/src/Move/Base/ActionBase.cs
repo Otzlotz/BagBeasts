@@ -20,7 +20,7 @@ public abstract class ActionBase
     /// Initialisiert die Aktion mit ihren Daten aus der Datenbank
     /// </summary>
     /// <param name="fromDB">Datenbankobjekt</param>
-    public virtual void Init(BagBeasts.MoveDB fromDB)
+    public virtual void Init(Entities.Move fromDB)
     {
         ID = (uint)fromDB.Id;
         Name = fromDB.Name;

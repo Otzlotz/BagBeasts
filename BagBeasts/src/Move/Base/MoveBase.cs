@@ -32,7 +32,7 @@ public abstract class MoveBase : ActionBase
 
     public uint PP {get; protected set;}
 
-    public TypeDB Type {get; protected set;}
+    public Type Type {get; protected set;}
 
     public Category Category {get; protected set;}
 
@@ -130,7 +130,7 @@ public abstract class MoveBase : ActionBase
         // Recoil
         if (RecoilBasedOnOwnHp > 0)
         {
-            executingBeast.CurrentHP =- Convert.ToInt32(executingBeast.MAXHP / 100 * RecoilBasedOnOwnHp);
+            executingBeast.CurrentHP -= Convert.ToInt32(executingBeast.MAXHP / 100 * RecoilBasedOnOwnHp);
             moveExecuteMessage += "\n" + $"{executingBeast.Name} was damaged by recoil!";
 
             if (executingBeast.CurrentHP == 0)
@@ -141,7 +141,7 @@ public abstract class MoveBase : ActionBase
 
         if (RecoilBasedOnDmgDealt > 0)
         {
-            executingBeast.CurrentHP =- Convert.ToInt32(damage / 100 * RecoilBasedOnDmgDealt);
+            executingBeast.CurrentHP -= Convert.ToInt32(damage / 100 * RecoilBasedOnDmgDealt);
             moveExecuteMessage += "\n" + $"{executingBeast.Name} was damaged by recoil!";
 
             if (executingBeast.CurrentHP == 0)
@@ -163,7 +163,7 @@ public abstract class MoveBase : ActionBase
     /// Initialisiert die Aktion mit ihren Daten aus der Datenbank
     /// </summary>
     /// <param name="fromDB">Datenbankobjekt</param>
-    public override void Init(BagBeasts.MoveDB fromDB)
+    public override void Init(Entities.Move fromDB)
     {
         base.Init(fromDB);
 
@@ -172,9 +172,9 @@ public abstract class MoveBase : ActionBase
         Accuracy = (uint?)fromDB.Acc;
         CritChanceTier = (uint)fromDB.CritChanceTier.Value;
         PP = (uint)fromDB.Pp.Value;
-        Type = (TypeDB)fromDB.Type.Value;
+        Type = (Type)fromDB.Type.Value;
         Category = (Category)fromDB.Category.Value;
-        Contact = fromDB.Contact.Value;
+        Contact = fromDB.Contact.Value == 1;
     }
 
     #endregion // Public Methods
@@ -223,7 +223,7 @@ public abstract class MoveBase : ActionBase
         }
 
         // Damage zufügen
-        defendingBeast.CurrentHP =- damage;
+        defendingBeast.CurrentHP -= damage;
 
         if (executeHitMessage == string.Empty)
         {

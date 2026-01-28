@@ -42,11 +42,11 @@ public static class BattleCalculationService
         decimal crit = critTriggered ? 1.5m : 1m;
         ushort z = GetZ();
         decimal stab = GetStab(attacker, attackMove);
-        decimal typeMult = GetMultiplier((Type)attackMove.Type.Id, defender.Type1, defender.Type2);
+        decimal typeMult = GetMultiplier(attackMove.Type, defender.Type1, defender.Type2);
         decimal attackStat = GetAttackStat(attacker, attackMove);
         decimal defendStat = GetDefendstat(defender, attackMove, critTriggered);
 
-        decimal damage = (42 * attackMove.Damage * (attackStat  / (50 * defendStat)) * f1 + 2) * crit * (z / 100) * stab * typeMult;
+        decimal damage = (42 * attackMove.Damage * (attackStat  / (50 * defendStat)) * f1 + 2) * crit * (z / 100m) * stab * typeMult;
 
         // Itemeffekt ggf. auslösen
         if (attacker.HeldItem is DamageModifierItemBase item)
@@ -177,12 +177,12 @@ public static class BattleCalculationService
         // Random ermitteln, ob der Move trifft
         if (Rnd.Next(1, 100) <= hitChance)
         {
-            moveHitMessage = $"{defender.Name} avoided {attackMove.Name} from {attacker.Name}.";
-            return false;
+            moveHitMessage = string.Empty;
+            return true;
         }
 
-        moveHitMessage = string.Empty;
-        return true;
+        moveHitMessage = $"{defender.Name} avoided {attackMove.Name} from {attacker.Name}.";
+        return false;
     }
 
     #endregion // Public Methods
@@ -213,7 +213,7 @@ public static class BattleCalculationService
             x += statChange;
         }
 
-        return attackValue * (x / y);
+        return attackValue * ((decimal)x / y);
     }
 
     /// <summary>
@@ -241,7 +241,7 @@ public static class BattleCalculationService
             x += statChange;
         }
 
-        return defendValue * (x / y);
+        return defendValue * ((decimal)x / y);
     }
 
     /// <summary>
@@ -311,7 +311,7 @@ public static class BattleCalculationService
             x += attacker.StatChange.ACC;
         }
 
-        return x / y;
+        return (decimal)x / y;
     }
 
     /// <summary>
@@ -335,7 +335,7 @@ public static class BattleCalculationService
             y += defender.StatChange.DODGE;
         }
 
-        return x / y;
+        return (decimal)x / y;
     }
 
     /// <summary>

@@ -49,7 +49,7 @@ public class BagBeastObject
     public AbilityBase Ability { get; set; }
     public StatusEffectEnum StatusEffect { get; set; }
     public int StatusCounter { get; set; }
-    public StatChanges StatChange { get; set; }
+    public StatChanges StatChange { get; set; } = new StatChanges();
     public int Confusion { get; set; }
 
     #endregion // Properties

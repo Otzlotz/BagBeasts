@@ -8,7 +8,6 @@
 @using BagBeasts.src.Battle
 @using BagBeasts.src.StatusEffect
 @rendermode InteractiveServer
-@inject IJSRuntime JS
 
 <div class="battle-wrap">
     <div class="battle-container">
@@ -158,10 +157,6 @@
                     else
                     {
                         <div class="action-row">
-                            <button class="btn-action attack" disabled="@isProcessing">
-                                <span class="btn-icon">⚔️</span>
-                                <span>Angriff</span>
-                            </button>
                             <button class="btn-action switch" @onclick="@(() => SwitchBeast())" 
                                     disabled="@(isProcessing || !HasSwitchablePokemon())">
                                 <span class="btn-icon">🔄</span>
@@ -1156,8 +1151,9 @@
 
     private async Task RunSingleTurn(BagBeasts.src.Battle.Battle battle, BagBeastObject attacker, BagBeastObject defender, MoveBase move, bool isPlayerAttacking)
     {
-        if (isPlayerAttacking) PlayerAnimationClass = "anim-shake";
-        else OpponentAnimationClass = "anim-shake";
+        // Das GETROFFENE Pokemon wird animiert, nicht der Angreifer
+        if (isPlayerAttacking) OpponentAnimationClass = "anim-shake";
+        else PlayerAnimationClass = "anim-shake";
         
         string result = battle.Turn(attacker, defender, move);
         foreach (var line in result.Split('\n', StringSplitOptions.RemoveEmptyEntries))
@@ -1221,7 +1217,8 @@
                 var battle = new BagBeasts.src.Battle.Battle(OpponentTeam.Active, PlayerTeam.Active);
                 battle.IsSecondTurn = false;
                 
-                OpponentAnimationClass = "anim-shake";
+                // Spieler wird getroffen beim Wechsel
+                PlayerAnimationClass = "anim-shake";
                 StateHasChanged();
                 
                 string result = battle.Turn(OpponentTeam.Active, PlayerTeam.Active, opponentMove.Move);
@@ -1231,7 +1228,7 @@
                 }
                 
                 await Task.Delay(1000);
-                OpponentAnimationClass = "";
+                PlayerAnimationClass = "";
                 
                 if (PlayerTeam.Active.CurrentHP == 0)
                 {
@@ -1258,8 +1255,15 @@
 
     private void CancelSwitch()
     {
-        showSwitchMenu = false;
-        StateHasChanged();
+        if (PlayerTeam.Active.StatusEffect != StatusEffectEnum.EternalEep)
+        {
+            showSwitchMenu = false;
+            StateHasChanged();
+        }
+        else
+        {
+            BattleLog.Add("Kann wechseln nicht abbrechen!");
+        }
     }
 
     private async Task CheckBattleEnd()
@@ -1271,10 +1275,7 @@
         {
             BattleLog.Add("💔 Alle deine Pokémon wurden besiegt!");
             BattleLog.Add("👹 Der Gegner hat gewonnen!");
-            UserAccessor acc = new UserAccessor();
-            User usr = acc.GetUserByAuth(JS.InvokeAsync<string>(identifier: "CheckForCookie", new object[] { "UserID" }).GetAwaiter().GetResult());
-            usr.Loses++;
-            acc.UpdateUser(usr);
+            opponentWins++;
             await Task.Delay(3000);
             ResetBattle();
         }
@@ -1282,10 +1283,7 @@
         {
             BattleLog.Add("🎉 Alle gegnerischen Pokémon wurden besiegt!");
             BattleLog.Add("🏆 Du hast gewonnen!");
-            UserAccessor acc = new UserAccessor();
-            User usr = acc.GetUserByAuth(JS.InvokeAsync<string>(identifier: "CheckForCookie", new object[] { "UserID" }).GetAwaiter().GetResult());
-            usr.Wins++;
-            acc.UpdateUser(usr);
+            playerWins++;
             await Task.Delay(3000);
             ResetBattle();
         }

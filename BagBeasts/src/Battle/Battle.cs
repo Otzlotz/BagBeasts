@@ -136,9 +136,12 @@ public class Battle
         }
         else if (IsSecondTurn == true)
         {
-            if (FirstMoveResult.FlinchEnemy)
+            if (FirstMoveResult != null)
             {
-                return turnResult = turnResult + "\n" + $"{executingBeast} flinched!";
+                if (FirstMoveResult.FlinchEnemy)
+                {
+                    return turnResult = turnResult + "\n" + $"{executingBeast} flinched!";
+                }    
             }
         }
         

@@ -1,6 +1,8 @@
 ﻿@using BagBeasts.src.Beast;
 @using BagBeasts.src.Database;
 @using System.Text.Json;
+@using BagBeasts.Database
+@using BagBeasts.Entities
 @page "/creator"
 @rendermode InteractiveServer
 @inject IJSRuntime JS
@@ -32,7 +34,7 @@ else
                 <tbody>
                     @if (bagbeasts != null)
                     {
-                        @foreach (BagbeastsDB beast in bagbeasts)
+                        @foreach (Beast beast in bagbeasts)
                         {
                             <tr>
                                 <td>
@@ -66,7 +68,7 @@ else
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach (BagbeastsDB beast in selectedBeasts)
+                        @foreach (Beast beast in selectedBeasts)
                         {
                             <tr>
                                 <td>@beast.Name</td>
@@ -125,6 +127,7 @@ else
                             <tbody>
                                 @foreach (var move in availableMoves)
                                 {
+                                    if (move == null || move.Name == "Struggle" || move.Name == "Switch") continue;
                                     var isSelected = IsMovesSelected(move);
                                     <tr class="@(isSelected ? "table-primary" : "")">
                                         <td>
@@ -175,12 +178,12 @@ else
 </style>
 
 @code {
-    private List<BagbeastsDB> bagbeasts = new();
-    private List<BagbeastsDB> selectedBeasts = new();
-    private Dictionary<int, List<MoveDB>> beastMoves = new();
-    private List<MoveDB> availableMoves = new();
-    private List<MoveDB> tempSelectedMoves = new();
-    private BagbeastsDB? currentBeast = null;
+    private List<Beast> bagbeasts = new();
+    private List<Beast> selectedBeasts = new();
+    private Dictionary<int, List<Move>> beastMoves = new();
+    private List<Move> availableMoves = new();
+    private List<Move> tempSelectedMoves = new();
+    private Beast? currentBeast = null;
     private bool showMovePopup = false;
     private bool isLoading = true;
     private string errorMessage = string.Empty;
@@ -191,7 +194,7 @@ else
         isLoading = false;
     }
 
-    private void ToggleSelection(BagbeastsDB beast)
+    private void ToggleSelection(Beast beast)
     {
         var existingBeast = selectedBeasts.FirstOrDefault(b => b.Id == beast.Id);
 
@@ -209,32 +212,32 @@ else
         StateHasChanged();
     }
 
-    private void RemoveBeast(BagbeastsDB beast)
+    private void RemoveBeast(Beast beast)
     {
         selectedBeasts.Remove(beast);
         beastMoves.Remove(beast.Id);
         StateHasChanged();
     }
 
-    private void OpenMoveSelection(BagbeastsDB beast)
+    private void OpenMoveSelection(Beast beast)
     {
         currentBeast = beast;
         availableMoves = Datareader.GetMovesRef(beast);
 
         if (beastMoves.ContainsKey(beast.Id))
         {
-            tempSelectedMoves = new List<MoveDB>(beastMoves[beast.Id]);
+            tempSelectedMoves = new List<Move>(beastMoves[beast.Id]);
         }
         else
         {
-            tempSelectedMoves = new List<MoveDB>();
+            tempSelectedMoves = new List<Move>();
         }
 
         showMovePopup = true;
         StateHasChanged();
     }
 
-    private void ToggleMoveSelection(MoveDB move)
+    private void ToggleMoveSelection(Move move)
     {
         var existingMove = tempSelectedMoves.FirstOrDefault(m => m.Id == move.Id);
 
@@ -250,7 +253,7 @@ else
         StateHasChanged();
     }
 
-    private bool IsMovesSelected(MoveDB move)
+    private bool IsMovesSelected(Move move)
     {
         return tempSelectedMoves.Any(m => m.Id == move.Id);
     }
@@ -266,7 +269,7 @@ else
         {
             if (tempSelectedMoves.Count > 0)
             {
-                beastMoves[currentBeast.Id] = new List<MoveDB>(tempSelectedMoves);
+                beastMoves[currentBeast.Id] = new List<Move>(tempSelectedMoves);
             }
             else if (beastMoves.ContainsKey(currentBeast.Id))
             {
@@ -290,20 +293,23 @@ else
         try
         {
             errorMessage = string.Empty;
-            List<BagbeastsDB> team = new List<BagbeastsDB>();
+            List<KeyValuePair<Beast, List<int>>> team = new();
 
-            foreach (BagbeastsDB bagBeast in selectedBeasts)
+            foreach (Beast bagBeast in selectedBeasts)
             {
-                team.Add(new BagbeastsDB
-             {
-                 Id = bagBeast.Id,
-                 Name = bagBeast.Name,
-                 Type1 = bagBeast.Type1,
-                 Type2 = bagBeast.Type2,
-                 Moves = beastMoves.ContainsKey(bagBeast.Id)
-                     ? new List<MoveDB>(beastMoves[bagBeast.Id])
-                     : new List<MoveDB>()
-                });
+                var beastData = new Beast
+                {
+                    Id = bagBeast.Id,
+                    Name = bagBeast.Name,
+                    Type1 = bagBeast.Type1,
+                    Type2 = bagBeast.Type2
+                };
+
+                var moves = beastMoves.ContainsKey(bagBeast.Id)
+                    ? beastMoves[bagBeast.Id].Select(x => x.Id).ToList()
+                    : new List<int>();
+
+                team.Add(new KeyValuePair<Beast, List<int>>(beastData, moves));
             }
 
             var json = JsonSerializer.Serialize(team, new JsonSerializerOptions { WriteIndented = true });

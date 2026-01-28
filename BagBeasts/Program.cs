@@ -1,4 +1,5 @@
 using BagBeasts.Components;
+using BagBeasts.Database;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -7,6 +8,9 @@ builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
 var app = builder.Build();
+
+// Initialize the database
+DbInitializer.Initialize();
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())

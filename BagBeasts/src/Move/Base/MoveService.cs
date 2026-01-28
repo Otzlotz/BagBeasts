@@ -23,7 +23,7 @@ public static class MoveService
     /// </summary>
     /// <param name="fromDB">Datenbankobjekt</param>
     /// <returns>Gefülltes ActionBase Objekt</returns>
-    public static ActionBase CreateActionObject(MoveDB fromDB)
+    public static ActionBase CreateActionObject(Entities.Move fromDB)
     {
         // Objekt erstellen
         ActionBase action = GetObject((uint)fromDB.Id);

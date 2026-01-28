@@ -73,13 +73,13 @@ public static class StatusEffectService
             case StatusEffectEnum.Eep:
                 // Schläft 1 - 3 Runden
                 bagBeastObject.StatusEffect = StatusEffectEnum.Eep;
-                Random Rnd = new();
-                bagBeastObject.StatusCounter = Rnd.Next(2, 4);
+                Random rnd = new();
+                bagBeastObject.StatusCounter = rnd.Next(2, 4);
                 statusMessage = $"{bagBeastObject.Name} makes a wittle nappy :3";
                 return true;
 
             case StatusEffectEnum.Paralysis:
-                if (bagBeastObject.Type1 == TypeDB.Electric || bagBeastObject.Type2 == TypeDB.Electric)
+                if (bagBeastObject.Type1 == Type.Electric || bagBeastObject.Type2 == Type.Electric)
                 {
                     statusMessage = $"{bagBeastObject.Name} can not be paralysed!";
                     return false;
@@ -92,7 +92,7 @@ public static class StatusEffectService
                 }
 
             case StatusEffectEnum.Poison:
-                if (bagBeastObject.Type1 == TypeDB.Poison || bagBeastObject.Type2 == TypeDB.Poison)
+                if (bagBeastObject.Type1 == Type.Poison || bagBeastObject.Type2 == Type.Poison)
                 {
                     statusMessage = $"{bagBeastObject.Name} can not be poisoned!";
                     return false;
@@ -106,7 +106,7 @@ public static class StatusEffectService
 
 
             case StatusEffectEnum.Toxic:
-                if (bagBeastObject.Type1 == TypeDB.Poison || bagBeastObject.Type2 == TypeDB.Poison)
+                if (bagBeastObject.Type1 == Type.Poison || bagBeastObject.Type2 == Type.Poison)
                 {
                     statusMessage = $"{bagBeastObject.Name} can not be poisoned!";
                     return false;
@@ -322,8 +322,8 @@ public static class StatusEffectService
         statusMessage = $"{bagBeastObject.Name} is paralysed!";
 
         // 25% Chance nicht anzugreifen
-        Random Rnd = new();
-        if (Rnd.Next(1, 4) == 1)
+        Random rnd = new();
+        if (rnd.Next(1, 4) == 1)
         {
             statusMessage = statusMessage + "\n" + $"{bagBeastObject.Name} is unable to move!";
             return true;
@@ -347,13 +347,9 @@ public static class StatusEffectService
         
         statusMessage = $"{bagBeastObject.Name} was hurt by poison!";
 
-        if (bagBeastObject.CurrentHP == 0)
-        {
-            statusMessage += "\n" + SetEternalEep(bagBeastObject);
-            return true;
-        }
-
-        return false;
+        if (bagBeastObject.CurrentHP != 0) return false;
+        statusMessage += "\n" + SetEternalEep(bagBeastObject);
+        return true;
     }
 
     /// <summary>

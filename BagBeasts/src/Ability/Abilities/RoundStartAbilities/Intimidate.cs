@@ -1,5 +1,6 @@
 
 
+using BagBeasts.src.Battle;
 using BagBeasts.src.Move.Base;
 
 namespace BagBeasts.src.Ability.AbilityBase;

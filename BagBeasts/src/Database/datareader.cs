@@ -7,8 +7,10 @@ using System.Data.Common;
 using System.Diagnostics;
 using System.Net.Http.Headers;
 using System.Xml.Linq;
+using BagBeasts.Entities;
+using BagBeasts.Data;
 
-namespace BagBeasts.src.Database
+namespace BagBeasts.Database
 {
     /// <summary>
     /// Reader der Postgres Datenbank
@@ -19,34 +21,17 @@ namespace BagBeasts.src.Database
         /// Holt sich alle Bagbeasts von der Datenbank
         /// </summary>
         /// <returns></returns>
-        public static List<BagbeastsDB> GetBagBeasts()
+        public static List<Beast> GetBagBeasts()
         {
             try
             {
-                using (PostgresContext context = new PostgresContext())
+                using (BagBeastsContext context = new BagBeastsContext())
                 {
                     var typesDict = context.Types.ToDictionary(t => t.Id);
 
-                    List<BagbeastsDB> query = context.Bagbeasts.ToList();
+                    List<Beast> query = context.Beasts.ToList();
 
                     return query;
-
-                    //List<BagBeast> retval = new();
-                    //foreach (var beast in query)
-                    //{
-                    //    // Type1 aus dem Dictionary mit Name holen
-                    //    Type typ1 = typesDict[beast.Type1];
-
-                    //    if (beast.Type2 != null && typesDict.TryGetValue(beast.Type2.Value, out var typ2))
-                    //    {
-                    //        retval.Add(new BagBeast(beast.Name, beast.Hp, beast.Atk, beast.Spa, beast.Def, beast.Spd, beast.Initiative, typ1, typ2, beast.Id));
-                    //    }
-                    //    else
-                    //    {
-                    //        retval.Add(new BagBeast(beast.Name, beast.Hp, beast.Atk, beast.Spa, beast.Def, beast.Spd, beast.Initiative, typ1, id: beast.Id));
-                    //    }
-                    //}
-                    //return retval;
                 }
             }
             catch (Exception ex)
@@ -61,14 +46,14 @@ namespace BagBeasts.src.Database
         /// </summary>
         /// <param name="id">ID des BagBeasts</param>
         /// <returns>BagBeast from db</returns>
-        public static BagbeastsDB GetBagBeastById(int id)
+        public static Beast GetBagBeastById(int id)
         {
             try
             {
-                using (PostgresContext context = new PostgresContext())
+                using (BagBeastsContext context = new BagBeastsContext())
                 {
                     var typesDict = context.Types.ToDictionary(t => t.Id);
-                    BagbeastsDB beast = context.Bagbeasts.Where(b => b.Id == id).FirstOrDefault();
+                    Beast beast = context.Beasts.Where(b => b.Id == id).FirstOrDefault();
                     return beast;
                 }
             }
@@ -83,13 +68,13 @@ namespace BagBeasts.src.Database
         /// Holt sich alle Abilities von der Datenbank
         /// </summary>
         /// <returns>Liste der Abilities</returns>
-        public static List<BagBeasts.AbilityDB> GetAblities()
+        public static List<Ability> GetAblities()
         {
             try
             {
-                using (PostgresContext context = new PostgresContext())
+                using (BagBeastsContext context = new BagBeastsContext())
                 {
-                    List<BagBeasts.AbilityDB> retval = new();
+                    List<Ability> retval = new();
                     foreach (var ability in context.Abilities)
                     {
                         retval.Add(ability);
@@ -108,13 +93,13 @@ namespace BagBeasts.src.Database
         /// Holt sich alle Moves von der Datenbank
         /// </summary>
         /// <returns>Liste der Moves</returns>
-        public static List<BagBeasts.MoveDB> GetMoves()
+        public static List<Move> GetMoves()
         {
             try
             {
-                using (PostgresContext context = new PostgresContext())
+                using (BagBeastsContext context = new BagBeastsContext())
                 {
-                    List<BagBeasts.MoveDB> retval = new();
+                    List<Move> retval = new();
                     foreach (var moves in context.Moves)
                     {
                         retval.Add(moves);
@@ -133,13 +118,13 @@ namespace BagBeasts.src.Database
         /// Holt sich alle Moves von der Datenbank
         /// </summary>
         /// <returns>Liste der Moves</returns>
-        public static List<BagBeasts.MoveDB> GetMoveById(int moveID)
+        public static List<Move> GetMoveById(int moveID)
         {
             try
             {
-                using (PostgresContext context = new PostgresContext())
+                using (BagBeastsContext context = new BagBeastsContext())
                 {
-                    List<BagBeasts.MoveDB> retval = new();
+                    List<Move> retval = new();
                     retval = context.Moves.Where(m => m.Id == moveID).ToList();
                     return retval;
                 }
@@ -156,27 +141,18 @@ namespace BagBeasts.src.Database
         /// </summary>
         /// <param name="referenz">BeagBeast</param>
         /// <returns>Liste der Moves</returns>
-        public static List<BagBeasts.MoveDB> GetMovesRef(BagbeastsDB referenz)
+        public static List<Move> GetMovesRef(Beast referenz)
         {
             try
             {
-                using (PostgresContext context = new PostgresContext())
+                using (BagBeastsContext context = new BagBeastsContext())
                 {
-                    List<BagBeasts.MoveDB> retval = new();
+                    List<Bbmove> temp = context.Bbmoves
+                        .Include(x => x.Move)
+                        .Where(x => x.Bbid == referenz.Id)
+                        .ToList();
 
-                    BagbeastsDB beastfromDB = context.Bagbeasts.Include(s => s.Moves).Where(x => x.Id == referenz.Id).First();
-
-                    if (beastfromDB != null && beastfromDB.Moves.Count > 0)
-                    {
-                        foreach (BagBeasts.MoveDB m in beastfromDB.Moves)
-                        {
-                            if (m.Id > 1 && (m.Id != 9 && m.Id != 18 && m.Id != 24 && m.Id != 43 && m.Id != 47 && m.Id != 56))
-                            {
-                                retval.Add(m);
-                            }
-                        }
-                        return retval;
-                    }
+                    return temp.Select(bbmove => bbmove.Move).ToList();
                 }
             }
             catch (Exception ex)
@@ -190,14 +166,14 @@ namespace BagBeasts.src.Database
         /// Holt alle Items von der Datenbank
         /// </summary>
         /// <returns>Liste der Items</returns>
-        public static List<ItemDB> GetItems()
+        public static List<Item> GetItems()
         {
             try
             {
-                using (PostgresContext context = new PostgresContext())
+                using (BagBeastsContext context = new BagBeastsContext())
                 {
-                    List<ItemDB> retval = new();
-                    foreach (ItemDB item in context.Items)
+                    List<Item> retval = new();
+                    foreach (Item item in context.Items)
                     {
                         retval.Add(item);
                     }

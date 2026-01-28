@@ -1,6 +1,8 @@
 ﻿using BagBeasts.src.Beast;
 using BagBeasts.src.Database;
 using System.Diagnostics;
+using BagBeasts.Entities;
+using BagBeasts.Data;
 
 namespace BagBeasts.src.Database
 {
@@ -15,9 +17,9 @@ namespace BagBeasts.src.Database
         {
             try
             {
-                using (PostgresContext context = new PostgresContext())
+                using (BagBeastsContext context = new BagBeastsContext())
                 {
-                    User retval = context.Users.Where(x => x.Name == userName).First() ?? new();
+                    User retval = context.Users.First(x => x.Name == userName) ?? new();
                     return retval;
                 }
             }
@@ -37,7 +39,7 @@ namespace BagBeasts.src.Database
         {
             try
             {
-                using (PostgresContext context = new PostgresContext())
+                using (BagBeastsContext context = new BagBeastsContext())
                 {
                     bool retval = context.Users.Any(x => x.Name == username);
                     return retval;
@@ -59,7 +61,7 @@ namespace BagBeasts.src.Database
         {
             try
             {
-                using (PostgresContext context = new PostgresContext())
+                using (BagBeastsContext context = new BagBeastsContext())
                 {
                     bool retval = context.Users.Any(x => x.Auth == token);
                     return retval;
@@ -73,6 +75,28 @@ namespace BagBeasts.src.Database
         }
 
         /// <summary>
+        /// Holt einen User anhand seines Auth-Tokens
+        /// </summary>
+        /// <param name="token">Auth-Token</param>
+        /// <returns>User</returns>
+        public User GetUserByAuth(string token)
+        {
+            try
+            {
+                using (BagBeastsContext context = new BagBeastsContext())
+                {
+                    User retval = context.Users.FirstOrDefault(x => x.Auth == token);
+                    return retval;
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex.Message);
+            }
+            return null;
+        }
+
+        /// <summary>
         /// Ändert einen User in der Datenbank
         /// </summary>
         /// <param name="user">Userobjekt</param>
@@ -81,7 +105,7 @@ namespace BagBeasts.src.Database
         {
             try
             {
-                using (PostgresContext context = new PostgresContext())
+                using (BagBeastsContext context = new BagBeastsContext())
                 {
                     User retval = context.Users.Where(x => x.Id == user.Id).First() ?? new();
                     retval = user;
@@ -105,7 +129,7 @@ namespace BagBeasts.src.Database
         {
             try
             {
-                using (PostgresContext context = new PostgresContext())
+                using (BagBeastsContext context = new BagBeastsContext())
                 {
                     context.Users.Add(user);
                     context.SaveChanges();

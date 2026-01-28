@@ -17,7 +17,7 @@ public abstract class Levitate : DamageReductionAbilityBase
     /// <returns>Neuer Schaden</returns>
     public override string AbilityEffect(BagBeastObject holderBeast, MoveBase attackMove, ref int damage)
     {
-        if (attackMove.Type == TypeDB.Ground)
+        if (attackMove.Type == Type.Ground)
         {
             damage = 0;
         }
